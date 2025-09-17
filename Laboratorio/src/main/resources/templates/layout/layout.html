@@ -1,0 +1,64 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head th:fragment="head">
+        <title>Laboratorio Clinico Calderon Piedra</title>
+        <meta charset="UTF-8"/>
+        <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.css}"/>
+        <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+        <script th:src="@{/js/main.js}" type="text/javascript"></script>
+        <script th:src="@{/js/main-admin.js}" type="text/javascript"></script>
+        <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+        <link href="/css/custom.css" rel="stylesheet"/>
+
+
+        <!-- Favicons -->
+        <link href="assets/img/favicon.png" rel="icon" />
+        <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon" />
+
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com" rel="preconnect" />
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" />
+
+        <!-- Vendor CSS Files -->
+        <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+            <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+                <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+                    <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+                        <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+                            <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+
+                                <!-- Main CSS File -->
+                                <link href="assets/css/main.css" rel="stylesheet">
+                                    </head>
+                                    <body  class="index-page">
+                                        <header th:fragment="header" id="header" class="header d-flex align-items-center fixed-top">
+                                            <div class="container position-relative d-flex align-items-center justify-content-between">
+
+                                                <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
+                                                    <!-- Uncomment the line below if you also wish to use an image logo -->
+                                                    <img src="assets/img/logo.png" alt="">
+
+                                                </a>
+
+                                                <nav id="navmenu" class="navmenu">
+                                                    <ul>
+                                                        <li><a href="index.html" class="active">Inicio</a></li>
+                                                        <li><a href="about.html">Sobre Nosotros</a></li>
+                                                        <li><a href="services.html" >Exámenes</a></li>
+                                                        <li><a href="contact.html">Contacto</a></li>
+                                                    </ul>
+                                                    <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+                                                </nav>
+
+                                                <div class="header-social-links">
+                                                    <a href="pages-login.html" >
+                                                        <i class="bi bi-person custom-profile" ></i>
+                                                    </a>
+                                                </div>
+
+                                            </div>
+                                        </header>
+                                    </body>
+                                    </html>

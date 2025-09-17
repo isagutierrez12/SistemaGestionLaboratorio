@@ -1,0 +1,209 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Faq Section
+--------------------------------------------------------------*/
+.faq {
+  padding-top: 60px;
+  padding-bottom: 60px;
+
+  .faq-item {
+    background-color: var(--surface-color);
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &:hover {
+      box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .faq-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 25px;
+      cursor: pointer;
+      position: relative;
+
+      h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--heading-color);
+        margin: 0;
+        flex: 1;
+        padding-right: 20px;
+        transition: color 0.3s ease;
+      }
+
+      .faq-toggle {
+        font-size: 20px;
+        color: var(--accent-color);
+        transition: transform 0.3s ease;
+      }
+    }
+
+    .faq-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.2s ease;
+
+      p {
+        padding: 0 25px 20px;
+        margin: 0;
+        line-height: 1.6;
+        color: var(--default-color);
+        font-size: 15px;
+      }
+    }
+
+    &.faq-active {
+      .faq-header {
+        h3 {
+          color: var(--accent-color);
+        }
+
+        .faq-toggle {
+          transform: rotate(180deg);
+        }
+      }
+
+      .faq-content {
+        max-height: 300px;
+        overflow: auto;
+      }
+    }
+  }
+
+  .faq-contact-card {
+    height: 100%;
+    background: linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color), var(--heading-color) 30%));
+    border-radius: 10px;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    color: var(--contrast-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+
+    .card-icon {
+      margin-bottom: 20px;
+
+      i {
+        font-size: 48px;
+        color: color-mix(in srgb, var(--contrast-color), transparent 10%);
+      }
+    }
+
+    .card-content {
+      h3 {
+        color: var(--contrast-color);
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 15px;
+      }
+
+      p {
+        color: color-mix(in srgb, var(--contrast-color), transparent 10%);
+        margin-bottom: 30px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+    }
+
+    .contact-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      margin-top: auto;
+
+      .contact-option {
+        display: flex;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.15);
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: var(--contrast-color);
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.25);
+          transform: translateX(5px);
+        }
+
+        i {
+          font-size: 20px;
+          margin-right: 12px;
+        }
+
+        span {
+          font-weight: 500;
+          font-size: 16px;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 991px) {
+    .row {
+      flex-direction: column-reverse;
+    }
+
+    .faq-contact-card {
+      margin-top: 30px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .faq-item {
+      .faq-header {
+        padding: 15px 20px;
+
+        h3 {
+          font-size: 16px;
+        }
+      }
+
+      .faq-content {
+        p {
+          padding: 0 20px 15px;
+          font-size: 14px;
+        }
+      }
+    }
+
+    .faq-contact-card {
+      padding: 30px 20px;
+
+      .card-icon i {
+        font-size: 40px;
+      }
+
+      .card-content {
+        h3 {
+          font-size: 24px;
+        }
+
+        p {
+          font-size: 15px;
+        }
+      }
+
+      .contact-options .contact-option {
+        padding: 12px 15px;
+
+        i {
+          font-size: 18px;
+        }
+
+        span {
+          font-size: 15px;
+        }
+      }
+    }
+  }
+}

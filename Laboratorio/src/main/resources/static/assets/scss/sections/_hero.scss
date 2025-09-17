@@ -1,0 +1,284 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Hero Section
+--------------------------------------------------------------*/
+.hero {
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+
+  .hero-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 0 60px 0;
+  }
+
+  .hero-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg,
+          color-mix(in srgb, var(--background-color), transparent 20%) 0%,
+          color-mix(in srgb, var(--background-color), transparent 50%) 100%);
+      z-index: 2;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 3;
+    padding: 3rem 0;
+    width: 100%;
+
+    .content-box {
+      padding: 2rem 0;
+
+      .badge-accent {
+        display: inline-block;
+        background-color: color-mix(in srgb, var(--accent-color), transparent 20%);
+        color: var(--contrast-color);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+      }
+
+      h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+      }
+
+      p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        max-width: 600px;
+      }
+
+      .cta-group {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+
+        .btn {
+          padding: 0.8rem 2rem;
+          font-weight: 600;
+          border-radius: 50px;
+          transition: all 0.3s ease;
+          font-size: 1rem;
+
+          &.btn-primary {
+            background-color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+            color: var(--contrast-color);
+
+            &:hover {
+              background-color: color-mix(in srgb, var(--accent-color), transparent 20%);
+              border-color: color-mix(in srgb, var(--accent-color), transparent 20%);
+            }
+          }
+
+          &.btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+
+            &:hover {
+              background-color: var(--accent-color);
+              border-color: var(--accent-color);
+              color: var(--contrast-color);
+            }
+          }
+        }
+      }
+
+      .info-badges {
+        display: flex;
+        gap: 2rem;
+
+        .badge-item {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+
+          i {
+            font-size: 2rem;
+            color: var(--accent-color);
+          }
+
+          .badge-content {
+            display: flex;
+            flex-direction: column;
+
+            span {
+              color: color-mix(in srgb, var(--default-color), transparent 20%);
+              font-size: 0.9rem;
+            }
+
+            strong {
+              font-size: 1.1rem;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .features-wrapper {
+    background-color: color-mix(in srgb, var(--surface-color), transparent 20%);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
+    padding: 2rem;
+    margin-top: 15px;
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      flex: 1;
+
+      .feature-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        background-color: color-mix(in srgb, var(--accent-color), transparent 85%);
+        border-radius: 12px;
+        flex-shrink: 0;
+
+        i {
+          font-size: 1.8rem;
+          color: var(--accent-color);
+        }
+      }
+
+      .feature-text {
+        h3 {
+          font-size: 1.2rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+        }
+
+        p {
+          font-size: 0.95rem;
+          color: color-mix(in srgb, var(--default-color), transparent 30%);
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .hero-content .content-box h1 {
+      font-size: 3rem;
+    }
+
+    .floating-features .features-wrapper {
+      padding: 1.5rem;
+      gap: 1rem;
+    }
+  }
+
+  @media (max-width: 992px) {
+    .hero-wrapper {
+      height: auto;
+      min-height: 600px;
+    }
+
+    .hero-content .content-box h1 {
+      font-size: 2.5rem;
+    }
+
+    .floating-features {
+      position: relative;
+      transform: translateY(0);
+      padding: 3rem 0;
+
+      .features-wrapper {
+        flex-direction: column;
+
+        .feature-item {
+          padding: 1rem 0;
+          border-bottom: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-wrapper {
+      min-height: 500px;
+    }
+
+    .hero-image::after {
+      background: linear-gradient(180deg,
+          rgba(0, 0, 0, 0.5) 0%,
+          rgba(0, 0, 0, 0.7) 100%);
+    }
+
+    .hero-content .content-box {
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+
+      .cta-group {
+        flex-direction: column;
+        gap: 0.8rem;
+
+        .btn {
+          width: 100%;
+          text-align: center;
+        }
+      }
+
+      .info-badges {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+  }
+
+  @media (max-width: 576px) {
+    .hero-content .content-box {
+      padding: 1rem 0;
+
+      h1 {
+        font-size: 1.8rem;
+      }
+    }
+  }
+}

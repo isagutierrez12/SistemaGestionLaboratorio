@@ -1,0 +1,305 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Terms Of Service Section
+--------------------------------------------------------------*/
+.terms-of-service {
+
+  // Header Styles
+  .tos-header {
+    margin-bottom: 60px;
+
+    .last-updated {
+      display: inline-block;
+      padding: 8px 20px;
+      background-color: color-mix(in srgb, var(--accent-color), transparent 90%);
+      border-radius: 30px;
+      color: var(--accent-color);
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+
+    p {
+      color: color-mix(in srgb, var(--default-color), transparent 30%);
+      font-size: 1.1rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+  }
+
+  // Content Section
+  .tos-content {
+    .content-section {
+      margin-bottom: 50px;
+      scroll-margin-top: 100px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      h3 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: var(--heading-color);
+      }
+
+      p {
+        color: color-mix(in srgb, var(--default-color), transparent 20%);
+        line-height: 1.7;
+        margin-bottom: 20px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      .info-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 20px;
+        background-color: color-mix(in srgb, var(--accent-color), transparent 95%);
+        border-radius: 15px;
+        margin-top: 20px;
+
+        i {
+          font-size: 1.5rem;
+          color: var(--accent-color);
+          flex-shrink: 0;
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.95rem;
+        }
+      }
+
+      .list-items {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+
+        li {
+          position: relative;
+          padding-left: 25px;
+          margin-bottom: 12px;
+          color: color-mix(in srgb, var(--default-color), transparent 20%);
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+          }
+        }
+      }
+
+      .alert-box {
+        display: flex;
+        gap: 20px;
+        padding: 25px;
+        background-color: var(--surface-color);
+        border-radius: 15px;
+        border-left: 4px solid var(--accent-color);
+        margin-top: 20px;
+
+        i {
+          font-size: 2rem;
+          color: var(--accent-color);
+          flex-shrink: 0;
+        }
+
+        .alert-content {
+          h5 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+          }
+
+          p {
+            margin: 0;
+            font-size: 0.95rem;
+          }
+        }
+      }
+
+      .prohibited-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-top: 20px;
+
+        @media (max-width: 576px) {
+          grid-template-columns: 1fr;
+        }
+
+        .prohibited-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 15px;
+          background-color: var(--surface-color);
+          border-radius: 12px;
+
+          i {
+            color: #dc3545;
+            font-size: 1.2rem;
+          }
+
+          span {
+            font-size: 0.95rem;
+            color: color-mix(in srgb, var(--default-color), transparent 20%);
+          }
+        }
+      }
+
+      .disclaimer-box {
+        background-color: var(--surface-color);
+        padding: 25px;
+        border-radius: 15px;
+        margin-top: 20px;
+
+        p {
+          margin-bottom: 15px;
+          font-weight: 500;
+        }
+
+        ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+
+          li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 12px;
+            color: color-mix(in srgb, var(--default-color), transparent 20%);
+            font-size: 0.95rem;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            &::before {
+              content: '•';
+              position: absolute;
+              left: 8px;
+              color: var(--accent-color);
+            }
+          }
+        }
+      }
+
+      .notice-box {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        background-color: color-mix(in srgb, var(--accent-color), transparent 95%);
+        border-radius: 15px;
+        margin-top: 20px;
+
+        i {
+          font-size: 1.5rem;
+          color: var(--accent-color);
+          flex-shrink: 0;
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.95rem;
+        }
+      }
+    }
+  }
+
+  // Contact Section
+  .tos-contact {
+    margin-top: 60px;
+
+    .contact-box {
+      background: linear-gradient(135deg,
+          color-mix(in srgb, var(--accent-color), transparent 95%) 0%,
+          color-mix(in srgb, var(--accent-color), transparent 98%) 100%);
+      border-radius: 20px;
+      padding: 40px;
+      display: flex;
+      align-items: center;
+      gap: 30px;
+
+      @media (max-width: 576px) {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .contact-icon {
+        width: 60px;
+        height: 60px;
+        background-color: var(--accent-color);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        i {
+          font-size: 1.8rem;
+          color: var(--contrast-color);
+        }
+      }
+
+      .contact-content {
+        flex: 1;
+
+        h4 {
+          font-size: 1.4rem;
+          margin-bottom: 8px;
+        }
+
+        p {
+          color: color-mix(in srgb, var(--default-color), transparent 30%);
+          margin-bottom: 15px;
+        }
+
+        .contact-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 25px;
+          background-color: var(--accent-color);
+          color: var(--contrast-color);
+          border-radius: 30px;
+          text-decoration: none;
+          font-weight: 500;
+          transition: all 0.3s;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+          }
+        }
+      }
+    }
+  }
+
+  @media print {
+    .tos-contact {
+      display: none;
+    }
+
+    .content-section {
+      page-break-inside: avoid;
+    }
+  }
+}

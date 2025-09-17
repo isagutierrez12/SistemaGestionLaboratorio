@@ -1,0 +1,113 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Featured Testimonials Section
+--------------------------------------------------------------*/
+.featured-testimonials {
+  .testimonials-slider {
+    width: 100%;
+    position: relative;
+    padding-bottom: 60px;
+  }
+
+  .swiper-wrapper {
+    height: auto;
+  }
+
+  .testimonial-item {
+    background-color: var(--surface-color);
+    padding: 40px;
+    border-radius: 20px;
+
+    @media (max-width: 575px) {
+      padding: 20px;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 30px;
+      font-style: italic;
+    }
+
+    .profile {
+      gap: 15px;
+
+      .profile-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .profile-info {
+        h3 {
+          font-size: 18px;
+          margin: 0;
+          font-weight: 600;
+        }
+
+        span {
+          font-size: 14px;
+          color: color-mix(in srgb, var(--default-color) 70%, transparent);
+        }
+      }
+    }
+
+    .featured-img-wrapper {
+      min-height: 400px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+
+    .featured-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  }
+
+  .swiper-navigation {
+    position: absolute;
+    bottom: 0;
+    gap: 10px;
+  }
+
+  .swiper-button-prev,
+  .swiper-button-next {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    margin: 0;
+    width: 44px;
+    height: 44px;
+    background-color: var(--surface-color);
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--default-color) 10%, transparent);
+    transition: 0.3s;
+
+    &::after {
+      font-size: 20px;
+      color: var(--default-color);
+    }
+
+    &:hover {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+
+      &::after {
+        color: var(--contrast-color);
+      }
+    }
+  }
+}

@@ -1,0 +1,113 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Error 404 Section
+--------------------------------------------------------------*/
+.error-404 {
+  padding: 80px 0;
+  margin: 0 auto;
+
+  .error-icon {
+    font-size: 5rem;
+    color: color-mix(in srgb, var(--accent-color), transparent 15%);
+  }
+
+  .error-code {
+    font-size: clamp(6rem, 15vw, 12rem);
+    font-weight: 800;
+    color: color-mix(in srgb, var(--heading-color), transparent 10%);
+    font-family: var(--heading-font);
+    line-height: 1;
+  }
+
+  .error-title {
+    font-size: 2rem;
+    color: var(--heading-color);
+    font-weight: 600;
+  }
+
+  .error-text {
+    font-size: 1.1rem;
+    color: color-mix(in srgb, var(--default-color), transparent 20%);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .search-box {
+    max-width: 500px;
+    margin: 0 auto;
+
+    .input-group {
+      border-radius: 50px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-control {
+      border: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      color: var(--default-color);
+      background-color: var(--surface-color);
+      border-radius: 50px;
+
+      &:focus {
+        box-shadow: none;
+        border-color: var(--accent-color);
+      }
+
+      &::placeholder {
+        color: color-mix(in srgb, var(--default-color), transparent 60%);
+      }
+    }
+
+    .search-btn {
+      background-color: var(--accent-color);
+      color: var(--contrast-color);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: color-mix(in srgb, var(--accent-color), transparent 15%);
+      }
+    }
+  }
+
+  .error-action {
+    .btn-primary {
+      padding: 0.75rem 2rem;
+      font-size: 1.1rem;
+      background-color: var(--accent-color);
+      border: none;
+      color: var(--contrast-color);
+      border-radius: 50px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: color-mix(in srgb, var(--accent-color), transparent 15%);
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 60px 0;
+
+    .error-code {
+      font-size: clamp(4rem, 12vw, 8rem);
+    }
+
+    .error-title {
+      font-size: 1.5rem;
+    }
+
+    .error-text {
+      font-size: 1rem;
+      padding: 0 20px;
+    }
+
+    .search-box {
+      margin: 0 20px;
+    }
+  }
+}
