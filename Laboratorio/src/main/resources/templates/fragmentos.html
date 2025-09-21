@@ -104,59 +104,519 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </section><!-- /Call To Action Section -->
 
         </section>
-        
+
         <section th:fragment="about">
             <section id="about" class="about section">
 
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
+                <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-        <div class="row gy-4">
-          <div class="col-lg-6">
-            <div class="content">
-              <h2>Laboratorio Clínico Paraíso</h2>
-              <p>Fundado en 1986. El mismo empezó como un proyecto de una pareja de esposos que tomaron la oportunidad
-                de establecer un laboratorio en la comunidad de Paraíso.
-                Al pasar de los años este proyecto ha crecido al lado de la comunidad y actualmente toda la familia
-                trabaja en él.
-                Estamos muy agradecido de poder brindar nuestros servicios a esta comunidad que nos ha recibido como
-                miembros de ella y nos ha introducido a la vida de sus familias.
-              </p>
-              <p>Dr. Álvaro Calderón Céspedes</p>
-              <p>Dr. Álvaro Calderón Piedra</p>
+                    <div class="row gy-4">
+                        <div class="col-lg-6">
+                            <div class="content">
+                                <h2>Laboratorio Clínico Paraíso</h2>
+                                <p>Fundado en 1986. El mismo empezó como un proyecto de una pareja de esposos que tomaron la oportunidad
+                                    de establecer un laboratorio en la comunidad de Paraíso.
+                                    Al pasar de los años este proyecto ha crecido al lado de la comunidad y actualmente toda la familia
+                                    trabaja en él.
+                                    Estamos muy agradecido de poder brindar nuestros servicios a esta comunidad que nos ha recibido como
+                                    miembros de ella y nos ha introducido a la vida de sus familias.
+                                </p>
+                                <p>Dr. Álvaro Calderón Céspedes</p>
+                                <p>Dr. Álvaro Calderón Piedra</p>
 
-              <div class="stats-container" data-aos="fade-up" data-aos-delay="200">
-                <div class="row gy-4">
-                  <div class="">
-                    <div class="stat-item">
-                      <div class="stat-number">
-                        <span data-purecounter-start="0" data-purecounter-end="30" data-purecounter-duration="1"
-                          class="purecounter"></span>+
-                      </div>
-                      <div class="stat-label">Years of Experience</div>
+                                <div class="stats-container" data-aos="fade-up" data-aos-delay="200">
+                                    <div class="row gy-4">
+                                        <div class="">
+                                            <div class="stat-item">
+                                                <div class="stat-number">
+                                                    <span data-purecounter-start="0" data-purecounter-end="30" data-purecounter-duration="1"
+                                                          class="purecounter"></span>+
+                                                </div>
+                                                <div class="stat-label">Years of Experience</div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="image-section" data-aos="fade-left" data-aos-delay="200">
+                                <div class="main-image">
+                                    <img src="assets/img/health/bg-historia.jpeg" alt="Healthcare consultation" class="img-fluid" />
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
-                  </div>
 
                 </div>
-              </div>
 
-
-            </div>
-          </div>
-
-          <div class="col-lg-6">
-            <div class="image-section" data-aos="fade-left" data-aos-delay="200">
-              <div class="main-image">
-                <img src="assets/img/health/bg-historia.jpeg" alt="Healthcare consultation" class="img-fluid">
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    </section><!-- /About Section -->
+            </section><!-- /About Section -->
         </section>
 
+        <section th:fragment="examenes">
+            <section id="services" class="services section">
+
+                <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+                    <div class="services-tabs">
+                        <ul class="nav nav-tabs" role="tablist" data-aos="fade-up" data-aos-delay="200">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="services-primary-tab" data-bs-toggle="tab"
+                                        data-bs-target="#services-primary" type="button" role="tab">Paquetes Generales</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="services-specialty-tab" data-bs-toggle="tab"
+                                        data-bs-target="#services-specialty" type="button" role="tab">Niños</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="services-diagnostics-tab" data-bs-toggle="tab"
+                                        data-bs-target="#services-diagnostics" type="button" role="tab">ETS</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="services-emergency-tab" data-bs-toggle="tab"
+                                        data-bs-target="#services-emergency" type="button" role="tab">Inmunología</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="services-emergency-tab" data-bs-toggle="tab"
+                                        data-bs-target="#services-hepatico" type="button" role="tab">Hepatico</button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" data-aos="fade-up" data-aos-delay="300">
+
+                            <div class="tab-pane fade show active" id="services-primary" role="tabpanel">
+                                <div class="row g-4">
+                                    <div class="col-lg-4">
+                                        <div class="service-item">
+                                            <div class="service-icon-wrapper">
+                                                <i class="fa fa-stethoscope"></i>
+                                            </div>
+                                            <div class="service-details">
+                                                <h5>Paquete Básico</h5>
+                                                <ul class="service-benefits">
+                                                    <li><i class="fa fa-check-circle"></i>Hemograma</li>
+                                                    <li><i class="fa fa-check-circle"></i>Perfil de lípidos</li>
+                                                    <li><i class="fa fa-check-circle"></i>Ácido úrico</li>
+                                                    <li><i class="fa fa-check-circle"></i>Glicemia</li>
+                                                </ul>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="service-item">
+                                            <div class="service-icon-wrapper">
+                                                <i class="fa fa-heartbeat"></i>
+                                            </div>
+                                            <div class="service-details">
+                                                <h5>Paquete Generales</h5>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <ul class="service-benefits">
+                                                            <li><i class="fa fa-check-circle"></i>Hemograma</li>
+                                                            <li><i class="fa fa-check-circle"></i>Perfil de lípidos</li>
+                                                            <li><i class="fa fa-check-circle"></i>Ácido úrico</li>
+                                                            <li><i class="fa fa-check-circle"></i>Glicemia</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col">
+                                                        <ul class="service-benefits">
+                                                            <li><i class="fa fa-check-circle"></i>Perfil Renal (urea y creatinina)</li>
+                                                            <li><i class="fa fa-check-circle"></i>Examén general de orina</li>
+                                                            <li><i class="fa fa-check-circle"></i>Heces por parasitos</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="service-item">
+                                            <div class="service-icon-wrapper">
+                                                <i class="fa fa-vials"></i>
+                                            </div>
+                                            <div class="service-details">
+                                                <h5>Paquete Completo</h5>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <ul class="service-benefits">
+                                                            <li><i class="fa fa-check-circle"></i>Hemograma</li>
+                                                            <li><i class="fa fa-check-circle"></i>Perfil de lípidos</li>
+                                                            <li><i class="fa fa-check-circle"></i>Ácido úrico</li>
+                                                            <li><i class="fa fa-check-circle"></i>Glicemia</li>
+                                                            <li><i class="fa fa-check-circle"></i>Perfil Renal (urea y creatinina)</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col">
+                                                        <ul class="service-benefits">
+                                                            <li><i class="fa fa-check-circle"></i>Transaminasas</li>
+                                                            <li><i class="fa fa-check-circle"></i>Examén general de orina</li>
+                                                            <li><i class="fa fa-check-circle"></i>Heces por parasitos</li>
+
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="services-specialty" role="tabpanel">
+                                <div class="row g-4">
+                                    <div class="col-lg-6">
+                                        <div class="service-item">
+                                            <div class="service-icon-wrapper">
+                                                <i class="fa fa-baby"></i>
+                                            </div>
+                                            <div class="service-details">
+                                                <h5>Paquete Básico</h5>
+                                                <ul class="service-benefits">
+                                                    <li><i class="fa fa-check-circle"></i>Hemograma</li>
+                                                    <li><i class="fa fa-check-circle"></i>Examen general de orina</li>
+                                                    <li><i class="fa fa-check-circle"></i>Heces por parásitos</li>
+                                                </ul>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <div class="service-item">
+                                            <div class="service-icon-wrapper">
+                                                <i class="fa fa-puzzle-piece"></i>
+                                            </div>
+                                            <div class="service-details">
+                                                <h5>Paquete General</h5>
+                                                <ul class="service-benefits">
+                                                    <li><i class="fa fa-check-circle"></i>Hemograma</li>
+                                                    <li><i class="fa fa-check-circle"></i>Examen general de orina</li>
+                                                    <li><i class="fa fa-check-circle"></i>Heces por parásitos</li>
+                                                    <li><i class="fa fa-check-circle"></i>Glicemia en ayunas</li>
+                                                </ul>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="services-diagnostics" role="tabpanel">
+                                <div class="row g-4">
+                                    <div class="col-lg-4">
+                                        <div class="service-item">
+                                            <div class="service-icon-wrapper">
+                                                <i class="fa fa-stethoscope"></i>
+                                            </div>
+                                            <div class="service-details">
+                                                <h5>Paquete Básico</h5>
+                                                <ul class="service-benefits">
+                                                    <li><i class="fa fa-check-circle"></i>VDRL (sifilis)</li>
+                                                    <li><i class="fa fa-check-circle"></i>HIV (4ta generacion, p24)</li>
+                                                    <li><i class="fa fa-check-circle"></i>Hepatitis B</li>
+                                                </ul>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="service-item">
+                                            <div class="service-icon-wrapper">
+                                                <i class="fa fa-heartbeat"></i>
+                                            </div>
+                                            <div class="service-details">
+                                                <h5>Paquete General</h5>
+
+                                                <ul class="service-benefits">
+                                                    <li><i class="fa fa-check-circle"></i>VDRL (sifilis)</li>
+                                                    <li><i class="fa fa-check-circle"></i>HIV (4ta generacion, p24)</li>
+                                                    <li><i class="fa fa-check-circle"></i>Hepatitis B</li>
+                                                    <li><i class="fa fa-check-circle"></i>Hepatitis C</li>
+                                                    <li><i class="fa fa-check-circle"></i>Herpes 2 (IgM)</li>
+                                                </ul>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-lg-4">
+                                        <div class="service-item">
+                                            <div class="service-icon-wrapper">
+                                                <i class="fa fa-vials"></i>
+                                            </div>
+                                            <div class="service-details">
+                                                <h5>Paquete Completo</h5>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <ul class="service-benefits">
+                                                            <li><i class="fa fa-check-circle"></i>VDRL (sifilis)</li>
+                                                            <li><i class="fa fa-check-circle"></i>HIV (4ta generacion, p24)</li>
+                                                            <li><i class="fa fa-check-circle"></i>Hepatitis B</li>
+                                                            <li><i class="fa fa-check-circle"></i>Hepatitis C</li>
+
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col">
+                                                        <ul class="service-benefits">
+                                                            <li><i class="fa fa-check-circle"></i>PCR en orina (Herpes I y II, Chlamydia trachomatis,
+                                                                Micoplasma genital, Ureaplasma, Gardnerella vaginalis, Trichomonas vaginalis, Neisseria
+                                                                gonorrhoeae)</li>
+
+
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="services-emergency" role="tabpanel">
+                                <div class="row g-4">
+                                    <div class="col-lg-4">
+                                        <div class="service-item">
+                                            <div class="service-icon-wrapper">
+                                                <i class="fa fa-stethoscope"></i>
+                                            </div>
+                                            <div class="service-details">
+                                                <h5>Paquete Básico</h5>
+                                                <ul class="service-benefits">
+                                                    <li><i class="fa fa-check-circle"></i>T4 libre</li>
+                                                    <li><i class="fa fa-check-circle"></i>TSH</li>
+
+                                                </ul>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="service-item">
+                                            <div class="service-icon-wrapper">
+                                                <i class="fa fa-heartbeat"></i>
+                                            </div>
+                                            <div class="service-details">
+                                                <h5>Paquete General</h5>
+
+                                                <ul class="service-benefits">
+                                                    <li><i class="fa fa-check-circle"></i>T3 total</li>
+                                                    <li><i class="fa fa-check-circle"></i>T4 total</li>
+                                                    <li><i class="fa fa-check-circle"></i>TSH</li>
+
+                                                </ul>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-lg-4">
+                                        <div class="service-item">
+                                            <div class="service-icon-wrapper">
+                                                <i class="fa fa-vials"></i>
+                                            </div>
+                                            <div class="service-details">
+                                                <h5>Paquete Completo</h5>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <ul class="service-benefits">
+                                                            <li><i class="fa fa-check-circle"></i>T3 total</li>
+                                                            <li><i class="fa fa-check-circle"></i>T4 total</li>
+                                                            <li><i class="fa fa-check-circle"></i>TSH</li>
+
+
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col">
+                                                        <ul class="service-benefits">
+                                                            <li><i class="fa fa-check-circle"></i>Anticuerpos anti tiroglobulina</li>
+                                                            <li><i class="fa fa-check-circle"></i>Anticuerpos anti microsoma</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="services-hepatico" role="tabpanel">
+                                <div class="row g-4">
+                                    <div class="col-lg-4">
+                                        <div class="service-item">
+                                            <div class="service-icon-wrapper">
+                                                <i class="fa fa-stethoscope"></i>
+                                            </div>
+                                            <div class="service-details">
+                                                <h5>Paquete Básico</h5>
+                                                <ul class="service-benefits">
+                                                    <li><i class="fa fa-check-circle"></i>Bilirrubinas totales y fraccionadas</li>
+                                                    <li><i class="fa fa-check-circle"></i>Transaminasas</li>
+                                                    <li><i class="fa fa-check-circle"></i>Fosfatasa alcalina</li>
+                                                </ul>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="service-item">
+                                            <div class="service-icon-wrapper">
+                                                <i class="fa fa-heartbeat"></i>
+                                            </div>
+                                            <div class="service-details">
+                                                <h5>Paquete General</h5>
+
+                                                <ul class="service-benefits">
+                                                    <li><i class="fa fa-check-circle"></i>Bilirrubinas totales y fraccionadas</li>
+                                                    <li><i class="fa fa-check-circle"></i>Transaminasas</li>
+                                                    <li><i class="fa fa-check-circle"></i>Fosfatasa alcalina</li>
+                                                    <li><i class="fa fa-check-circle"></i>GGT</li>
+                                                </ul>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-lg-4">
+                                        <div class="service-item">
+                                            <div class="service-icon-wrapper">
+                                                <i class="fa fa-vials"></i>
+                                            </div>
+                                            <div class="service-details">
+                                                <h5>Paquete Completo</h5>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <ul class="service-benefits">
+                                                            <li><i class="fa fa-check-circle"></i>Bilirrubinas totales y fraccionadas</li>
+                                                            <li><i class="fa fa-check-circle"></i>Transaminasas</li>
+                                                            <li><i class="fa fa-check-circle"></i>Fosfatasa alcalina/li>
+
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col">
+                                                        <ul class="service-benefits">
+                                                            <li><i class="fa fa-check-circle"></i>Proteínas totales y fraccionadas</li>
+                                                            <li><i class="fa fa-check-circle"></i>GGT</li>                       
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                </div>
+
+            </section><!-- /Services Section -->
+        </section>
+
+
+        <section th:fragment="contacto">
+            <section id="contact" class="contact section">
+
+                <div class="container">
+                    <div class="contact-wrapper">
+                        <div class="contact-info-panel">
+                            <div class="contact-info-header">
+                                <h3>Información de Contacto</h3>
+                                <p>Conoce nuestras sucursales o contáctanos a través de los diferentes canales de comunicación</p>
+                            </div>
+
+                            <div class="contact-info-cards">
+                                <div class="info-card">
+                                    <div class="icon-container">
+                                        <i class="bi bi-pin-map-fill"></i>
+                                    </div>
+                                    <div class="card-content">
+                                        <h4>Ubicaciones</h4>
+                                        <p>Contigo al Residencial Vistas de Monserrat, Cartago</p>
+                                        <p>Plaza Granadilla, San José</p>
+                                    </div>
+                                </div>
+
+                                <div class="info-card">
+                                    <div class="icon-container">
+                                        <i class="bi bi-envelope-open"></i>
+                                    </div>
+                                    <div class="card-content">
+                                        <h4>Correo</h4>
+                                        <p>laboratoriocalderonpiedra@gmail.com</p>
+                                    </div>
+                                </div>
+
+                                <div class="info-card">
+                                    <div class="icon-container">
+                                        <i class="bi bi-telephone-fill"></i>
+                                    </div>
+                                    <div class="card-content">
+                                        <h4>Télefono</h4>
+                                        <p>4033 8103</p>
+                                    </div>
+                                </div>
+
+                                <div class="info-card">
+                                    <div class="icon-container">
+                                        <i class="bi bi-clock-history"></i>
+                                    </div>
+                                    <div class="card-content">
+                                        <h4>Horas de atención</h4>
+                                        <p>Lunes-Viernes: 7AM - 4PM</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="social-links-panel">
+                                <h5>Síguenos</h5>
+                                <div class="social-icons">
+                                    <a href="https://www.facebook.com/laboratoriocalderon/"><i class="bi bi-facebook"></i></a>
+                                    <a href="#"><i class="bi bi-instagram"></i></a>
+                                    <a href="https://api.whatsapp.com/send/?phone=50671414286&text&type=phone_number&app_absent=0"><i
+                                            class="bi bi-whatsapp"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="contact-form-panel">
+                            <h3>Encuentranos</h3>
+                            <div class="map-container">
+                                <iframe
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.976143753966!2d-84.01289278871876!3d9.935942774091377!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8fa0e18d0532f55b%3A0x3a7515d371e87136!2sLaboratorio%20Cl%C3%ADnico%20Calder%C3%B3n%20Piedra!5e0!3m2!1ses!2scr!4v1754623926587!5m2!1ses!2scr"
+                                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section><!-- /Contact Section -->
+        </section>
     </body>
 </html>

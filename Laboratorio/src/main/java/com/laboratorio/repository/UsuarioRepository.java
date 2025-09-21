@@ -4,7 +4,7 @@
  */
 
 package com.laboratorio.repository;
-import com.laboratorio.domain.Usuario;
+import com.laboratorio.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 /**

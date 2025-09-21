@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-package com.laboratorio.domain;
+package com.laboratorio.model;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
@@ -21,7 +21,7 @@ public class Usuario implements Serializable{
     private static final long serialVersionUID = 1l;
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    @Column(name="usuario_id")
+    @Column(name="id_usuario")
     private Long idUsuario;
     private String nombre;
     private String primerApellido;
