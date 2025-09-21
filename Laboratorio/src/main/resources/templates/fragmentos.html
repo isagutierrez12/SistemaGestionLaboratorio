@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head  th:replace="~{layout/layout :: head}">
+        <title>Laboratorio Clinico Calderon Piedra</title>
+        <meta charset="UTF-8" />
+
+    </head>
+    <body>
+        <section th:fragment="index">
+            <section  class="hero section dark-background">
+                <div class="container-fluid p-0">
+                    <div class="hero-wrapper">
+                        <div class="hero-image">
+                            <img src="assets/img/health/lab.png" alt="Advanced Healthcare" class="img-fluid" />
+                        </div>
+
+
+                        <div class="hero-content">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-lg-7 col-md-10" data-aos="fade-right" data-aos-delay="100">
+                                        <div class="content-box">
+                                            <span class="badge-accent" data-aos="fade-up" data-aos-delay="150">Laboratorio Clínico Calderón
+                                                Piedra</span>
+                                            <h1 data-aos="fade-up" data-aos-delay="200">Brindando un servicio personalizado, de calidad y
+                                                eficiente</h1>
+                                            <p data-aos="fade-up" data-aos-delay="250">Estamos en la comunidad de Concepción de Tres Rios,
+                                                Curridabat y sus alredores.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- contenido -->
+            <section th:fragment="index-contenido" id="call-to-action" class="call-to-action section">
+
+                <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8 text-center">
+                            <h2 data-aos="fade-up" data-aos-delay="200">Cuida tu Salud</h2>
+                            <p data-aos="fade-up" data-aos-delay="250">Nuestro compromiso es brindarte la mejor atención posible y garantizar que tengás acceso a análisis clínicos precisos y confiables. </p>
+                        </div>
+                    </div>
+
+                    <div class="row features-row" data-aos="fade-up" data-aos-delay="400">
+
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="feature-card">
+                                <div class="icon-wrapper">
+                                    <i class="bi bi-heart-pulse"></i>
+                                </div>
+                                <h5>Atención rápida</h5>
+                                <p>Nuestro equipo de expertos está listo para atenderte.</p>
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="feature-card">
+                                <div class="icon-wrapper">
+                                    <i class="bi bi-calendar-check"></i>
+                                </div>
+                                <h5>Servicio a domicilio</h5>
+                                <p>Con coordinación el día anterior
+                                </p>
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="feature-card">
+                                <div class="icon-wrapper">
+                                    <i class="bi bi-file-text"></i>
+                                </div>
+                                <h5>Resultados</h5>
+                                <p>Envío de resultados por correo electrónico o WhatsApp (con firma digital si así lo requiere)</p>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="feature-card">
+                                <div class="icon-wrapper">
+                                    <i class="bi bi-wallet-fill"></i>
+                                </div>
+                                <h5>Metodos de Pago</h5>
+                                <p>Efecitivo, Tarjeta de credito o SINPE</p>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </section><!-- /Call To Action Section -->
+
+        </section>
+        
+        <section th:fragment="about">
+            <section id="about" class="about section">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-4">
+          <div class="col-lg-6">
+            <div class="content">
+              <h2>Laboratorio Clínico Paraíso</h2>
+              <p>Fundado en 1986. El mismo empezó como un proyecto de una pareja de esposos que tomaron la oportunidad
+                de establecer un laboratorio en la comunidad de Paraíso.
+                Al pasar de los años este proyecto ha crecido al lado de la comunidad y actualmente toda la familia
+                trabaja en él.
+                Estamos muy agradecido de poder brindar nuestros servicios a esta comunidad que nos ha recibido como
+                miembros de ella y nos ha introducido a la vida de sus familias.
+              </p>
+              <p>Dr. Álvaro Calderón Céspedes</p>
+              <p>Dr. Álvaro Calderón Piedra</p>
+
+              <div class="stats-container" data-aos="fade-up" data-aos-delay="200">
+                <div class="row gy-4">
+                  <div class="">
+                    <div class="stat-item">
+                      <div class="stat-number">
+                        <span data-purecounter-start="0" data-purecounter-end="30" data-purecounter-duration="1"
+                          class="purecounter"></span>+
+                      </div>
+                      <div class="stat-label">Years of Experience</div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="image-section" data-aos="fade-left" data-aos-delay="200">
+              <div class="main-image">
+                <img src="assets/img/health/bg-historia.jpeg" alt="Healthcare consultation" class="img-fluid">
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /About Section -->
+        </section>
+
+    </body>
+</html>
