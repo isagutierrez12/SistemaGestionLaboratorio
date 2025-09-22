@@ -13,5 +13,5 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  */
 @EnableJpaRepositories
 public interface UsuarioRepository extends JpaRepository < Usuario, Long> {
-
+    Usuario findByUsuario(String usuario);
 }

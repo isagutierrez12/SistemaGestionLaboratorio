@@ -91,7 +91,18 @@
             <artifactId>popper.js</artifactId>
             <version>2.11.7</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>6.4.1</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>6.4.1</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>
