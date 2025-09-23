@@ -8,20 +8,15 @@ package com.laboratorio.model;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import lombok.Data;
 
-/**
- *
- * @author melanie
- */
-@Data
 @Entity
+@Data
 @Table(name="usuario")
-public class Usuario implements Serializable{
-    private static final long serialVersionUID = 1l;
+public class Usuario implements Serializable {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    @Column(name="id_usuario")
     private Long idUsuario;
     private String nombre;
     private String primerApellido;
@@ -30,6 +25,13 @@ public class Usuario implements Serializable{
     private String password;
     private boolean activo;
     private Date fechaCreacion;
-   
-    
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "usuario_rol",
+        joinColumns = @JoinColumn(name = "id_usuario"),
+        inverseJoinColumns = @JoinColumn(name = "id_rol")
+    )
+    private List<Rol> roles;
 }
+
