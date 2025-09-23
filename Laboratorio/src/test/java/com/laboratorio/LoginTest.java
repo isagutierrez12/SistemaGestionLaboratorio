@@ -16,6 +16,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
@@ -51,6 +53,25 @@ public class LoginTest {
         usuario.setPrimerApellido("User");
         usuario.setActivo(true);
         usuarioRepository.save(usuario);
+    }
+     @Test
+    public void testLoginExitoso() throws Exception {
+        mockMvc.perform(post("/login")
+                .param("username", "testuser")
+                .param("password", "123456")
+                  .with(csrf()))
+                .andExpect(status().is3xxRedirection()) // redirige después de login
+                .andExpect(redirectedUrl("/")); // tu defaultSuccessUrl
+    }
+
+    @Test
+    public void testLoginFallido() throws Exception {
+        mockMvc.perform(post("/login")
+                .param("username", "testuser")
+                .param("password", "wrongpass")
+                 .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?error"));
     }
 }
 

@@ -1,62 +1,51 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.laboratorio.config;
+
 import com.laboratorio.model.Ruta;
 import com.laboratorio.service.RutaPermitService;
 import com.laboratorio.service.RutaService;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
-
-
-/**
- *
- * @author melanie
- */
 @Configuration
-public class SecurityConfig implements WebMvcConfigurer{
-    @Autowired
-    private RutaPermitService rutaPermitService;
-
-    @Autowired
-    private RutaService rutaService;
+public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-       
-        String[] rutaPermit = rutaPermitService.getRutaPermitsString();
-        List<Ruta> rutas = rutaService.getAll();
-        
-        http.authorizeHttpRequests((request)->{request.requestMatchers(rutaPermit).permitAll();
-        for (Ruta ruta : rutas){
-            request.requestMatchers(ruta.getRuta()).hasRole(ruta.getRoleName());
-        }
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+            RutaPermitService rutaPermitService,
+            RutaService rutaService) throws Exception {
+
+        final String[] rutaPermit = rutaPermitService.getRutaPermitsString();
+        final List<Ruta> rutas = rutaService.getAll();
+
+        http.authorizeHttpRequests(auth -> {
+            if (rutaPermit != null && rutaPermit.length > 0) {
+                auth.requestMatchers(rutaPermit).permitAll();
+            }
+            for (Ruta ruta : rutas) {
+                auth.requestMatchers(ruta.getRuta()).hasRole(ruta.getRoleName());
+            }
+            auth.anyRequest().authenticated();
         })
-        
-                .formLogin((form) -> form
+                .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/", true)
                 .permitAll()
                 )
-                .logout((logout) -> logout
+                .logout(logout -> logout
                 .logoutSuccessUrl("/")
                 .permitAll()
                 );
+
         return http.build();
     }
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-
- 
 }
