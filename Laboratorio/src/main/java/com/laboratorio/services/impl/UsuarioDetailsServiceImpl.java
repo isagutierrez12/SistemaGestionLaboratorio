@@ -34,7 +34,7 @@ public class UsuarioDetailsServiceImpl
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
         //Se busca el usuario en la tabla usuarios por medio del username
-        Usuario usuario = usuarioRepository.findByUsuario(username);
+        Usuario usuario = usuarioRepository.findByUsername(username);
         //Se valida si se encontró el usuario con el username pasado...
         if (usuario == null) {
             //El usuario NO se encontró
@@ -56,7 +56,7 @@ public class UsuarioDetailsServiceImpl
             roles.add(new SimpleGrantedAuthority("ROLE_" + r.getNombre()));
         }
         //Se retorna un usuario de Seguridad con roles incluídos...
-        return new User(usuario.getUsuario(),
+        return new User(usuario.getUsername(),
                 usuario.getPassword(),
                 roles);
     }

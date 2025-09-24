@@ -24,7 +24,7 @@ class UsuarioRepositoryTest {
         usuario.setNombre("Melanie");
         usuario.setPrimerApellido("Gutierrez");
         usuario.setSegundoApellido("Prueba");
-        usuario.setUsuario("mgutierrez");
+        usuario.setUsername("mgutierrez");
         usuario.setPassword("1234");
         usuario.setActivo(true);
         usuario.setFechaCreacion(new Date());

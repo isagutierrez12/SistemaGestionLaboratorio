@@ -47,7 +47,7 @@ public class LoginTest {
         usuarioRepository.deleteAll();
 
         Usuario usuario = new Usuario();
-        usuario.setUsuario("testuser");
+        usuario.setUsername("testuser");
         usuario.setPassword(passwordEncoder.encode("123456"));
         usuario.setNombre("Test");
         usuario.setPrimerApellido("User");

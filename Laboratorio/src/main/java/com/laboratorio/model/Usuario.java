@@ -21,7 +21,7 @@ public class Usuario implements Serializable {
     private String nombre;
     private String primerApellido;
     private String segundoApellido;
-    private String usuario;
+    private String username;
     private String password;
     private boolean activo;
     private Date fechaCreacion;
