@@ -41,7 +41,6 @@ public class UsuarioDetailsServiceImpl
             throw new UsernameNotFoundException(username);
         }
 
-        //Guardamos los demás atributos necesarios del usuario para la visualización del perfil
         session.setAttribute("idUsuario", usuario.getIdUsuario());
         session.setAttribute("nombre", usuario.getNombre());
         session.setAttribute("apellido1", usuario.getPrimerApellido());
@@ -49,13 +48,12 @@ public class UsuarioDetailsServiceImpl
         session.setAttribute("fechaCreacion", usuario.getFechaCreacion());
         session.setAttribute("activo", usuario.isActivo());
 
-        //Se deben recuperar los roles del usuario y crear un ArrayList con Roles de seguridad
+       
         var roles = new ArrayList<GrantedAuthority>();
-        //Se revisan los roles del usuario y se convierten en roles de seguridad
+        
         for (Rol r : usuario.getRoles()) {
             roles.add(new SimpleGrantedAuthority("ROLE_" + r.getNombre()));
         }
-        //Se retorna un usuario de Seguridad con roles incluídos...
         return new User(usuario.getUsername(),
                 usuario.getPassword(),
                 roles);

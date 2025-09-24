@@ -1,0 +1,14 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head  th:replace="~{layout/layout :: head-admin}">
+        <title>Laboratorio Clinico Calderon Piedra</title>
+        <meta charset="UTF-8" />
+
+    </head>
+    <body>
+        <!-- aside -->
+        <aside th:replace="~{usuario/fragmentos :: aside}"></aside>
+        <!-- Preloader -->
+        <div id="preloader"></div>
+        <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
+    </body>
+</html>
