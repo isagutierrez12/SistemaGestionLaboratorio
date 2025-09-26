@@ -44,7 +44,7 @@ public class RutaPermitServiceImpl implements RutaPermitService {
         String[] rutasPermit = new String[lista.size()];
         int i = 0;
         for (RutaPermit rp : lista) {
-            rutasPermit[i] = rp.getRutaPermit();
+            rutasPermit[i] = rp.getRutaPermit().trim();
             i++;
         }
         return rutasPermit;

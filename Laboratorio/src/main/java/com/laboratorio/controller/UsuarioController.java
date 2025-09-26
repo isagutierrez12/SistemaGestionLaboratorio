@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class UsuarioController {
     
    
-     @GetMapping("agregar")
-    public String agregar(Model model){
+    
+     @GetMapping("/usuarios")
+    public String listadoUsuarios(Model model){
         
-        return "/usuario/agregar";
+        return "/usuario/usuarios";
     }
 }

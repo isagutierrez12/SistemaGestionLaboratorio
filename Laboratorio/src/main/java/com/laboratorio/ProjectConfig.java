@@ -3,6 +3,7 @@ package com.laboratorio;
 import com.laboratorio.model.Ruta;
 import com.laboratorio.service.RutaPermitService;
 import com.laboratorio.service.RutaService;
+import java.util.Arrays;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +16,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-
 @Configuration
 public class ProjectConfig implements WebMvcConfigurer {
 
-
-   @Autowired
+    @Autowired
     private RutaPermitService rutaPermitService;
 
     @Autowired
@@ -28,16 +27,20 @@ public class ProjectConfig implements WebMvcConfigurer {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-       
+
         String[] rutaPermit = rutaPermitService.getRutaPermitsString();
         List<Ruta> rutas = rutaService.getAll();
-        
-        http.authorizeHttpRequests((request)->{request.requestMatchers(rutaPermit).permitAll();
-        for (Ruta ruta : rutas){
-            request.requestMatchers(ruta.getRuta()).hasRole(ruta.getRoleName());
-        }
+
+        System.out.println("Permits: " + Arrays.toString(rutaPermit));
+        http.authorizeHttpRequests((request) -> {
+            request.requestMatchers(rutaPermit).permitAll();
+            for (Ruta ruta : rutas) {
+                request.requestMatchers(ruta.getRuta())
+                        .hasAuthority(ruta.getRoleName());
+            }
+           
+           
         })
-        
                 .formLogin((form) -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/", true)
