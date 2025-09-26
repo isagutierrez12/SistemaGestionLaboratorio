@@ -44,7 +44,7 @@
 
             <div class="d-flex align-items-center justify-content-between">
                 <a href="index.html" class="logo d-flex align-items-center">
-                    <img src="assets/img/logo-1.png" alt="Logo Laboratorio" class="logo-img" />
+                    <img th:src="@{/assets/img/logo-1.png}" alt="Logo Laboratorio" class="logo-img" />
                 </a>
                 <i class="bi bi-list toggle-sidebar-btn"></i>
             </div><!-- End Logo -->
@@ -78,7 +78,7 @@
                                 <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
                             </li>
                             <li>
-                                <hr class="dropdown-divider">
+                                <hr class="dropdown-divider" />
                             </li>
 
                             <li class="notification-item">
@@ -91,7 +91,7 @@
                             </li>
 
                             <li>
-                                <hr class="dropdown-divider">
+                                <hr class="dropdown-divider" />
                             </li>
 
                             <li class="notification-item">
@@ -104,7 +104,7 @@
                             </li>
 
                             <li>
-                                <hr class="dropdown-divider">
+                                <hr class="dropdown-divider" />
                             </li>
 
                             <li class="notification-item">
@@ -117,7 +117,7 @@
                             </li>
 
                             <li>
-                                <hr class="dropdown-divider">
+                                <hr class="dropdown-divider" />
                             </li>
 
                             <li class="notification-item">
@@ -130,7 +130,7 @@
                             </li>
 
                             <li>
-                                <hr class="dropdown-divider">
+                                <hr class="dropdown-divider" />
                             </li>
                             <li class="dropdown-footer">
                                 <a href="#">Mostrar Todas las notificaciones</a>
@@ -143,7 +143,7 @@
                     <li class="nav-item dropdown pe-3">
 
                         <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                            <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
+                            <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" />
                                 <span class="d-none d-md-block dropdown-toggle ps-2">K. Anderson</span>
                         </a><!-- End Profile Iamge Icon -->
 
@@ -153,7 +153,7 @@
                                 <span>Médico</span>
                             </li>
                             <li>
-                                <hr class="dropdown-divider">
+                                <hr class="dropdown-divider" />
                             </li>
 
                             <li>
@@ -173,7 +173,7 @@
                                 </a>
                             </li>
                             <li>
-                                <hr class="dropdown-divider">
+                                <hr class="dropdown-divider" />
                             </li>
 
                             <li>
@@ -190,7 +190,103 @@
             </nav><!-- End Icons Navigation -->
 
         </header><!-- End Header -->
+        <aside th:fragment="aside" id="sidebar" class="sidebar">
 
+            <ul class="sidebar-nav" id="sidebar-nav">
+
+                <li class="nav-item">
+                    <a class="nav-link " href="dashboard.html">
+                        <i class="bi bi-grid"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li><!-- End Dashboard Nav -->
+                   <li class="nav-item"  sec:authorize="hasRole('ROLE_')">
+                    <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-layout-text-window-reverse"></i><span>Usuarios</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <li>
+                            <a href="patients-index.html">
+                                <i class="bi bi-circle"></i><span>General</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li><!-- End Tables Nav -->
+
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-layout-text-window-reverse"></i><span>Pacientes</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <li>
+                            <a href="patients-index.html">
+                                <i class="bi bi-circle"></i><span>General</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li><!-- End Tables Nav -->
+
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#test-nav" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-layout-text-window-reverse"></i><span>Pruebas</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="test-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                        <li>
+                            <a href="exams-index.html">
+                                <i class="bi bi-circle"></i><span>General</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="exams-results.html">
+                                <i class="bi bi-circle"></i><span>Resultados</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li><!-- End Examenes Nav -->
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#exams-nav" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-layout-text-window-reverse"></i><span>Exámenes</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="exams-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <li>
+                            <a href="patients-index.html">
+                                <i class="bi bi-circle"></i><span>General</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li><!-- End Tables Nav -->
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#inventory-nav" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-layout-text-window-reverse"></i><span>Inventario</span><i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <ul id="inventory-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                        <li>
+                            <a href="patients-index.html">
+                                <i class="bi bi-circle"></i><span>General</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li><!-- End Tables Nav -->
+
+                <li class="nav-heading">Pages</li>
+
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="pages-register.html">
+                        <i class="bi bi-card-list"></i>
+                        <span>Register</span>
+                    </a>
+                </li><!-- End Register Page Nav -->
+
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="pages-error-404.html">
+                        <i class="bi bi-dash-circle"></i>
+                        <span>Error 404</span>
+                    </a>
+                </li><!-- End Error 404 Page Nav -->
+
+            </ul>
+
+        </aside><!-- End Sidebar-->
 
         <!-- Fragmento para los JS -->
         <div th:fragment="jsfiles">

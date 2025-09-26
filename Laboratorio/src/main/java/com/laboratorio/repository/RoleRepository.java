@@ -2,16 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
-package com.laboratorio.service;
+package com.laboratorio.repository;
 
-import com.laboratorio.model.Rol;
-import org.springframework.stereotype.Service;
+import com.laboratorio.model.Role;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-/**
- *
- * @author melanie
- */
-@Service
-public interface RolService extends CrudService<Rol>{
+
+public interface RoleRepository extends JpaRepository<Role, String> {
     
 }

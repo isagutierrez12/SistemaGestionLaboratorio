@@ -1,6 +1,6 @@
 package com.laboratorio.services.impl;
 
-import com.laboratorio.model.Rol;
+
 import com.laboratorio.model.RutaPermit;
 import com.laboratorio.repository.RutaPermitRepository;
 import com.laboratorio.service.RutaPermitService;

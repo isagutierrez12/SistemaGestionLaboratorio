@@ -6,9 +6,8 @@ package com.laboratorio.repository;
 
 import com.laboratorio.model.Rol;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@EnableJpaRepositories
-public interface RolRepository extends JpaRepository<Rol, Long >{
-    Rol findByNombre(String nombre);
+
+public interface RolRepository extends JpaRepository<Rol, Long> {
+    
 }

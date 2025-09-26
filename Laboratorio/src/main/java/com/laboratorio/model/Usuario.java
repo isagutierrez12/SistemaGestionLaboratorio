@@ -2,7 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 package com.laboratorio.model;
 
 import jakarta.persistence.*;
@@ -13,10 +12,13 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name="usuario")
+@Table(name = "usuario")
 public class Usuario implements Serializable {
+
+    private static final long serialVersionUID = 1l;
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuario")
     private Long idUsuario;
     private String nombre;
     private String primerApellido;
@@ -25,13 +27,8 @@ public class Usuario implements Serializable {
     private String password;
     private boolean activo;
     private Date fechaCreacion;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "usuario_rol",
-        joinColumns = @JoinColumn(name = "id_usuario"),
-        inverseJoinColumns = @JoinColumn(name = "id_rol")
-    )
+    @OneToMany
+    @JoinColumn(name = "id_usuario", updatable = false)
     private List<Rol> roles;
-}
 
+}

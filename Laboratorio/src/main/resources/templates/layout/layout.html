@@ -47,7 +47,7 @@
 
                 <nav id="navmenu" class="navmenu">
                     <ul>
-                        <li><a href="/index" class="active">Inicio</a></li>
+                        <li><a href="/index" class="active"  sec:authorize="hasRole('ROLE_ADMIN')" >Inicio</a></li>
                         <li><a href="/nosotros">Sobre Nosotros</a></li>
                         <li><a href="/examenes" >Exámenes</a></li>
                         <li><a href="/contacto">Contacto</a></li>
