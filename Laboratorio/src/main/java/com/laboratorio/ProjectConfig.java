@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -38,8 +39,7 @@ public class ProjectConfig implements WebMvcConfigurer {
                 request.requestMatchers(ruta.getRuta())
                         .hasAuthority(ruta.getRoleName());
             }
-           
-           
+
         })
                 .formLogin((form) -> form
                 .loginPage("/login")
@@ -59,5 +59,10 @@ public class ProjectConfig implements WebMvcConfigurer {
     @Autowired
     public void configurerGlobla(AuthenticationManagerBuilder builder) throws Exception {
         builder.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

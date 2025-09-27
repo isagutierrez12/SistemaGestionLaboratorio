@@ -9,13 +9,15 @@ import com.laboratorio.model.Usuario;
 import com.laboratorio.repository.RolRepository;
 import com.laboratorio.repository.UsuarioRepository;
 import com.laboratorio.service.UsuarioService;
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class UsuarioServiceImpl  implements UsuarioService{
+public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -46,24 +48,47 @@ public class UsuarioServiceImpl  implements UsuarioService{
         return usuarioRepository.findByUsernameAndPassword(username, password);
     }
 
- 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
-    public void save(Usuario usuario, boolean crearRolUser) {
-        usuario=usuarioRepository.save(usuario);
-        if (crearRolUser) {  //Si se está creando el usuario, se crea el rol por defecto "USER"
-            Rol rol = new Rol();
-            rol.setNombre("USER");
-            rol.setIdUsuario(usuario.getIdUsuario());
-            rolRepository.save(rol);
+    public void save(Usuario usuario, String rolSeleccionado) {
+      
+        if (usuarioRepository.existsByUsername(usuario.getUsername())) {
+            throw new IllegalArgumentException("El nombre de usuario ya está ocupado");
         }
+        usuario.setFechaCreacion(new Date());
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+
+        usuario = usuarioRepository.save(usuario);
+
+        Rol rol = new Rol();
+        switch (rolSeleccionado) {
+            case "1" -> {
+                rol.setNombre("ADMIN");
+                rol.setIdUsuario(usuario.getIdUsuario());
+            }
+            case "2" -> {
+                rol.setNombre("REP");
+                rol.setIdUsuario(usuario.getIdUsuario());
+            }
+            case "3" -> {
+                rol.setNombre("DOCTOR");
+                rol.setIdUsuario(usuario.getIdUsuario());
+            }
+            default ->
+                throw new IllegalArgumentException("Rol no válido: " + rolSeleccionado);
+        }
+
+        rolRepository.save(rol);
     }
 
     @Override
     @Transactional
     public void delete(Usuario usuario) {
+
         usuarioRepository.delete(usuario);
     }
-    
+
 }
