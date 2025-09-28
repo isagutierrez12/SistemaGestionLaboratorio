@@ -54,34 +54,49 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional
     public void save(Usuario usuario, String rolSeleccionado) {
-      
-        if (usuarioRepository.existsByUsername(usuario.getUsername())) {
-            throw new IllegalArgumentException("El nombre de usuario ya está ocupado");
+
+        if (usuario.getIdUsuario() == null) {
+            if (usuarioRepository.existsByUsername(usuario.getUsername())) {
+                throw new IllegalArgumentException("El nombre de usuario ya está ocupado");
+            }
+            usuario.setFechaCreacion(new Date());
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        } else {
+            Usuario existente = usuarioRepository.findById(usuario.getIdUsuario())
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+            if (!usuario.getPassword().isEmpty()) {
+                existente.setPassword(passwordEncoder.encode(usuario.getPassword()));
+            }
+            existente.setNombre(usuario.getNombre());
+            existente.setPrimerApellido(usuario.getPrimerApellido());
+            existente.setSegundoApellido(usuario.getSegundoApellido());
+            existente.setUsername(usuario.getUsername());
+
+            usuario = existente;
+
+            usuario = usuarioRepository.save(usuario);
+
+            Rol rol = new Rol();
+            switch (rolSeleccionado) {
+                case "1" -> {
+                    rol.setNombre("ADMIN");
+                    rol.setIdUsuario(usuario.getIdUsuario());
+                }
+                case "2" -> {
+                    rol.setNombre("REP");
+                    rol.setIdUsuario(usuario.getIdUsuario());
+                }
+                case "3" -> {
+                    rol.setNombre("DOCTOR");
+                    rol.setIdUsuario(usuario.getIdUsuario());
+                }
+                default ->
+                    throw new IllegalArgumentException("Rol no válido: " + rolSeleccionado);
+            }
+
+            rolRepository.save(rol);
         }
-        usuario.setFechaCreacion(new Date());
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-
-        usuario = usuarioRepository.save(usuario);
-
-        Rol rol = new Rol();
-        switch (rolSeleccionado) {
-            case "1" -> {
-                rol.setNombre("ADMIN");
-                rol.setIdUsuario(usuario.getIdUsuario());
-            }
-            case "2" -> {
-                rol.setNombre("REP");
-                rol.setIdUsuario(usuario.getIdUsuario());
-            }
-            case "3" -> {
-                rol.setNombre("DOCTOR");
-                rol.setIdUsuario(usuario.getIdUsuario());
-            }
-            default ->
-                throw new IllegalArgumentException("Rol no válido: " + rolSeleccionado);
-        }
-
-        rolRepository.save(rol);
     }
 
     @Override

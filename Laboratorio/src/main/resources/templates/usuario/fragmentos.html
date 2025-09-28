@@ -58,7 +58,7 @@
                                                 </a>
                                             </td>
 
-                                            
+
                                         </tr>
 
                                         <!-- Agrega más filas según sea necesario -->
@@ -148,15 +148,17 @@
                                             <option value="false">Inactivo</option>
                                         </select>
                                     </div>
+
                                     <div class="col-md-6 mb-3">
                                         <label for="inputEstado" class="form-label">Rol</label>
-                                        <select id="inputEstado" name="rol" class="form-select">
+                                        <select id="inputEstado" name="roles" class="form-select">
                                             <option selected>Seleccione...</option>
                                             <option value="1">Administrador</option>
                                             <option value="2">Recepcionista</option>
                                             <option value="3">Doctor</option>
                                         </select>
                                     </div>
+
 
                                     <div class="text-center mt-3">
                                         <button type="submit" class="btn btn-save me-5">Registrar</button>
@@ -178,7 +180,7 @@
 
         </section><!-- End #main -->
 
-        <section th:fragment="editar" id="main" class="main">
+        <section th:fragment="modificar" id="main" class="main">
 
             <div class="pagetitle">
                 <nav>
@@ -190,7 +192,7 @@
                 </nav>
             </div>
 
-            <section class="section" th:fragment="modificar">
+            <section class="section" >
                 <div class="row">
                     <div class="col-lg-12">
 
@@ -206,7 +208,7 @@
                                 </h4>
 
                                 <!-- Formulario de edición -->
-                                <form class="row custom-gx gy-4 mt-4" th:action="@{/usuario/modificar}" th:object="${usuario}" method="post">
+                                <form class="row custom-gx gy-4 mt-4" th:action="@{/usuario/guardar}" th:object="${usuario}" method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                     <input type="hidden" th:field="*{idUsuario}" />
 
@@ -238,7 +240,7 @@
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Estado</label>
                                         <select class="form-select" th:field="*{activo}">
-                                            <option value="">Seleccione...</option>
+
                                             <option value="true">Activo</option>
                                             <option value="false">Inactivo</option>
                                         </select>
@@ -246,11 +248,11 @@
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Rol</label>
-                                        <select class="form-select" th:field="*{rol}">
-                                            <option value="">Seleccione...</option>
-                                            <option value="1">Administrador</option>
-                                            <option value="2">Recepcionista</option>
-                                            <option value="3">Doctor</option>
+                                        <select class="form-select" name="roles">
+                                           
+                                            <option value="1"  th:selected="${rol == '1'}">Administrador</option>
+                                            <option value="2" th:selected="${rol == '2'}">Recepcionista</option>
+                                            <option value="3" th:selected="${rol == '3'}">Doctor</option>
                                         </select>
                                     </div>
 
