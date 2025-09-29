@@ -43,7 +43,7 @@ public class ProjectConfig implements WebMvcConfigurer {
         })
                 .formLogin((form) -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/usuario/usuarios", true)
+                .defaultSuccessUrl("/paciente/pacientes", true)
                 .permitAll()
                 )
                 .logout((logout) -> logout
