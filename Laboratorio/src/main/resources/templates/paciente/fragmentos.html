@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
     </head>
     <body>
-        <main th:fragment="main" id="main" class="main">
+        <section th:fragment="main" id="main" class="main">
 
             <div class="pagetitle">
                 <nav>
@@ -77,9 +77,9 @@
                 </div> <!-- row -->
             </section>
 
-        </main><!-- End #main -->
+        </section><!-- End #main -->
 
-        <main th:fragment="form-paciente" id="main" class="main">
+        <section th:fragment="form-paciente" id="main" class="main">
 
             <div class="pagetitle">
                 <nav>
@@ -102,7 +102,7 @@
                                 <div class="text-center mb-5" style="margin-top: 20px;">
                                     <img th:src="@{/assets/img/logo-1.png}" alt="Logo Laboratorio"
                                          class="logo-img" style="max-width: 150px;"
-                                         onerror="this.style.display='none'"> <!-- Oculta si no encuentra la imagen -->
+                                         onerror="this.style.display='none'" /> <!-- Oculta si no encuentra la imagen -->
                                 </div>
 
                                 <!-- Título -->
@@ -110,7 +110,43 @@
                                     Registrar Paciente
                                 </h4>
 
-                                <form th:action="@{/paciente/guardar}" th:object="${paciente}" method="post"> <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> <div class="col-md-6 text-center mb-3"> <label for="nombre" class="form-label">Nombre</label> <input type="text" class="form-control text-center" id="nombre" name="nombre" required> </div> <div class="col-md-6 text-center mb-3"> <label for="primerApellido" class="form-label">Primer Apellido</label> <input type="text" class="form-control text-center" id="primerApellido" name="primerApellido" required> </div> <div class="col-md-6 text-center mb-3"> <label for="segundoApellido" class="form-label">Segundo Apellido</label> <input type="text" class="form-control text-center" id="segundoApellido" name="segundoApellido"> </div> <div class="col-md-6 text-center mb-3"> <label for="cedula" class="form-label">Cédula</label> <input type="text" class="form-control text-center" id="cedula" name="cedula" required> </div> <div class="col-md-6 text-center mb-3"> <label for="telefono" class="form-label">Teléfono</label> <input type="text" class="form-control text-center" id="telefono" name="telefono"> </div> <div class="col-md-6 text-center mb-3"> <label for="email" class="form-label">Correo electrónico</label> <input type="email" class="form-control text-center" id="email" name="email"> </div> <div class="col-md-6 text-center mb-3"> <label for="estado" class="form-label">Estado</label> <select id="estado" name="activo" class="form-select text-center"> <option value="">Seleccione...</option> <option value="true">Activo</option> <option value="false">Inactivo</option> </select> </div> <div class="col-12 text-center mt-3"> <button type="submit" class="btn btn-save me-2">Registrar</button> <a th:href="@{paciente/pacientes}" class="btn btn-cancel">Cancelar</a> </div> </form>
+                                <form th:action="@{/paciente/guardar}" th:object="${paciente}" method="post"> 
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> 
+                                    <div class="col-md-6 text-center mb-3"> 
+                                        <label for="nombre" class="form-label">Nombre</label> 
+                                        <input type="text" class="form-control text-center" id="nombre" name="nombre" required /> 
+                                    </div> 
+                                    <div class="col-md-6 text-center mb-3"> 
+                                        <label for="primerApellido" class="form-label">Primer Apellido</label> 
+                                        <input type="text" class="form-control text-center" id="primerApellido" name="primerApellido" required> 
+                                    </div> 
+                                    <div class="col-md-6 text-center mb-3"> 
+                                        <label for="segundoApellido" class="form-label">Segundo Apellido</label> 
+                                        <input type="text" class="form-control text-center" id="segundoApellido" name="segundoApellido"> 
+                                    </div> 
+                                    <div class="col-md-6 text-center mb-3"> 
+                                        <label for="cedula" class="form-label">Cédula</label> 
+                                        <input type="text" class="form-control text-center" id="cedula" name="cedula" required> 
+                                    </div> 
+                                    <div class="col-md-6 text-center mb-3"> 
+                                        <label for="telefono" class="form-label">Teléfono</label> 
+                                        <input type="text" class="form-control text-center" id="telefono" name="telefono"> 
+                                    </div> 
+                                    <div class="col-md-6 text-center mb-3"> 
+                                        <label for="email" class="form-label">Correo electrónico</label> 
+                                        <input type="email" class="form-control text-center" id="email" name="email"> 
+                                    </div> 
+                                    <div class="col-md-6 text-center mb-3"> 
+                                        <label for="estado" class="form-label">Estado</label> 
+                                        <select id="estado" name="activo" class="form-select text-center"> 
+                                            <option value="">Seleccione...</option> 
+                                            <option value="true">Activo</option> 
+                                            <option value="false">Inactivo</option> 
+                                        </select> </div> <div class="col-12 text-center mt-3"> 
+                                        <button type="submit" class="btn btn-save me-2">Registrar</button> 
+                                        <a th:href="@{/paciente/pacientes}" class="btn btn-cancel">Cancelar</a> 
+                                    </div> 
+                                </form>
 
                             </div> <!-- card-body -->
                         </div> <!-- card -->
@@ -119,7 +155,7 @@
                 </div> <!-- row -->
             </section>
 
-        </main>
+        </section>
 
         <!-- Fragmento de botonesBuscar -->
         <section th:fragment="botonesBuscar" class="">
@@ -147,21 +183,21 @@
         <!-- Preloader -->
         <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
 
-                    <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                    const inputs = document.querySelectorAll("input[pattern]");
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const inputs = document.querySelectorAll("input[pattern]");
 
-                    inputs.forEach(input => {
-                        input.addEventListener("input", () => {
-                            if (input.validity.patternMismatch) {
-                                input.setCustomValidity(input.title);
-                            } else {
-                                input.setCustomValidity("");
-                            }
-                        });
+                inputs.forEach(input => {
+                    input.addEventListener("input", () => {
+                        if (input.validity.patternMismatch) {
+                            input.setCustomValidity(input.title);
+                        } else {
+                            input.setCustomValidity("");
+                        }
                     });
                 });
-            </script>
+            });
+        </script>
 
 
     </body>

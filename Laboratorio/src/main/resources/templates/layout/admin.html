@@ -206,7 +206,7 @@
                     </a>
                     <ul id="usuario" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                         <li>
-                            <a href="patients-index.html">
+                            <a th:href="@{/usuario/usuarios}">
                                 <i class="bi bi-circle"></i><span>General</span>
                             </a>
                         </li>
@@ -219,7 +219,7 @@
                     </a>
                     <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                         <li>
-                            <a href="patients-index.html">
+                            <a th:href="@{/paciente/pacientes}">
                                 <i class="bi bi-circle"></i><span>General</span>
                             </a>
                         </li>
@@ -281,6 +281,10 @@
             </ul>
 
         </aside><!-- End Sidebar-->
+         <section th:fragment="aside-edit" id="sidebar" class="sidebar">
+
+            
+        </section><!-- End Sidebar-->
 
         <!-- Fragmento para los JS -->
         <div th:fragment="jsfiles">
