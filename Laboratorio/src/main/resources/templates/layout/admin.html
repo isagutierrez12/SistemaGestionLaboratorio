@@ -163,7 +163,7 @@
                                 </a>
                             </li>
                             <li>
-                                <hr class="dropdown-divider">
+                                <hr class="dropdown-divider" />
                             </li>
 
                             <li>
@@ -200,13 +200,13 @@
                         <span>Dashboard</span>
                     </a>
                 </li><!-- End Dashboard Nav -->
-                   <li class="nav-item"  >
-                    <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
+                   <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')" >
+                    <a class="nav-link collapsed" data-bs-target="#usuario" data-bs-toggle="collapse" href="#">
                         <i class="bi bi-layout-text-window-reverse"></i><span>Usuarios</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <ul id="usuario" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                         <li>
-                            <a href="patients-index.html">
+                            <a th:href="@{/usuario/usuarios}">
                                 <i class="bi bi-circle"></i><span>General</span>
                             </a>
                         </li>
@@ -219,7 +219,7 @@
                     </a>
                     <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                         <li>
-                            <a href="patients-index.html">
+                            <a th:href="@{/paciente/pacientes}">
                                 <i class="bi bi-circle"></i><span>General</span>
                             </a>
                         </li>
@@ -268,14 +268,7 @@
                     </ul>
                 </li><!-- End Tables Nav -->
 
-                <li class="nav-heading">Pages</li>
-
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="pages-register.html">
-                        <i class="bi bi-card-list"></i>
-                        <span>Register</span>
-                    </a>
-                </li><!-- End Register Page Nav -->
+              <!-- 
 
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="pages-error-404.html">
@@ -284,9 +277,14 @@
                     </a>
                 </li><!-- End Error 404 Page Nav -->
 
+                
             </ul>
 
         </aside><!-- End Sidebar-->
+         <section th:fragment="aside-edit" id="sidebar" class="sidebar">
+
+            
+        </section><!-- End Sidebar-->
 
         <!-- Fragmento para los JS -->
         <div th:fragment="jsfiles">

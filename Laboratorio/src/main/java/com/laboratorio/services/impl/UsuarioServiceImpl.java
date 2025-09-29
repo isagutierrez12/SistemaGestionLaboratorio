@@ -9,13 +9,15 @@ import com.laboratorio.model.Usuario;
 import com.laboratorio.repository.RolRepository;
 import com.laboratorio.repository.UsuarioRepository;
 import com.laboratorio.service.UsuarioService;
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class UsuarioServiceImpl  implements UsuarioService{
+public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -46,24 +48,79 @@ public class UsuarioServiceImpl  implements UsuarioService{
         return usuarioRepository.findByUsernameAndPassword(username, password);
     }
 
- 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
-    public void save(Usuario usuario, boolean crearRolUser) {
-        usuario=usuarioRepository.save(usuario);
-        if (crearRolUser) {  //Si se está creando el usuario, se crea el rol por defecto "USER"
+    public void save(Usuario usuario, String rolSeleccionado) {
+
+        if (usuario.getIdUsuario() == null) {
+            // Usuario nuevo
+            if (usuarioRepository.existsByUsername(usuario.getUsername())) {
+                throw new IllegalArgumentException("El nombre de usuario ya está ocupado");
+            }
+            usuario.setFechaCreacion(new Date());
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+            usuario = usuarioRepository.save(usuario);
+
+            // Asignar rol inicial
             Rol rol = new Rol();
-            rol.setNombre("USER");
             rol.setIdUsuario(usuario.getIdUsuario());
+            switch (rolSeleccionado) {
+                case "1" ->
+                    rol.setNombre("ADMIN");
+                case "2" ->
+                    rol.setNombre("REP");
+                case "3" ->
+                    rol.setNombre("DOCTOR");
+                default ->
+                    throw new IllegalArgumentException("Rol no válido: " + rolSeleccionado);
+            }
             rolRepository.save(rol);
+
+        } else {
+            // Usuario existente
+            Usuario existente = usuarioRepository.findById(usuario.getIdUsuario())
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+            if (!usuario.getPassword().isEmpty()) {
+                existente.setPassword(passwordEncoder.encode(usuario.getPassword()));
+            }
+            existente.setNombre(usuario.getNombre());
+            existente.setPrimerApellido(usuario.getPrimerApellido());
+            existente.setSegundoApellido(usuario.getSegundoApellido());
+            existente.setUsername(usuario.getUsername());
+            existente.setActivo(usuario.isActivo()); // si quieres permitir cambiar el estado
+
+            usuarioRepository.save(existente);
+
+            // Actualizar rol existente en vez de crear uno nuevo
+            Rol rolExistente = rolRepository.findByIdUsuario(usuario.getIdUsuario());
+            if (rolExistente == null) {
+                rolExistente = new Rol();
+                rolExistente.setIdUsuario(usuario.getIdUsuario());
+            }
+            rolExistente.setIdUsuario(usuario.getIdUsuario());
+            switch (rolSeleccionado) {
+                case "1" ->
+                    rolExistente.setNombre("ADMIN");
+                case "2" ->
+                    rolExistente.setNombre("REP");
+                case "3" ->
+                    rolExistente.setNombre("DOCTOR");
+                default ->
+                    throw new IllegalArgumentException("Rol no válido: " + rolSeleccionado);
+            }
+            rolRepository.save(rolExistente);
         }
     }
 
     @Override
     @Transactional
     public void delete(Usuario usuario) {
+
         usuarioRepository.delete(usuario);
     }
-    
+
 }
