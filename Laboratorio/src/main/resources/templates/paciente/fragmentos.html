@@ -23,14 +23,11 @@
                         <div class="card">
                             <div class="card-body">
 
-                                <div class="datatable-controls">
-                                    <a th:href="@{/paciente/agregar}" class="btn btn-primary">Agregar</a>                    
+                                <div class="datatable-controls d-flex justify-content-between align-items-center gap-2">
+                                    <a th:href="@{/paciente/agregar}" class="btn btn-primary">Agregar</a>
+                                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/paciente/inactivos}" class="btn btn-primary">Pacientes Inactivos</a>
                                 </div>
-                                
-                                <div class="datatable-controls">
-                                    <a th:href="@{/paciente/inactivos}" class="btn btn-primary">Pacientes Inactivos</a>                    
-                                </div>
-
+                               
                                 <div th:replace="~{paciente/fragmentos :: busqueda}"></div>
 
                                 <!-- Table with stripped rows -->
@@ -238,7 +235,7 @@
                                         <label for="email" class="form-label">Correo electrónico</label> 
                                         <input type="email" class="form-control text-center" id="email" th:field="*{email}"/> 
                                     </div> 
-                                    <div class="col-md-6 text-center mb-3"> 
+                                    <div sec:authorize="hasRole('ADMIN')" class="col-md-6 text-center mb-3"> 
                                         <label for="estado" class="form-label">Estado</label> 
                                         <select id="estado" th:field="*{activo}" class="form-select text-center"> 
                                             <option value="true">Activo</option> 
