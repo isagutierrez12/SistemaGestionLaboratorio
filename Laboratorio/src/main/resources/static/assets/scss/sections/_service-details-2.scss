@@ -1,0 +1,317 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Service Details 2 Section
+--------------------------------------------------------------*/
+.service-details-2 {
+  .service-image {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+
+    img {
+      border-radius: 15px;
+    }
+
+    .service-tag {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: var(--accent-color);
+      color: var(--contrast-color);
+      padding: 8px 16px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+
+  .service-content {
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+
+      @media (max-width: 768px) {
+        font-size: 2rem;
+      }
+    }
+
+    .service-tagline {
+      font-size: 1.2rem;
+      color: var(--accent-color);
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      color: color-mix(in srgb, var(--default-color), transparent 15%);
+    }
+
+    .service-features {
+      margin: 2rem 0;
+
+      h4 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+        color: var(--heading-color);
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+
+        li {
+          display: flex;
+          align-items: center;
+          margin-bottom: 0.8rem;
+          color: color-mix(in srgb, var(--default-color), transparent 10%);
+
+          i {
+            color: var(--accent-color);
+            margin-right: 0.8rem;
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+
+    .service-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+
+      @media (max-width: 576px) {
+        flex-direction: column;
+      }
+
+      .btn-primary {
+        background: var(--accent-color);
+        color: var(--contrast-color);
+        padding: 12px 28px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: color-mix(in srgb, var(--accent-color), black 10%);
+          transform: translateY(-2px);
+        }
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: var(--heading-color);
+        padding: 12px 28px;
+        border: 2px solid color-mix(in srgb, var(--default-color), transparent 80%);
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+
+        &:hover {
+          border-color: var(--accent-color);
+          color: var(--accent-color);
+        }
+      }
+    }
+  }
+
+  .service-card {
+    background: var(--surface-color);
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    height: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-icon {
+      width: 70px;
+      height: 70px;
+      background: color-mix(in srgb, var(--accent-color), transparent 90%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+
+      i {
+        font-size: 2rem;
+        color: var(--accent-color);
+      }
+    }
+
+    h4 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: color-mix(in srgb, var(--default-color), transparent 20%);
+      margin-bottom: 1.5rem;
+    }
+
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--accent-color);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+
+      &:hover {
+        gap: 0.8rem;
+        color: color-mix(in srgb, var(--accent-color), black 10%);
+      }
+
+      i {
+        transition: transform 0.3s ease;
+      }
+
+      &:hover i {
+        transform: translateX(3px);
+      }
+    }
+  }
+
+  .booking-section {
+    background: color-mix(in srgb, var(--accent-color), transparent 95%);
+    padding: 2rem;
+    border-radius: 15px;
+
+    h3 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: var(--heading-color);
+    }
+
+    p {
+      color: color-mix(in srgb, var(--default-color), transparent 15%);
+      margin-bottom: 2rem;
+    }
+
+    .availability-info {
+      .info-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+
+        i {
+          width: 40px;
+          height: 40px;
+          background: var(--accent-color);
+          color: var(--contrast-color);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        div {
+          display: flex;
+          flex-direction: column;
+
+          strong {
+            color: var(--heading-color);
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+          }
+
+          span {
+            color: color-mix(in srgb, var(--default-color), transparent 20%);
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+  }
+
+  .appointment-card {
+    background: var(--surface-color);
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+
+    h4 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: color-mix(in srgb, var(--default-color), transparent 30%);
+      margin-bottom: 2rem;
+    }
+
+    .btn-appointment {
+      display: inline-block;
+      background: var(--accent-color);
+      color: var(--contrast-color);
+      padding: 15px 30px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      width: 100%;
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+
+      &:hover {
+        background: color-mix(in srgb, var(--accent-color), black 10%);
+        transform: translateY(-2px);
+      }
+    }
+
+    .contact-alternative {
+      text-align: center;
+      font-size: 0.9rem;
+
+      span {
+        color: color-mix(in srgb, var(--default-color), transparent 40%);
+        display: block;
+        margin-bottom: 0.3rem;
+      }
+
+      a {
+        color: var(--accent-color);
+        text-decoration: none;
+        font-weight: 500;
+
+        &:hover {
+          color: color-mix(in srgb, var(--accent-color), black 10%);
+        }
+      }
+    }
+  }
+
+  @media (max-width: 992px) {
+    .service-content {
+      margin-top: 2rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .booking-section {
+      margin-bottom: 2rem;
+    }
+
+    .availability-info {
+      .info-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+      }
+    }
+  }
+}

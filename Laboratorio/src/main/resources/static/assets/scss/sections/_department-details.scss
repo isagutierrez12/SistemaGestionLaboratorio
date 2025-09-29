@@ -1,0 +1,307 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Department Details Section
+--------------------------------------------------------------*/
+.department-details {
+  .intro {
+    margin-bottom: 2rem;
+
+    h2 {
+      font-size: 2.75rem;
+      font-weight: 700;
+      color: var(--heading-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .divider {
+      width: 80px;
+      height: 4px;
+      background-color: var(--accent-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .lead {
+      font-size: 1.2rem;
+      color: color-mix(in srgb, var(--default-color), transparent 20%);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+  }
+
+  .department-overview {
+    .department-image {
+      position: relative;
+
+      img {
+        width: 100%;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+      }
+
+      .experience-badge {
+        position: absolute;
+        bottom: -25px;
+        right: 30px;
+        background-color: var(--accent-color);
+        color: var(--contrast-color);
+        padding: 1.5rem;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+
+        span {
+          font-size: 2.25rem;
+          font-weight: 700;
+          line-height: 1;
+          margin-bottom: 0.25rem;
+        }
+
+        p {
+          font-size: 0.85rem;
+          line-height: 1.2;
+          margin-bottom: 0;
+        }
+
+        @media (max-width: 576px) {
+          width: 100px;
+          height: 100px;
+          padding: 1rem;
+
+          span {
+            font-size: 1.8rem;
+          }
+
+          p {
+            font-size: 0.75rem;
+          }
+        }
+      }
+    }
+
+    .department-services {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .service-card {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .icon {
+          flex-shrink: 0;
+          width: 60px;
+          height: 60px;
+          background-color: color-mix(in srgb, var(--accent-color), transparent 85%);
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-right: 1.25rem;
+
+          i {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+          }
+        }
+
+        .content {
+          h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--heading-color);
+            margin-bottom: 0.75rem;
+          }
+
+          p {
+            color: color-mix(in srgb, var(--default-color), transparent 25%);
+            margin-bottom: 0;
+            line-height: 1.7;
+          }
+        }
+      }
+
+      @media (max-width: 991px) {
+        margin-top: 3rem;
+      }
+    }
+  }
+
+  .department-stats {
+    margin-top: 5rem;
+    padding: 3rem 0;
+    background-color: color-mix(in srgb, var(--background-color), transparent 95%);
+    border-radius: 12px;
+
+    .stat-item {
+      text-align: center;
+
+      .number {
+        font-size: 2.75rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        margin-bottom: 0.5rem;
+        line-height: 1;
+      }
+
+      p {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--heading-color);
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .key-services {
+    h3 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--heading-color);
+      margin-bottom: 1.25rem;
+    }
+
+    p {
+      color: color-mix(in srgb, var(--default-color), transparent 15%);
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+
+    .service-list {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 0;
+
+      li {
+        padding: 0.5rem 0;
+        display: flex;
+        align-items: center;
+
+        i {
+          color: var(--accent-color);
+          font-size: 1.2rem;
+          margin-right: 0.75rem;
+        }
+      }
+    }
+
+    .cta-wrapper {
+      position: relative;
+      background-color: color-mix(in srgb, var(--accent-color), transparent 92%);
+      border-radius: 12px;
+      padding: 2.5rem;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+
+      .cta-content {
+        width: 60%;
+        padding-right: 2rem;
+
+        h3 {
+          font-size: 1.75rem;
+          margin-bottom: 1rem;
+          color: var(--heading-color);
+        }
+
+        p {
+          margin-bottom: 1.75rem;
+        }
+
+        .cta-buttons {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+
+          .btn {
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+
+            &.btn-primary {
+              background-color: var(--accent-color);
+              border-color: var(--accent-color);
+              color: var(--contrast-color);
+
+              &:hover {
+                background-color: color-mix(in srgb, var(--accent-color), black 15%);
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+              }
+            }
+
+            &.btn-outline {
+              background-color: transparent;
+              border: 2px solid var(--accent-color);
+              color: var(--accent-color);
+
+              &:hover {
+                background-color: var(--accent-color);
+                color: var(--contrast-color);
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+              }
+            }
+          }
+        }
+      }
+
+      .cta-image {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 45%;
+
+        img {
+          border-radius: 12px 0 12px 0;
+        }
+      }
+
+      @media (max-width: 991px) {
+        flex-direction: column;
+
+        .cta-content {
+          width: 100%;
+          padding-right: 0;
+          margin-bottom: 2rem;
+        }
+
+        .cta-image {
+          position: relative;
+          width: 100%;
+
+          img {
+            border-radius: 12px;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .intro h2 {
+      font-size: 2.25rem;
+    }
+
+    .key-services h3 {
+      font-size: 1.5rem;
+    }
+
+    .department-stats .stat-item .number {
+      font-size: 2.25rem;
+    }
+  }
+}

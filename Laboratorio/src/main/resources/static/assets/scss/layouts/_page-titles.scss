@@ -1,0 +1,87 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Global Page Titles & Breadcrumbs
+--------------------------------------------------------------*/
+.page-title {
+  text-align: center;
+  padding: 120px 0 20px 0;
+
+  .breadcrumbs {
+    margin-bottom: 1.5rem;
+
+    .breadcrumb {
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      background: none;
+
+      .breadcrumb-item {
+        font-size: 0.9rem;
+        color: color-mix(in srgb, var(--default-color), transparent 30%);
+
+        &.active {
+          color: var(--accent-color);
+        }
+
+        a {
+          color: inherit;
+          text-decoration: none;
+          transition: color 0.3s ease;
+
+          &:hover {
+            color: var(--accent-color);
+          }
+
+          i {
+            font-size: 0.9rem;
+            margin-right: 0.2rem;
+          }
+        }
+
+        &+.breadcrumb-item::before {
+          color: color-mix(in srgb, var(--default-color), transparent 50%);
+        }
+      }
+    }
+  }
+
+  .title-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem 0;
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      color: var(--heading-color);
+    }
+
+    p {
+      font-size: 1.1rem;
+      color: color-mix(in srgb, var(--default-color), transparent 20%);
+      margin: 0;
+      line-height: 1.6;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .title-wrapper {
+      h1 {
+        font-size: 2rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  @media (max-width: 576px) {
+    .title-wrapper {
+      h1 {
+        font-size: 1.75rem;
+      }
+    }
+  }
+}

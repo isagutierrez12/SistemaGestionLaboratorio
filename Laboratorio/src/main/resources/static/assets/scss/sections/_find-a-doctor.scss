@@ -1,0 +1,263 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Find A Doctor Section
+--------------------------------------------------------------*/
+.find-a-doctor {
+  h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--heading-color);
+    margin-bottom: 1rem;
+  }
+
+  .search-container {
+    background: var(--surface-color);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px color-mix(in srgb, var(--default-color), transparent 90%);
+    margin-bottom: 2rem;
+  }
+
+  .search-form {
+
+    .form-control,
+    .form-select {
+      padding: 0.75rem 1rem;
+      border: 2px solid color-mix(in srgb, var(--default-color), transparent 85%);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+
+      &:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--accent-color), transparent 85%);
+      }
+    }
+
+    .btn-primary {
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      border: none;
+      background: var(--accent-color);
+      color: var(--contrast-color);
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: color-mix(in srgb, var(--accent-color), black 15%);
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  .filter-tabs {
+    .nav-pills {
+      .nav-link {
+        color: var(--default-color);
+        background: transparent;
+        border: 2px solid color-mix(in srgb, var(--default-color), transparent 85%);
+        border-radius: 25px;
+        padding: 0.5rem 1.5rem;
+        margin: 0 0.25rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+
+        &:hover {
+          color: var(--accent-color);
+          border-color: var(--accent-color);
+        }
+
+        &.active {
+          background: var(--accent-color);
+          border-color: var(--accent-color);
+          color: var(--contrast-color);
+        }
+      }
+    }
+  }
+
+  .doctor-card {
+    background: var(--surface-color);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 25px color-mix(in srgb, var(--default-color), transparent 92%);
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px color-mix(in srgb, var(--default-color), transparent 85%);
+    }
+
+    .doctor-image {
+      position: relative;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+
+      .availability-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        &.online {
+          background: color-mix(in srgb, #28a745, transparent 10%);
+          color: white;
+        }
+
+        &.busy {
+          background: color-mix(in srgb, #ffc107, transparent 10%);
+          color: white;
+        }
+
+        &.offline {
+          background: color-mix(in srgb, var(--default-color), transparent 20%);
+          color: white;
+        }
+      }
+    }
+
+    &:hover .doctor-image img {
+      transform: scale(1.05);
+    }
+
+    .doctor-info {
+      padding: 1.5rem;
+
+      h5 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--heading-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .specialty {
+        color: var(--accent-color);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+      }
+
+      .experience {
+        color: color-mix(in srgb, var(--default-color), transparent 30%);
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .rating {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        i {
+          color: #ffc107;
+          font-size: 0.9rem;
+          margin-right: 0.125rem;
+        }
+
+        .rating-text {
+          color: color-mix(in srgb, var(--default-color), transparent 30%);
+          font-size: 0.875rem;
+          margin-left: 0.5rem;
+        }
+      }
+
+      .appointment-actions {
+        display: flex;
+        gap: 0.5rem;
+
+        .btn {
+          flex: 1;
+          padding: 0.5rem 1rem;
+          font-size: 0.875rem;
+          font-weight: 500;
+          border-radius: 8px;
+          transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary {
+          border: 2px solid var(--accent-color);
+          color: var(--accent-color);
+
+          &:hover {
+            background: var(--accent-color);
+            color: var(--contrast-color);
+          }
+        }
+
+        .btn-primary {
+          background: var(--accent-color);
+          border: 2px solid var(--accent-color);
+          color: var(--contrast-color);
+
+          &:hover {
+            background: color-mix(in srgb, var(--accent-color), black 15%);
+            border-color: color-mix(in srgb, var(--accent-color), black 15%);
+          }
+        }
+      }
+    }
+  }
+
+  .btn-lg {
+    padding: 0.75rem 2rem;
+    font-size: 1.125rem;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .search-container {
+      padding: 1.5rem;
+    }
+
+    .search-form .row.g-3>* {
+      margin-bottom: 1rem;
+    }
+
+    .filter-tabs .nav-pills {
+      flex-wrap: wrap;
+
+      .nav-link {
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    .doctor-card .doctor-info .appointment-actions {
+      flex-direction: column;
+
+      .btn {
+        width: 100%;
+        margin-bottom: 0.25rem;
+      }
+    }
+  }
+
+  @media (max-width: 576px) {
+    h2 {
+      font-size: 2rem;
+    }
+
+    .search-container {
+      padding: 1rem;
+    }
+
+    .doctor-card .doctor-image img {
+      height: 200px;
+    }
+  }
+}

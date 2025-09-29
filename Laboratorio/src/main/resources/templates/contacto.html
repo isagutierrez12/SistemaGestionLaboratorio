@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head  th:replace="~{layout/layout :: head}">
+        <title>Laboratorio Clinico Calderon Piedra</title>
+        <meta charset="UTF-8" />
+
+    </head>
+    <body class="contact-page">
+        <header th:replace="~{layout/layout :: header}" />
+        <main class="main">
+
+
+            <div class="page-title">
+                <div class="title-wrapper">
+                    <h1>Contacto</h1>
+                </div>
+            </div><!-- End Page Title -->
+
+            <section th:replace="~{fragmentos :: contacto}" ></section>
+        </main>
+
+        <footer th:replace="~{layout/layout :: footer}"></footer>
+
+        <!-- Scroll Top -->
+        <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+                class="bi bi-arrow-up-short"></i></a>
+
+        <!-- Preloader -->
+        <div id="preloader"></div>
+        <div th:replace="~{layout/layout :: jsfiles}"></div>
+    </body>
+</html>

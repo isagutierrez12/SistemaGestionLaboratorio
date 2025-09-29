@@ -1,0 +1,33 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head  th:replace="~{layout/layout :: head}">
+        <title>Laboratorio Clinico Calderon Piedra</title>
+        <meta charset="UTF-8" />
+
+    </head>
+    <body class="index-page">
+        <div th:if="${session.idUsuario != null}">
+            Usuario: <span th:text="${session.nombre}"></span> <br/>
+            Apellido: <span th:text="${session.apellido1}"></span>
+             Apellido: <span th:text="${session.rol}"></span>
+              Apellido: <span th:text="${session.roles}"></span>
+               Apellido: <span th:text="${session.password}"></span>
+                Apellido: <span th:text="${session.apellido1}"></span>
+        </div>
+        <div th:if="${session.idUsuario == null}">
+            No hay usuario logueado
+        </div>
+        <header th:replace="~{layout/layout :: header}" />
+        <main class="main">
+            <section th:replace="~{fragmentos :: index}" ></section>
+        </main>
+        <footer th:replace="~{layout/layout :: footer}"></footer>
+
+        <!-- Scroll Top -->
+        <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+                class="bi bi-arrow-up-short"></i></a>
+
+        <!-- Preloader -->
+        <div id="preloader"></div>
+        <div th:replace="~{layout/layout :: jsfiles}"></div>
+    </body>
+</html>
