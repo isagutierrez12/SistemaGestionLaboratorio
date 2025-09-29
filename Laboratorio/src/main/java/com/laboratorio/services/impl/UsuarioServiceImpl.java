@@ -21,7 +21,7 @@ public class UsuarioServiceImpl  implements UsuarioService{
     private UsuarioRepository usuarioRepository;
     @Autowired
     private RolRepository rolRepository;
-
+    
     @Override
     @Transactional(readOnly = true)
     public List<Usuario> getUsuarios() {
@@ -66,4 +66,59 @@ public class UsuarioServiceImpl  implements UsuarioService{
         usuarioRepository.delete(usuario);
     }
     
+    
+    @Override
+    @Transactional
+    public String desactivarUsuario(Long idUsuario) {
+        try {
+            Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
+            if (usuario == null) {
+                return "Usuario no encontrado";
+            }
+            if (!usuario.isActivo()) {
+                return "El usuario ya está inactivo";
+            }
+            usuario.setActivo(false);
+            usuarioRepository.save(usuario);
+            return "Usuario desactivado correctamente";
+        } catch (Exception e) {
+        // Captura cualquier error al actualizar el usuario
+        return "Error al cambiar el estado del usuario. Intente nuevamente";
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Usuario> getUsuariosActivos() {
+        return usuarioRepository.findByActivoTrue();
+    }
+    @Override
+    @Transactional
+    public String reactivarUsuario(Long idUsuario) {
+        try {
+            Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
+            if (usuario == null) {
+                return "Usuario no encontrado";
+            }
+            if (usuario.isActivo()) {
+                return "El usuario ya está activo";
+            }
+            usuario.setActivo(true);
+            usuarioRepository.save(usuario);
+            return "Usuario activado correctamente";
+        } catch (Exception e) {
+            return "Error al cambiar el estado del usuario. Intente nuevamente";
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Usuario> getUsuariosInactivos() {
+        return usuarioRepository.findByActivoFalse();
+    }
+   @Override
+   @Transactional(readOnly = true)
+   public List<Usuario> buscarUsuariosPorNombre(String nombre){
+       return usuarioRepository.findByNombre(nombre);
+   }
 }
