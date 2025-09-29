@@ -16,14 +16,14 @@ public interface PacienteRepository extends JpaRepository<Paciente, String> {
     int getMaxSequenceForYear(@Param("anio") String anio);
     
     @Query("SELECT p FROM Paciente p " +
-           "WHERE p.activo = true AND(" +
+           "WHERE p.activo = true AND (" +
            "LOWER(p.nombre) LIKE LOWER(CONCAT('%', :query, '%')) " +
            "OR LOWER(p.cedula) LIKE LOWER(CONCAT('%', :query, '%')) " +
            "OR LOWER(p.email) LIKE LOWER(CONCAT('%', :query, '%')))")
     List<Paciente> buscarActivosPorQuery(@Param("query") String query);
     
     @Query("SELECT p FROM Paciente p " +
-           "WHERE p.activo = false AND(" +
+           "WHERE p.activo = false AND (" +
            "LOWER(p.nombre) LIKE LOWER(CONCAT('%', :query, '%')) " +
            "OR LOWER(p.cedula) LIKE LOWER(CONCAT('%', :query, '%')) " +
            "OR LOWER(p.email) LIKE LOWER(CONCAT('%', :query, '%')))")

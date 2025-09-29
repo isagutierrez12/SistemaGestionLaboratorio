@@ -62,13 +62,14 @@ public class PacienteController {
     List<Paciente> pacientes;
 
     if (query == null || query.trim().isEmpty()) {
-        pacientes = pacienteService.getPacientes();
+        pacientes = pacienteService.getPacientesActivos();
     } else {
         pacientes = pacienteService.buscarPacientes(query.trim());
     }
 
     model.addAttribute("pacientes", pacientes);
-    model.addAttribute("query", query); 
+    model.addAttribute("query", query);
+    model.addAttribute("page", "list"); 
     return "paciente/pacientes"; 
 }
 
@@ -122,7 +123,8 @@ public class PacienteController {
     }
 
     model.addAttribute("pacientes", pacientes);
-    model.addAttribute("query", query); 
+    model.addAttribute("query", query);
+    model.addAttribute("page", "inactive");
     return "paciente/inactivos"; 
     }
 
