@@ -18,7 +18,7 @@ public class RolServiceImpl implements RolService{
     
     @Override
     public Rol findRolByIdUsuario(Long idUSuario) {
-        return rolRepository.findRolByIdUsuario(idUSuario);
+        return rolRepository.findByIdUsuario(idUSuario);
     }
     
 }
