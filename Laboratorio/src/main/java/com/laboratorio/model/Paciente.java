@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Data
@@ -30,6 +31,7 @@ public class Paciente implements Serializable {
     private String segundoApellido;
 
     @Column(name = "fecha_nacimiento")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.DATE)
     private Date fechaNacimiento;
 
@@ -39,7 +41,7 @@ public class Paciente implements Serializable {
 
     private boolean activo;
 
-    @Column(name = "fecha_creacion")
+    @Column(name = "fecha_creacion", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCreacion;
     
