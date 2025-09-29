@@ -13,6 +13,6 @@ public interface UsuarioRepository extends JpaRepository< Usuario, Long> {
 
     Usuario findByUsernameAndPassword(String username, String Password);
 
-    
+    public boolean existsByUsername(String username);
 
 }
