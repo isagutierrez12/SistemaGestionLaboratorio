@@ -6,10 +6,11 @@
     </head>
     <body>
         <!-- aside -->
-
+        <aside th:replace="~{layout/admin :: aside-edit}"></aside>
         <header th:replace="~{layout/admin :: header}"></header>
         <!-- Preloader -->
-        <section th:replace="~{usuario/fragmentos :: agregar}"></section>
+        <main th:replace="~{paciente/fragmentos :: form-paciente}"></main>
+
         <div id="preloader"></div>
         <div th:replace="~{layout/admin :: jsfiles}"></div>
     </body>

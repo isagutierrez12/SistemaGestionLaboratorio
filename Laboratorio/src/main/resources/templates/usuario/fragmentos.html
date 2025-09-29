@@ -6,13 +6,13 @@
     </head>
     
     <body>
-        <main th:fragment="main" id="main" class="main">
+        <section th:fragment="main" id="main" class="main">
 
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
-                        <li class="breadcrumb-item">Pacientes</li>
+                        <li class="breadcrumb-item">Usuarios</li>
                         <li class="breadcrumb-item active">Datos</li>
                     </ol>
                 </nav>
@@ -26,6 +26,7 @@
                             <div class="card-body">
 
                                 <div class="datatable-controls">
+
                                    <a th:href="@{/usuario/agregar}"> Agregar</a>
                                    
                                    <!-- Formulario de búsqueda -->
@@ -41,6 +42,7 @@
                                 <div th:if="${error}" class="alert alert-danger" style="margin-top:5px;">
                                 <span th:text="${error}"></span>
                                 </div>
+
                                 </div>
 
                                 <div th:if="${mensaje}" class="alert alert-success" role="alert" style="margin-bottom: 15px;">
@@ -72,10 +74,11 @@
                                             <td style="vertical-align: middle; text-align: center;">[[${u.activo}]]</td>
                                             <td style="vertical-align: middle; text-align: center;">[[${u.fechaCreacion}]]</td>
                                             <td class="actions-cell" style="vertical-align: middle; text-align: center;">
-                                                <a href="patients-edit.html" class="btn-edit" title="Editar">
+                                                <a th:href="@{/usuario/modificar/{id}(id=${u.idUsuario})}" class="btn-edit" title="Editar">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
                                             </td>
+
 
                                             <td class="actions-cell">
                                                 <a href="patients-history.html" class="btn btn-history">Historial</a>
@@ -98,6 +101,7 @@
                                             </a>
                                         </td>
 
+
                                         </tr>
 
                                         <!-- Agrega más filas según sea necesario -->
@@ -113,9 +117,202 @@
             </section>
 
 
-        </main><!-- End #main -->
+        </section><!-- End #main -->
 
-        <!-- Preloader -->
+
+        <section th:fragment="agregar" id="main" class="main">
+
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item">Registrar</li>
+                        <li class="breadcrumb-item active">Usuario</li>
+                    </ol>
+                </nav>
+            </div><!-- End Page Title -->
+            <section class="section">
+                <div class="row">
+                    <div class="col-lg-12">
+
+
+                        <div class="card">
+                            <div class="card-body">
+
+
+                                <div class="text-center md-2 mb-6" style="margin-top: 20px;">
+                                    <img src="assets/img/logo-1.png" alt="Logo Laboratorio" class="logo-img" style="max-width: 150px;" />
+                                </div>
+
+
+                                <!-- Title -->
+                                <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
+                                    Registrar Usuario
+                                </h4>
+
+                                <!-- Multi Columns Form -->
+                                <form class="row custom-gx gy-4 mt-4"  th:action="@{/usuario/guardar}" th:object="${usuario}">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputNombreCompleto" class="form-label">Nombre</label>
+                                        <input type="text" class="form-control" id="inputNombreCompleto" name="nombre" />
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputCedula" class="form-label">Primer Apellido</label>
+                                        <input type="text" class="form-control" id="inputCedula" name="primerApellido" />
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputTelefono" class="form-label">Segundo Apellido</label>
+                                        <input type="text" class="form-control" id="inputTelefono" name="segundoApellido" />
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputCorreo" class="form-label">Nombre de usuario</label>
+                                        <input type="text" class="form-control" id="inputCorreo" name="username" />
+                                        <div th:if="${error}" class="alert alert-danger mt-2">
+                                            <span th:text="${error}"></span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputCorreo" class="form-label">Contraseña</label>
+                                        <input type="text" class="form-control" id="inputCorreo" name="password" />
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputEstado" class="form-label">Estado</label>
+                                        <select id="inputEstado" name="activo" class="form-select">
+                                            <option selected>Seleccione...</option>
+                                            <option value="true">Activo</option>
+                                            <option value="false">Inactivo</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputEstado" class="form-label">Rol</label>
+                                        <select id="inputEstado" name="roles" class="form-select">
+                                            <option selected>Seleccione...</option>
+                                            <option value="1">Administrador</option>
+                                            <option value="2">Recepcionista</option>
+                                            <option value="3">Doctor</option>
+                                        </select>
+                                    </div>
+
+
+                                    <div class="text-center mt-3">
+                                        <button type="submit" class="btn btn-save me-5">Registrar</button>
+                                        <button type="button" class="btn btn-cancel" >
+                                            Cancelar
+                                        </button>
+
+                                    </div>
+                                </form>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </section>
+
+        </section><!-- End #main -->
+
+        <section th:fragment="modificar" id="main" class="main">
+
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item">Modificar</li>
+                        <li class="breadcrumb-item active">Usuario</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <section class="section" >
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="card">
+                            <div class="card-body">
+
+                                <div class="text-center md-2 mb-6" style="margin-top: 20px;">
+                                    <img src="assets/img/logo-1.png" alt="Logo Laboratorio" class="logo-img" style="max-width: 150px;" />
+                                </div>
+
+                                <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
+                                    Modificar Usuario
+                                </h4>
+
+                                <!-- Formulario de edición -->
+                                <form class="row custom-gx gy-4 mt-4" th:action="@{/usuario/guardar}" th:object="${usuario}" method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <input type="hidden" th:field="*{idUsuario}" />
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputNombreCompleto" class="form-label">Nombre</label>
+                                        <input type="text" class="form-control" id="inputNombreCompleto" th:field="*{nombre}" />
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Primer Apellido</label>
+                                        <input type="text" class="form-control" th:field="*{primerApellido}" />
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Segundo Apellido</label>
+                                        <input type="text" class="form-control" th:field="*{segundoApellido}" />
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Nombre de usuario</label>
+                                        <input type="text" class="form-control" th:field="*{username}" />
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Contraseña</label>
+                                        <input type="password" class="form-control" th:field="*{password}" />
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Estado</label>
+                                        <select class="form-select" th:field="*{activo}">
+
+                                            <option value="true">Activo</option>
+                                            <option value="false">Inactivo</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Rol</label>
+                                        <select class="form-select" name="roles">
+                                           
+                                            <option value="1"  th:selected="${rol == '1'}">Administrador</option>
+                                            <option value="2" th:selected="${rol == '2'}">Recepcionista</option>
+                                            <option value="3" th:selected="${rol == '3'}">Doctor</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="text-center mt-3">
+                                        <button type="submit" class="btn btn-save me-5">Actualizar</button>
+                                        <a href="/usuario/lista" class="btn btn-cancel">Cancelar</a>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </section>
+
+
+        <!-- Preloader --> 
 
         <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
        

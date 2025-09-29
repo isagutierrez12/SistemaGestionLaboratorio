@@ -21,4 +21,7 @@ public interface UsuarioRepository extends JpaRepository< Usuario, Long> {
     //List<Usuario> findByRolNombre(String rol);
     
     List<Usuario> findByNombre(String nombre);
+
+    public boolean existsByUsername(String username);
+
 }
