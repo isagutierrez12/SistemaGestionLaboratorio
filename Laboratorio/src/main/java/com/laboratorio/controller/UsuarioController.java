@@ -21,6 +21,7 @@ public class UsuarioController {
     @Autowired
     RolService rolService;
 
+    //listado
     @GetMapping("/usuarios")
     public String listadoUsuarios(Model model) {
         var lista = usuarioService.getUsuarios();
@@ -28,6 +29,7 @@ public class UsuarioController {
         return "/usuario/usuarios";
     }
 
+    //agregar
     @GetMapping("/agregar")
     public String agregarUsuarios(Model model) {
         return "/usuario/agregar";
@@ -45,13 +47,14 @@ public class UsuarioController {
         }
 
     }
+    //editar
 
     @GetMapping("/modificar/{idUsuario}")
     public String modicarUsuario(Usuario usuario, Model model) {
         usuario = usuarioService.getUsuario(usuario);
 
         String rol = usuario.getRoles().getFirst().getNombre();
-        String rolSeleccionado ;
+        String rolSeleccionado;
         switch (rol) {
             case "ADMIN":
                 rolSeleccionado = "1";
@@ -66,7 +69,7 @@ public class UsuarioController {
                 rolSeleccionado = "";
 
         }
-        
+
         model.addAttribute("rol", rolSeleccionado);
         model.addAttribute("usuario", usuario);
         return "usuario/modificar";

@@ -29,6 +29,7 @@ public class PacienteController {
         this.pacienteService = pacienteService;
     }
 
+    //listado
     @GetMapping("/pacientes")
     public String listadoPacientes(Model model) {
         List<Paciente> pacientes = pacienteService.getPacientes();
@@ -36,6 +37,7 @@ public class PacienteController {
         return "paciente/pacientes";
     }
 
+    //agregar
     @GetMapping("/agregar")
     public String agregarPaciente(Model model) {
         model.addAttribute("paciente", new Paciente());
@@ -53,7 +55,7 @@ public class PacienteController {
     pacienteService.save(paciente);
     return "redirect:/paciente/pacientes";
 }
-    
+    //otros
     @GetMapping("/buscar")
     public String buscarPacientes(@RequestParam("query") String query, Model model) {
     List<Paciente> pacientes;

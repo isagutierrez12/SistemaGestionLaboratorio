@@ -8,6 +8,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import lombok.Data;
 
 @Entity
@@ -18,14 +19,14 @@ public class Examen {
     
     @Id
     @Column(name = "id_examen", nullable = false, updatable = false)
-    private long idExamen; 
-    private String codig;
+    private Long idExamen; 
+    private String codigo;
     private String nombre; 
     private String area; 
-    private double precio; 
+    private BigDecimal precio; 
     private String condiciones; 
     private String unidad; 
-    private int valorMinimo; 
-    private int valorMaximo; 
+    private float valorMinimo; 
+    private float valorMaximo; 
     private boolean activo; 
 }

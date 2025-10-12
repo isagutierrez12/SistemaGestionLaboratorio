@@ -8,11 +8,9 @@ import com.laboratorio.model.Examen;
 import com.laboratorio.repository.ExamenRepository;
 import com.laboratorio.service.ExamenService;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
-/**
- *
- * @author melanie
- */
+@Service
 public class ExamenServiceImpl implements ExamenService{
     private ExamenRepository examenRepository;
 

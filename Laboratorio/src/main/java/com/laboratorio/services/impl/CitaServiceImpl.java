@@ -8,11 +8,9 @@ import com.laboratorio.model.Cita;
 import com.laboratorio.repository.CitaRepository;
 import com.laboratorio.service.CitaService;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
-/**
- *
- * @author melanie
- */
+@Service
 public class CitaServiceImpl implements CitaService{
 
     private CitaRepository citaRepository;
