@@ -110,7 +110,7 @@
                                 </h4>
 
                                 <!-- Multi Columns Form -->
-                                <form class="row custom-gx gy-4 mt-4"  th:action="@{/usuario/guardar}" th:object="${usuario}">
+                                <form class="row custom-gx gy-4 mt-4"  th:action="@{/usuario/guardar}" th:object="${usuario}" method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                     <div class="col-md-6 mb-3">
                                         <label for="inputNombreCompleto" class="form-label">Nombre</label>
