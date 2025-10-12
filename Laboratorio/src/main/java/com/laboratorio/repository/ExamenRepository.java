@@ -6,11 +6,9 @@ package com.laboratorio.repository;
 
 import com.laboratorio.model.Examen;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-/**
- *
- * @author melanie
- */
+@EnableJpaRepositories
 public interface ExamenRepository extends JpaRepository<Examen, Long>{
     
 }
