@@ -1,14 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
 package com.laboratorio.repository;
 
 import com.laboratorio.model.Examen;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EnableJpaRepositories
-public interface ExamenRepository extends JpaRepository<Examen, Long>{
-    
+public interface ExamenRepository extends JpaRepository<Examen, Long> {
+
+    @Query("SELECT e FROM Examen e " +
+           "WHERE LOWER(e.nombre) LIKE LOWER(CONCAT('%', :query, '%')) " +
+           "OR LOWER(e.area) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<Examen> buscarPorQuery(@Param("query") String query);
+
 }

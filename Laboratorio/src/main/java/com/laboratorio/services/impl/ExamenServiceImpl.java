@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.laboratorio.services.impl;
 
 import com.laboratorio.model.Examen;
@@ -10,33 +6,39 @@ import com.laboratorio.service.ExamenService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ExamenServiceImpl implements ExamenService{
+public class ExamenServiceImpl implements ExamenService {
+
+    private final ExamenRepository examenRepository;
+
     @Autowired
-    private ExamenRepository examenRepository;
-
-    @Override
-      @Transactional(readOnly = true)
-    public List<Examen> getAll() {
-         return examenRepository.findAll();
+    public ExamenServiceImpl(ExamenRepository examenRepository) {
+        this.examenRepository = examenRepository;
     }
 
     @Override
-      @Transactional(readOnly = true)
-    public Examen get(Examen entity) {
-         return examenRepository.findById(entity.getIdExamen()).orElse(null);
+    public List<Examen> findAll() {
+        return examenRepository.findAll();
     }
 
     @Override
-    public void save(Examen entity) {
-        examenRepository.save(entity);
+    public Examen findById(Long id) {
+        return examenRepository.findById(id).orElse(null);
     }
 
     @Override
-    public void delete(Examen entity) {
-        examenRepository.delete(entity);
+    public Examen save(Examen examen) {
+        return examenRepository.save(examen);
+    }
+
+    @Override
+    public void delete(Long id) {
+        examenRepository.deleteById(id);
     }
     
+    @Override
+    public List<Examen> buscarExamenes(String query) {
+        return examenRepository.buscarPorQuery(query);
+    }
 }
