@@ -8,11 +8,9 @@ import com.laboratorio.model.Inventario;
 import com.laboratorio.repository.InventarioRepository;
 import com.laboratorio.service.InventarioService;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
-/**
- *
- * @author melanie
- */
+@Service
 public class InventarioServiceImpl implements InventarioService{
     private InventarioRepository inventarioRepository;
 
