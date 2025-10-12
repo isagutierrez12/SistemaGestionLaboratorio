@@ -6,11 +6,12 @@ package com.laboratorio.service;
 
 import com.laboratorio.model.Examen;
 import com.laboratorio.model.RutaPermit;
+import java.util.List;
 
-/**
- *
- * @author melanie
- */
-public interface ExamenService  extends CrudService<Examen>{
-    
+public interface ExamenService {
+    List<Examen> findAll();
+    Examen findById(Long id);
+    Examen save(Examen examen); 
+    void delete(Long id);
+    List<Examen> buscarExamenes(String query); 
 }
