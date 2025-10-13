@@ -27,7 +27,7 @@
                                     <a th:href="@{/examen/agregar}" class="btn btn-primary">Agregar Examen</a>                    
                                 </div>
 
-                                <div th:replace="examen/fragmentos :: busqueda"></div>
+                                <div th:replace="~{examen/fragmentos :: busqueda}"></div>
 
                                 <!-- Tabla -->
                                 <table class="table datatable">
@@ -171,6 +171,102 @@
             </section>
 
         </section>
+        <!-- modificar -->
+        <section th:fragment="modificar" id="main" class="main">
+
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item">Editar</li>
+                        <li class="breadcrumb-item active">Examen</li>
+                    </ol>
+                </nav>
+            </div><!-- End Page Title -->
+            <section class="section">
+                <div class="row">
+                    <div class="col-lg-12">
+
+
+                        <div class="card">
+                            <div class="card-body">
+
+
+                                <div class="text-center md-2 mb-6" style="margin-top: 20px;">
+                                    <img src="assets/img/logo-1.png" alt="Logo Laboratorio" class="logo-img" style="max-width: 150px;">
+                                </div>
+
+
+                                <!-- Title -->
+                                <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
+                                    Editar Examen
+                                </h4>
+
+                                <!-- Multi Columns Form -->
+                                <form class="row custom-gx gy-4 mt-4" th:action="@{/examen/guardar}" th:object="${examen}" method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                                                     <input type="hidden" th:field="*{idExamen}" />
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputNombreExamen" class="form-label">Nombre del examen</label>
+                                        <input type="text" class="form-control" id="inputNombreExamen" th:field="*{nombre}">
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputDescripcion" class="form-label">Area</label>
+                                        <input type="text" class="form-control" id="inputArea" th:field="*{area}">
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputDuracion" class="form-label">Precio</label>
+                                        <input type="number" class="form-control" id="inputPrecio" th:field="*{precio}">
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputFecha" class="form-label">Unidad</label>
+                                        <input type="text" class="form-control" id="inputFecha" th:field="*{unidad}">
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputEstado" class="form-label">Valor Minimo</label>
+                                        <input type="text" class="form-control" id="inputValorMinimo" th:field="*{valorMinimo}">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputEstado" class="form-label">Valor Máximo</label>
+                                        <input type="text" class="form-control" id="inputValorMaximo" th:field="*{valorMaximo}">
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="inputImagen" class="form-label">Condiciones</label>
+                                        <input class="form-control" type="text" id="inputImagen" th:field="*{condiciones}">
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Estado</label>
+                                        <select class="form-select" th:field="*{activo}">
+
+                                            <option value="true">Activo</option>
+                                            <option value="false">Inactivo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 text-center mt-3">
+                                        <button type="submit" class="btn btn-save me-2">Registrar</button>
+                                        <a th:href="@{/paciente/pacientes}" class="btn btn-cancel">Cancelar</a>
+                                    </div>
+
+                                </form>
+
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </section>
+
+        </section>
 
         <!-- Fragmento botonesBuscar -->
         <section th:fragment="botonesBuscar">
@@ -199,17 +295,17 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", () => {
-            const inputs = document.querySelectorAll("input[pattern]");
+                const inputs = document.querySelectorAll("input[pattern]");
 
-            inputs.forEach(input => {
-            input.addEventListener("input", () => {
-            if (input.validity.patternMismatch) {
-            input.setCustomValidity(input.title);
-            } else {
-            input.setCustomValidity("");
-            }
-            });
-            });
+                inputs.forEach(input => {
+                    input.addEventListener("input", () => {
+                        if (input.validity.patternMismatch) {
+                            input.setCustomValidity(input.title);
+                        } else {
+                            input.setCustomValidity("");
+                        }
+                    });
+                });
             });
         </script>
 

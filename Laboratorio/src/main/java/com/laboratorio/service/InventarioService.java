@@ -6,11 +6,9 @@ package com.laboratorio.service;
 
 import com.laboratorio.model.Inventario;
 import com.laboratorio.model.RutaPermit;
+import org.springframework.stereotype.Service;
 
-/**
- *
- * @author melanie
- */
+@Service
 public interface InventarioService extends CrudService<Inventario>{
     
 }

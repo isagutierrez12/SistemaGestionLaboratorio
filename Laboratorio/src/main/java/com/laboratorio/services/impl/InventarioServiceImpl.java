@@ -8,11 +8,14 @@ import com.laboratorio.model.Inventario;
 import com.laboratorio.repository.InventarioRepository;
 import com.laboratorio.service.InventarioService;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class InventarioServiceImpl implements InventarioService{
+    @Autowired
     private InventarioRepository inventarioRepository;
+    
 
     @Override
     public List<Inventario> getAll() {

@@ -230,11 +230,11 @@
 
                 <li class="nav-item">
                     <a class="nav-link collapsed" data-bs-target="#test-nav" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-layout-text-window-reverse"></i><span>Pruebas</span><i class="bi bi-chevron-down ms-auto"></i>
+                        <i class="bi bi-layout-text-window-reverse"></i><span>Examenes</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="test-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
                         <li>
-                            <a href="exams-index.html">
+                            <a th:href="@{/examen/examenes}">
                                 <i class="bi bi-circle"></i><span>General</span>
                             </a>
                         </li>
@@ -247,7 +247,7 @@
                 </li><!-- End Examenes Nav -->
                 <li class="nav-item">
                     <a class="nav-link collapsed" data-bs-target="#exams-nav" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-layout-text-window-reverse"></i><span>Exámenes</span><i class="bi bi-chevron-down ms-auto"></i>
+                        <i class="bi bi-layout-text-window-reverse"></i><span>Citas</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
                     <ul id="exams-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                         <li>
@@ -263,7 +263,7 @@
                     </a>
                     <ul id="inventory-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                         <li>
-                            <a href="patients-index.html">
+                            <a  th:href="@{/inventario/inventarios}">
                                 <i class="bi bi-circle"></i><span>General</span>
                             </a>
                         </li>

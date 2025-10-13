@@ -18,23 +18,23 @@ public class PacienteServiceImpl implements PacienteService {
     }
 
     @Override
-    public List<Paciente> findAll() {
+    public List<Paciente> getAll() {
         return pacienteRepository.findAll();
     }
 
     @Override
-    public Paciente findById(String id) {
-        return pacienteRepository.findById(id).orElse(null);
+    public Paciente get(Paciente paciente) {
+        return pacienteRepository.findById(paciente.getIdPaciente()).orElse(null);
     }
 
     @Override
-    public Paciente save(Paciente paciente) {
-        return pacienteRepository.save(paciente);
+    public void save(Paciente paciente) {
+        pacienteRepository.save(paciente);
     }
 
     @Override
-    public void delete(String id) {
-        pacienteRepository.deleteById(id);
+    public void delete(Paciente paciente) {
+        pacienteRepository.delete(paciente);
     }
 
     @Override

@@ -6,11 +6,8 @@ package com.laboratorio.repository;
 
 import com.laboratorio.model.Inventario;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-/**
- *
- * @author melanie
- */
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+@EnableJpaRepositories
 public interface InventarioRepository extends JpaRepository<Inventario, Long>{
     
 }

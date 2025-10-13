@@ -18,23 +18,23 @@ public class ExamenServiceImpl implements ExamenService {
     }
 
     @Override
-    public List<Examen> findAll() {
+    public List<Examen> getAll() {
         return examenRepository.findAll();
     }
 
     @Override
-    public Examen findById(Long id) {
-        return examenRepository.findById(id).orElse(null);
+    public Examen get(Examen examen) {
+        return examenRepository.findById(examen.getIdExamen()).orElse(null);
     }
 
     @Override
-    public Examen save(Examen examen) {
-        return examenRepository.save(examen);
+    public void save(Examen examen) {
+       examenRepository.save(examen);
     }
 
     @Override
-    public void delete(Long id) {
-        examenRepository.deleteById(id);
+    public void delete(Examen examen) {
+        examenRepository.delete(examen);
     }
     
     @Override

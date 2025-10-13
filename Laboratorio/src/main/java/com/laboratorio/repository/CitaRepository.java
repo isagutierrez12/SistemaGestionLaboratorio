@@ -6,11 +6,9 @@ package com.laboratorio.repository;
 
 import com.laboratorio.model.Cita;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-/**
- *
- * @author melanie
- */
+@EnableJpaRepositories
 public interface CitaRepository extends JpaRepository<Cita, Long> {
     
 }
