@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.Date;
 import lombok.Data;
 
 @Entity
@@ -20,10 +21,12 @@ public class Inventario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idInventario;
+    private Date fechaVencimiento;
     private String codigo;
     private String nombre;
     private String unidadMedida;
     private int stockMinimo;
     private int stockActual;
     private boolean activo;
+    private String tipo;
 }

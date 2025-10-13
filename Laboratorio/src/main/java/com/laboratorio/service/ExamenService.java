@@ -8,10 +8,7 @@ import com.laboratorio.model.Examen;
 import com.laboratorio.model.RutaPermit;
 import java.util.List;
 
-public interface ExamenService {
-    List<Examen> findAll();
-    Examen findById(Long id);
-    Examen save(Examen examen); 
-    void delete(Long id);
+public interface ExamenService extends CrudService<Examen> {
+    
     List<Examen> buscarExamenes(String query); 
 }

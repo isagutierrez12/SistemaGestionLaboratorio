@@ -31,7 +31,7 @@ public class ExamenController {
     //listado
     @GetMapping("/examenes")
     public String listadoExamenes(Model model) {
-        model.addAttribute("examenes", examenService.findAll());
+        model.addAttribute("examenes", examenService.getAll());
         return "examen/examenes";
     }
 
@@ -54,16 +54,16 @@ public class ExamenController {
 
 // Editar
     @GetMapping("/modificar/{idExamen}")
-    public String modificarExamen(@PathVariable Long idExamen, Model model) {
-        Examen examen = examenService.findById(idExamen);
+    public String modificarExamen(Examen examen, Model model) {
+       examen = examenService.get(examen);
         model.addAttribute("examen", examen);
         return "examen/modificar";
     }
 
 // Eliminar
     @GetMapping("/eliminar/{idExamen}")
-    public String eliminarExamen(@PathVariable Long idExamen) {
-        examenService.delete(idExamen);
+    public String eliminarExamen(Examen examen) {
+        examenService.delete(examen);
         return "redirect:/examen/examenes";
     }
     
@@ -73,7 +73,7 @@ public class ExamenController {
         List<Examen> examenes;
 
         if (query == null || query.trim().isEmpty()) {
-            examenes = examenService.findAll();
+            examenes = examenService.getAll();
         } else {
             examenes = examenService.buscarExamenes(query.trim());
         }

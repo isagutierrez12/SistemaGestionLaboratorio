@@ -33,7 +33,7 @@ public class PacienteController {
     // Listado
     @GetMapping("/pacientes")
     public String listadoPacientes(Model model) {
-        model.addAttribute("pacientes", pacienteService.findAll());
+        model.addAttribute("pacientes", pacienteService.getAll());
         return "paciente/pacientes";
     }
 
@@ -63,7 +63,7 @@ public class PacienteController {
         List<Paciente> pacientes;
 
         if (query == null || query.trim().isEmpty()) {
-            pacientes = pacienteService.findAll();
+            pacientes = pacienteService.getAll();
         } else {
             pacientes = pacienteService.buscarPacientes(query.trim());
         }
@@ -75,16 +75,16 @@ public class PacienteController {
 
 // Editar
     @GetMapping("/modificar/{id}")
-    public String modificarPaciente(@PathVariable String id, Model model) {
-        Paciente paciente = pacienteService.findById(id);
+    public String modificarPaciente(Paciente paciente, Model model) {
+      paciente = pacienteService.get(paciente);
         model.addAttribute("paciente", paciente);
         return "paciente/modificar";
     }
 
 // Eliminar
     @GetMapping("/eliminar/{id}")
-    public String eliminarPaciente(@PathVariable String id) {
-        pacienteService.delete(id);
+    public String eliminarPaciente(Paciente paciente) {
+        pacienteService.delete(paciente);
         return "redirect:/paciente/pacientes";
     }
 
