@@ -45,4 +45,13 @@ public class Paciente implements Serializable {
     
     @Column(name = "cedula", length = 10)
     private String cedula;
+    
+    @Column(name = "contacto_emergencia", length = 15)
+    private String contactoEmergencia;
+
+    @Column(name = "padecimiento", length = 255)
+    private String padecimiento;
+
+    @Column(name = "alergia", length = 255)
+    private String alergia;
 }

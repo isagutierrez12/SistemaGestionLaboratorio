@@ -4,12 +4,11 @@
  */
 package com.laboratorio.service;
 
+import com.laboratorio.model.Inventario;
+import com.laboratorio.model.RutaPermit;
+import org.springframework.stereotype.Service;
 
-import com.laboratorio.model.Solicitud;
-
-import java.util.List;
-
-public interface SolicitudService  extends CrudService<Solicitud>{
-      List<Solicitud> buscarSolicitudes(String query);
-
+@Service
+public interface InventarioService extends CrudService<Inventario>{
+    
 }

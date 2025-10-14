@@ -1,7 +1,7 @@
 package com.laboratorio.services.impl;
 
 import com.laboratorio.model.Solicitud;
-import com.laboratorio.model.SolicitudDetalle;
+
 import com.laboratorio.repository.SolicitudRepository;
 import com.laboratorio.service.SolicitudService;
 import java.time.LocalDateTime;

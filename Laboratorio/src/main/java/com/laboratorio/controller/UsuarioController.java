@@ -66,6 +66,7 @@ public class UsuarioController {
     @Autowired
     RolService rolService;
 
+    //listado
     @GetMapping("/usuarios")
     public String listadoUsuarios(Model model) {
         var lista = usuarioService.getUsuarios();
@@ -74,6 +75,7 @@ public class UsuarioController {
 
     }
 
+    //agregar
     @GetMapping("/agregar")
     public String agregarUsuarios(Model model) {
         return "/usuario/agregar";
@@ -91,6 +93,7 @@ public class UsuarioController {
         }
 
     }
+    //editar
 
     @GetMapping("/modificar/{idUsuario}")
     public String modicarUsuario(Usuario usuario, Model model) {

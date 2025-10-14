@@ -4,12 +4,13 @@
  */
 package com.laboratorio.service;
 
+import com.laboratorio.model.Cita;
+import com.laboratorio.model.RutaPermit;
 
-import com.laboratorio.model.Solicitud;
-
-import java.util.List;
-
-public interface SolicitudService  extends CrudService<Solicitud>{
-      List<Solicitud> buscarSolicitudes(String query);
-
+/**
+ *
+ * @author melanie
+ */
+public interface CitaService  extends CrudService<Cita>{
+    
 }

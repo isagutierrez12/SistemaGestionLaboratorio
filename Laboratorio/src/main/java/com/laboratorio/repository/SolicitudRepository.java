@@ -4,7 +4,7 @@
  */
 package com.laboratorio.repository;
 
-import com.laboratorio.model.Examen;
+
 import com.laboratorio.model.Solicitud;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

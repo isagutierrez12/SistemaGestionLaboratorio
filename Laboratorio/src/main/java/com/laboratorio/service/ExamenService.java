@@ -4,12 +4,11 @@
  */
 package com.laboratorio.service;
 
-
-import com.laboratorio.model.Solicitud;
-
+import com.laboratorio.model.Examen;
+import com.laboratorio.model.RutaPermit;
 import java.util.List;
 
-public interface SolicitudService  extends CrudService<Solicitud>{
-      List<Solicitud> buscarSolicitudes(String query);
-
+public interface ExamenService extends CrudService<Examen> {
+    
+    List<Examen> buscarExamenes(String query); 
 }
