@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.laboratorio.services.impl;
 
 import com.laboratorio.model.Paciente;
@@ -22,23 +18,32 @@ public class PacienteServiceImpl implements PacienteService {
     }
 
     @Override
-    public List<Paciente> getPacientes() {
+    public List<Paciente> getAll() {
         return pacienteRepository.findAll();
     }
 
     @Override
-    public Paciente save(Paciente paciente) {
-        return pacienteRepository.save(paciente);
+    public Paciente get(Paciente paciente) {
+        return pacienteRepository.findById(paciente.getIdPaciente()).orElse(null);
+    }
+
+    @Override
+    public void save(Paciente paciente) {
+        pacienteRepository.save(paciente);
+    }
+
+    @Override
+    public void delete(Paciente paciente) {
+        pacienteRepository.delete(paciente);
     }
 
     @Override
     public int getMaxSequenceForYear(String anio) {
         return pacienteRepository.getMaxSequenceForYear(anio);
     }
-    
+
     @Override
     public List<Paciente> buscarPacientes(String query) {
         return pacienteRepository.buscarPorQuery(query);
-}
-
+    }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -29,45 +30,62 @@ public class PacienteController {
         this.pacienteService = pacienteService;
     }
 
+    // Listado
     @GetMapping("/pacientes")
     public String listadoPacientes(Model model) {
-        List<Paciente> pacientes = pacienteService.getPacientes();
-        model.addAttribute("pacientes", pacientes);
+        model.addAttribute("pacientes", pacienteService.getAll());
         return "paciente/pacientes";
     }
 
+// Agregar
     @GetMapping("/agregar")
     public String agregarPaciente(Model model) {
         model.addAttribute("paciente", new Paciente());
-        return "paciente/agregar"; //
+        return "paciente/agregar";
     }
 
+// Guardar
     @PostMapping("/guardar")
     public String guardarPaciente(@ModelAttribute("paciente") Paciente paciente) {
-    paciente.setFechaCreacion(new Date());
+        paciente.setFechaCreacion(new Date());
 
-    String anio = new SimpleDateFormat("yy").format(paciente.getFechaCreacion());
-    int maxSeq = pacienteService.getMaxSequenceForYear(anio);
-    paciente.setIdPaciente("P" + anio + "-" + String.format("%04d", maxSeq + 1));
+        String anio = new java.text.SimpleDateFormat("yy").format(paciente.getFechaCreacion());
+        int maxSeq = pacienteService.getMaxSequenceForYear(anio);
+        paciente.setIdPaciente("P" + anio + "-" + String.format("%04d", maxSeq + 1));
 
-    pacienteService.save(paciente);
-    return "redirect:/paciente/pacientes";
-}
-    
-    @GetMapping("/buscar")
-    public String buscarPacientes(@RequestParam("query") String query, Model model) {
-    List<Paciente> pacientes;
-
-    if (query == null || query.trim().isEmpty()) {
-        pacientes = pacienteService.getPacientes();
-    } else {
-        pacientes = pacienteService.buscarPacientes(query.trim());
+        pacienteService.save(paciente);
+        return "redirect:/paciente/pacientes";
     }
 
-    model.addAttribute("pacientes", pacientes);
-    model.addAttribute("query", query); 
-    return "paciente/pacientes"; 
-}
+// Buscar
+    @GetMapping("/buscar")
+    public String buscarPacientes(@RequestParam("query") String query, Model model) {
+        List<Paciente> pacientes;
 
+        if (query == null || query.trim().isEmpty()) {
+            pacientes = pacienteService.getAll();
+        } else {
+            pacientes = pacienteService.buscarPacientes(query.trim());
+        }
+
+        model.addAttribute("pacientes", pacientes);
+        model.addAttribute("query", query);
+        return "paciente/pacientes";
+    }
+
+// Editar
+    @GetMapping("/modificar/{id}")
+    public String modificarPaciente(Paciente paciente, Model model) {
+      paciente = pacienteService.get(paciente);
+        model.addAttribute("paciente", paciente);
+        return "paciente/modificar";
+    }
+
+// Eliminar
+    @GetMapping("/eliminar/{id}")
+    public String eliminarPaciente(Paciente paciente) {
+        pacienteService.delete(paciente);
+        return "redirect:/paciente/pacientes";
+    }
 
 }

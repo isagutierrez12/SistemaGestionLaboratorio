@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import lombok.Data;
+import org.hibernate.annotations.processing.Pattern;
 
 @Entity
 @Data
@@ -27,6 +28,10 @@ public class Usuario implements Serializable {
     private String password;
     private boolean activo;
     private Date fechaCreacion;
+    
+    @Column(length = 9)
+    private String cedula;
+  
     @OneToMany
     @JoinColumn(name = "id_usuario", updatable = false)
     private List<Rol> roles;
