@@ -4,9 +4,9 @@
  */
 package com.laboratorio.service;
 
-import com.laboratorio.model.Paciente;
+
 import com.laboratorio.model.Solicitud;
-import com.laboratorio.model.SolicitudDetalle;
+
 import java.util.List;
 
 public interface SolicitudService  extends CrudService<Solicitud>{
