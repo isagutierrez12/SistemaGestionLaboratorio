@@ -1,0 +1,286 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{layout/layout :: head-admin}">
+        <title>Laboratorio Clinico Calderon Piedra</title>
+        <meta charset="UTF-8" />
+    </head>
+    <body>
+        <section th:fragment="main" id="main" class="main">
+
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item">Solicitudes</li>
+                        <li class="breadcrumb-item active">Listado</li>
+                    </ol>
+                </nav>
+            </div><!-- End Page Title -->
+
+            <section class="section">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="card">
+                            <div class="card-body">
+
+                                <div class="datatable-controls">
+                                    <a th:href="@{/examen/agregar}" class="btn btn-primary">Agregar Examen</a>                    
+                                </div>
+
+                                <div th:replace="~{examen/fragmentos :: busqueda}"></div>
+
+                                <!-- Tabla -->
+                                <table class="table datatable">
+                                    <thead>
+                                        <tr>        
+                                            <th style="text-align:center;">ID Solicitud</th>            
+                                            <th style="text-align:center;">ID Paciente</th>
+                                            <th style="text-align:center;">ID Usuario</th>
+                                            <th style="text-align:center;">Fecha Solicitud</th>
+                                            <th style="text-align:center;">Precio Total</th>           
+                                            <th style="text-align:center;">Estado</th>        
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="s : ${solicitudes}">
+                                            <td>[[${s.idSolicitud}]]</td>
+                                            <td style="vertical-align: middle; text-align: center;">[[${s.idPaciente}]]</td>
+                                            <td style="vertical-align: middle; text-align: center;">[[${s.idUsuario}]]</td>
+                                            <td> th:text="${#temporals.format(s.fechaSolicitud, 'dd/MM/yyyy HH:mm')}"></td>
+                                            <td style="vertical-align: middle; text-align: center;">[[${s.precioTotal}]] - [[${e.valorMaximo}]]</td>
+                                            <td>[[${s.estado}]]</td>
+                                            <td style="text-align:center;">
+                                            <a th:href="@{/solicitud/modificar/{id}(id=${s.idSolicitud})}" class="btn btn-warning btn-sm">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a th:href="@{/solicitud/eliminar/{id}(id=${s.idSolicitud})}" class="btn btn-danger btn-sm" 
+                                               onclick="return confirm('¿Seguro que desea eliminar esta solicitud?');">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- Fin de tabla -->
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+
+        </section><!-- End #main -->
+
+        <section th:fragment="form-solicitud" id="main" class="main">
+
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                        <li class="breadcrumb-item">Solicitud</li>
+                        <li class="breadcrumb-item active">Registrar</li>
+                    </ol>
+                </nav>
+            </div><!-- End Page Title -->
+
+            <section class="section">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="card">
+                            <div class="card-body">
+
+                                <!-- Logo -->
+                                <div class="text-center mb-5" style="margin-top: 20px;">
+                                    <img th:src="@{/assets/img/logo-1.png}" alt="Logo Laboratorio"
+                                         class="logo-img" style="max-width: 150px;"
+                                         onerror="this.style.display='none'" />
+                                </div>
+
+                                <!-- Título -->
+                                <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
+                                    Registrar Solicitud
+                                </h4>
+
+                                <form th:action="@{/solicitud/guardar}" th:object="${solicitud}" method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                                    <div class="row"> 
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Paciente</label>
+                                            <input type="text" class="form-control text-center" th:field="*{idPaciente}" required="true" />
+                                        </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label for="area" class="form-label">Usuario</label>
+                                            <input type="number" class="form-control text-center" th:field="*{idUsuario}" required="required" />
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Fecha Solicitud</label>
+                                            <input type="datetime-local" class="form-control text-center" th:field="*{fechaSolicitud}" required="required" />
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                             <label class="form-label">Precio Total</label>
+                                            <input type="number" step="0.01" class="form-control text-center" th:field="*{precioTotal}" required="required" />
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Estado</label>
+                                            <select class="form-select text-center" th:field="*{estado}">
+                                            <option value="Pendiente">Pendiente</option>
+                                            <option value="Procesando">Procesando</option>
+                                            <option value="Completada">Completada</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 text-center mt-3">
+                                            <button type="submit" class="btn btn-save me-2">Registrar</button>
+                                            <a th:href="@{/solicitud/examenes}" class="btn btn-cancel">Cancelar</a>
+                                        </div>
+                                    </form>
+                                    </div> 
+
+
+                            </div> <!-- card-body -->
+                        </div> <!-- card -->
+
+                    </div> <!-- col-lg-12 -->
+                 <!-- row -->
+            </section>
+
+        </section>
+        <!-- modificar -->
+        <section th:fragment="modificar" id="main" class="main">
+
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item">Editar</li>
+                        <li class="breadcrumb-item active">Solicitud</li>
+                    </ol>
+                </nav>
+            </div><!-- End Page Title -->
+            <section class="section">
+                <div class="row">
+                    <div class="col-lg-12">
+
+
+                        <div class="card">
+                            <div class="card-body">
+
+
+                                <div class="text-center md-2 mb-6" style="margin-top: 20px;">
+                                    <img src="assets/img/logo-1.png" alt="Logo Laboratorio" class="logo-img" style="max-width: 150px;"></img>
+                                </div>
+
+
+                                <!-- Title -->
+                                <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
+                                    Editar Solicitud
+                                </h4>
+
+                                <!-- Multi Columns Form -->
+                                <form class="row custom-gx gy-4 mt-4" th:action="@{/solicitud/guardar}" th:object="${solicitud}" method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                                                     <input type="hidden" th:field="*{idSolicitud}" />
+                                    <div class="col-md-6 mb-3">
+                                    <label class="form-label">Paciente</label>
+                                    <input type="text" class="form-control text-center" th:field="*{paciente.idPaciente}" readonly=readonly />
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Usuario</label>
+                                        <input type="text" class="form-control text-center" th:field="*{usuario.idUsuario}" readonlyr ="readonly" />
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Fecha Solicitud</label>
+                                        <input type="datetime-local" class="form-control text-center"
+                                               th:value="${#temporals.format(solicitud.fechaSolicitud, 'yyyy-MM-dd\'T\'HH:mm')}"
+                                               th:field="*{fechaSolicitud}" />
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Precio Total</label>
+                                        <input type="number" step="0.01" class="form-control text-center" th:field="*{precioTotal}" />
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Estado</label>
+                                        <select class="form-select text-center" th:field="*{estado}">
+                                            <option value="Pendiente">Pendiente</option>
+                                            <option value="Procesando">Procesando</option>
+                                            <option value="Completada">Completada</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-12 text-center mt-3">
+                                        <button type="submit" class="btn btn-save me-2">Actualizar</button>
+                                        <a th:href="@{/solicitud/solicitudes}" class="btn btn-cancel">Cancelar</a>
+                                    </div>
+
+                                </form>
+
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </section>
+
+        </section>
+
+        <!-- Fragmento botonesBuscar -->
+        <section th:fragment="botonesBuscar">
+            <div class="container">
+                <div class="row">
+                    <div class="">
+                        <button class="btn bg-brown border bg-user-hover" type="submit">
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fragmento de búsqueda -->
+        <section th:fragment="busqueda">
+            <form method="get" th:action="@{/solicitud/buscar}" class="d-flex mb-3">
+                <input type="text" name="query" th:value="${query}" class="form-control me-2" 
+                       placeholder="Buscar por nombre o área" />
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </form>
+        </section>
+
+        <!-- Preloader -->
+        <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const inputs = document.querySelectorAll("input[pattern]");
+
+                inputs.forEach(input => {
+                    input.addEventListener("input", () => {
+                        if (input.validity.patternMismatch) {
+                            input.setCustomValidity(input.title);
+                        } else {
+                            input.setCustomValidity("");
+                        }
+                    });
+                });
+            });
+        </script>
+
+
+    </body>
+</html>
