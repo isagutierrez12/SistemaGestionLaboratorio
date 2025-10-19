@@ -44,6 +44,29 @@ public class PacienteServiceImpl implements PacienteService {
 
     @Override
     public List<Paciente> buscarPacientes(String query) {
-        return pacienteRepository.buscarPorQuery(query);
+
+        return pacienteRepository.buscarActivosPorQuery(query);
     }
+    
+    @Override
+    public List<Paciente> buscarPacientesInactivos(String query) {
+        return pacienteRepository.buscarInactivosPorQuery(query);
+    }
+    
+    @Override
+    public Paciente getPaciente(String id) {
+        return pacienteRepository.findByIdPaciente(id);
+    }
+    
+    @Override
+    public List<Paciente> getPacientesActivos() {
+        return pacienteRepository.findByActivoTrue();
+    }
+    
+    @Override
+    public List<Paciente> getPacientesInactivos() {
+        return pacienteRepository.findByActivoFalse();
+    }
+
+
 }

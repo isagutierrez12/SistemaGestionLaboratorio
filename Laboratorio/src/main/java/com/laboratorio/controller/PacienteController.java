@@ -33,7 +33,11 @@ public class PacienteController {
     // Listado
     @GetMapping("/pacientes")
     public String listadoPacientes(Model model) {
-        model.addAttribute("pacientes", pacienteService.getAll());
+
+        List<Paciente> pacientes = pacienteService.getPacientesActivos();
+        model.addAttribute("pacientes", pacientes);
+        model.addAttribute("page", "list");
+
         return "paciente/pacientes";
     }
 
@@ -41,51 +45,93 @@ public class PacienteController {
     @GetMapping("/agregar")
     public String agregarPaciente(Model model) {
         model.addAttribute("paciente", new Paciente());
-        return "paciente/agregar";
+        model.addAttribute("page", "create");
+        return "paciente/agregar"; //
     }
 
 // Guardar
     @PostMapping("/guardar")
     public String guardarPaciente(@ModelAttribute("paciente") Paciente paciente) {
         paciente.setFechaCreacion(new Date());
-
-        String anio = new java.text.SimpleDateFormat("yy").format(paciente.getFechaCreacion());
+        
+        String anio = new SimpleDateFormat("yy").format(paciente.getFechaCreacion());
         int maxSeq = pacienteService.getMaxSequenceForYear(anio);
         paciente.setIdPaciente("P" + anio + "-" + String.format("%04d", maxSeq + 1));
 
         pacienteService.save(paciente);
         return "redirect:/paciente/pacientes";
     }
-
-// Buscar
+    
     @GetMapping("/buscar")
     public String buscarPacientes(@RequestParam("query") String query, Model model) {
-        List<Paciente> pacientes;
+    List<Paciente> pacientes;
 
-        if (query == null || query.trim().isEmpty()) {
-            pacientes = pacienteService.getAll();
-        } else {
-            pacientes = pacienteService.buscarPacientes(query.trim());
+    if (query == null || query.trim().isEmpty()) {
+        pacientes = pacienteService.getPacientesActivos();
+    } else {
+        pacientes = pacienteService.buscarPacientes(query.trim());
+    }
+
+    model.addAttribute("pacientes", pacientes);
+    model.addAttribute("query", query);
+    model.addAttribute("page", "list"); 
+    return "paciente/pacientes"; 
+}
+
+    @GetMapping("/editar/{id}")
+    public String editarPaciente(@PathVariable("id") String id, Model model) {
+        Paciente paciente = pacienteService.getPaciente(id);
+        if (paciente == null) {
+            return "redirect:/paciente/pacientes";
+        }
+        model.addAttribute("paciente", paciente);
+        model.addAttribute("page", "edit");
+        return "/paciente/editar";
+    }
+    
+    @PostMapping("/actualizar")
+    public String actualizarPaciente(@ModelAttribute("paciente") Paciente paciente) {
+        Paciente p = pacienteService.getPaciente(paciente.getIdPaciente());
+        if (p == null) {
+            return "redirect:/paciente/pacientes";
         }
 
-        model.addAttribute("pacientes", pacientes);
-        model.addAttribute("query", query);
-        return "paciente/pacientes";
-    }
+        p.setNombre(paciente.getNombre());
+        p.setPrimerApellido(paciente.getPrimerApellido());
+        p.setSegundoApellido(paciente.getSegundoApellido());
+        p.setCedula(paciente.getCedula());
+        p.setTelefono(paciente.getTelefono());
+        p.setEmail(paciente.getEmail());
+        p.setActivo(paciente.isActivo());
+        p.setFechaNacimiento(paciente.getFechaNacimiento());
 
-// Editar
-    @GetMapping("/modificar/{id}")
-    public String modificarPaciente(Paciente paciente, Model model) {
-      paciente = pacienteService.get(paciente);
-        model.addAttribute("paciente", paciente);
-        return "paciente/modificar";
-    }
-
-// Eliminar
-    @GetMapping("/eliminar/{id}")
-    public String eliminarPaciente(Paciente paciente) {
-        pacienteService.delete(paciente);
+        pacienteService.save(p);
         return "redirect:/paciente/pacientes";
     }
+    
+    @GetMapping("/inactivos")
+    public String listadoPacientesInactivos(Model model) {
+        List<Paciente> pacientes = pacienteService.getPacientesInactivos();
+        model.addAttribute("pacientes", pacientes);
+        model.addAttribute("page", "inactive");
+        return "paciente/inactivos";
+    }
+    
+    @GetMapping("/inactivos/buscar")
+    public String buscarPacientesInactivos(@RequestParam("query") String query, Model model) {
+    List<Paciente> pacientes;
+
+    if (query == null || query.trim().isEmpty()) {
+        pacientes = pacienteService.getPacientesInactivos();
+    } else {
+        pacientes = pacienteService.buscarPacientesInactivos(query.trim());
+    }
+
+    model.addAttribute("pacientes", pacientes);
+    model.addAttribute("query", query);
+    model.addAttribute("page", "inactive");
+    return "paciente/inactivos"; 
+    }
+
 
 }
