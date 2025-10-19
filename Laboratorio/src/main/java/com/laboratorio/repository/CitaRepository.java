@@ -4,11 +4,11 @@
  */
 package com.laboratorio.repository;
 
-import com.laboratorio.model.Role;
+import com.laboratorio.model.Cita;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EnableJpaRepositories
-public interface RoleRepository extends JpaRepository<Role, String> {
+public interface CitaRepository extends JpaRepository<Cita, Long> {
     
 }

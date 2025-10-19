@@ -30,14 +30,18 @@ public class PacienteController {
         this.pacienteService = pacienteService;
     }
 
+    // Listado
     @GetMapping("/pacientes")
     public String listadoPacientes(Model model) {
+
         List<Paciente> pacientes = pacienteService.getPacientesActivos();
         model.addAttribute("pacientes", pacientes);
         model.addAttribute("page", "list");
+
         return "paciente/pacientes";
     }
 
+// Agregar
     @GetMapping("/agregar")
     public String agregarPaciente(Model model) {
         model.addAttribute("paciente", new Paciente());
@@ -45,6 +49,7 @@ public class PacienteController {
         return "paciente/agregar"; //
     }
 
+// Guardar
     @PostMapping("/guardar")
     public String guardarPaciente(@ModelAttribute("paciente") Paciente paciente) {
         paciente.setFechaCreacion(new Date());
@@ -127,5 +132,6 @@ public class PacienteController {
     model.addAttribute("page", "inactive");
     return "paciente/inactivos"; 
     }
+
 
 }
