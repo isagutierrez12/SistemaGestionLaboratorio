@@ -27,50 +27,83 @@
                                 <div class="datatable-controls">
                                     <a th:href="@{/usuario/agregar}" class="btn-register"> Agregar</a>                    
                                 </div>
+                                <!-- Formulario de búsqueda -->
+                                <section th:replace="~{usuario/fragmentos :: busqueda}"></section>
+                              
 
-                                <!-- Table with stripped rows -->
-                                <table class="table datatable">
-                                    <thead>
-                                        <tr>
-                                            <th style="text-align:center;">ID usuario</th>       
-                                            <th style="text-align:center;">Nombre</th>  
-                                            <th style="text-align:center;">Primer Apellido</th>            
-                                            <th style="text-align:center;">Segundo Apellido</th>        
-                                            <th style="text-align:center;">Usuario</th>
-                                            <th style="text-align:center;">Cédula</th>           
-                                            <th style="text-align:center;">Activo</th>        
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="u : ${usuarios}">
-                                            <td style="vertical-align: middle; text-align: center;">[[${u.idUsuario}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${u.nombre}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${u.primerApellido}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${u.segundoApellido}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${u.username}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${u.cedula}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${u.activo}]]</td>
-                                            <td class="actions-cell" style="vertical-align: middle; text-align: center;">
-                                                <a th:href="@{/usuario/modificar/{id}(id=${u.idUsuario})}" class="btn-edit" title="Editar">
-                                                    <i class="bi bi-pencil"></i>
-                                                </a>
-                                            </td>
-
-
-                                        </tr>
-
-                                        <!-- Agrega más filas según sea necesario -->
-                                    </tbody>
-                                </table>
-
-
-                                <!-- End Table with stripped rows -->
-
+                                <!-- Advertencia o mensaje de error -->
+                                <div th:if="${advertencia}" class="alert alert-warning" style="margin-top:5px;">
+                                    <span th:text="${advertencia}"></span>
+                                </div>
+                                <div th:if="${error}" class="alert alert-danger" style="margin-top:5px;">
+                                    <span th:text="${error}"></span>
+                                </div>
                             </div>
-                        </div>
+                            <div th:if="${mensaje}" class="alert alert-success" role="alert" style="margin-bottom: 15px;">
+                                <span th:text="${mensaje}"></span>
+                            </div>
+                            <!-- Table with stripped rows -->
+                            <table class="table datatable">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center;">ID usuario</th>       
+                                        <th style="text-align:center;">Nombre</th>  
+                                        <th style="text-align:center;">Primer Apellido</th>            
+                                        <th style="text-align:center;">Segundo Apellido</th>        
+                                        <th style="text-align:center;">Usuario</th>
+                                        <th style="text-align:center;">Cédula</th>           
+                                        <th style="text-align:center;">Activo</th>   
+                                           <th>Acción</th>    
+                                             <th>Acción</th>    
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="u : ${usuarios}">
+                                        <td style="vertical-align: middle; text-align: center;">[[${u.idUsuario}]]</td>
+                                        <td style="vertical-align: middle; text-align: center;">[[${u.nombre}]]</td>
+                                        <td style="vertical-align: middle; text-align: center;">[[${u.primerApellido}]]</td>
+                                        <td style="vertical-align: middle; text-align: center;">[[${u.segundoApellido}]]</td>
+                                        <td style="vertical-align: middle; text-align: center;">[[${u.username}]]</td>
+                                        <td style="vertical-align: middle; text-align: center;">[[${u.cedula}]]</td>
+                                        <td style="vertical-align: middle; text-align: center;">[[${u.activo}]]</td>
+                                        <td class="actions-cell" style="vertical-align: middle; text-align: center;">
+                                            <a th:href="@{/usuario/modificar/{id}(id=${u.idUsuario})}" class="btn-edit" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        </td>
+                                          <td class="actions-cell" style="vertical-align: middle; text-align: center;">
+                                                <!-- Botón Desactivar solo si el usuario está activo -->
+                                                <a th:if="${u.activo}" 
+                                                   th:href="@{/usuario/desactivar/{id}(id=${u.idUsuario})}" 
+                                                   class="btn btn-danger btn-sm"
+                                                   onclick="return confirm('¿Desea desactivar este usuario?');">
+                                                   Desactivar
+                                                </a>
 
+                                            <!-- Botón Activar solo si el usuario está inactivo -->
+                                            <a th:if="${!u.activo}" 
+                                               th:href="@{/usuario/reactivar/{id}(id=${u.idUsuario})}" 
+                                               class="btn btn-success btn-sm"
+                                               onclick="return confirm('¿Desea reactivar este usuario?');">
+                                               Activar
+                                            </a>
+                                        </td>
+
+
+                                    </tr>
+
+                                    <!-- Agrega más filas según sea necesario -->
+                                </tbody>
+                            </table>
+
+
+                            <!-- End Table with stripped rows -->
+
+                        </div>
                     </div>
+
                 </div>
+                
             </section>
 
 
@@ -273,6 +306,14 @@
                 </div>
             </section>
         </section>
+         <section th:fragment="busqueda">
+            <form method="get" th:action="@{/usuario/buscar}" class="d-flex mb-3">
+                <input type="text" name="nombre" th:value="${nombreBuscado}"  class="form-control me-2" 
+                       placeholder="Buscar por nombre, cédula o email" />
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </form>
+        </section>
+         
 
 
         <!-- Preloader --> 

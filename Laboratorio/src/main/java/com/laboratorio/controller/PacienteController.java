@@ -74,7 +74,7 @@ public class PacienteController {
     }
 
 // Editar
-    @GetMapping("/modificar/{id}")
+    @GetMapping("/modificar/{idPaciente}")
     public String modificarPaciente(Paciente paciente, Model model) {
       paciente = pacienteService.get(paciente);
         model.addAttribute("paciente", paciente);

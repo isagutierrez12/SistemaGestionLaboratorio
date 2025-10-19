@@ -3,14 +3,17 @@ package com.laboratorio.controller;
 import com.laboratorio.model.Usuario;
 import com.laboratorio.service.RolService;
 import com.laboratorio.service.UsuarioService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/usuario")
@@ -24,8 +27,13 @@ public class UsuarioController {
     //listado
     @GetMapping("/usuarios")
     public String listadoUsuarios(Model model) {
-        var lista = usuarioService.getUsuarios();
-        model.addAttribute("usuarios", lista);
+        try {
+            var lista = usuarioService.getUsuarios();
+            model.addAttribute("usuarios", lista);
+        } catch (Exception e) {
+            model.addAttribute("error",
+                    "No se pudo cargar el módulo consultado. Intente nuevamente o contacte soporte.");
+        }
         return "/usuario/usuarios";
     }
 
@@ -73,5 +81,33 @@ public class UsuarioController {
         model.addAttribute("rol", rolSeleccionado);
         model.addAttribute("usuario", usuario);
         return "usuario/modificar";
+    }
+
+    //desactivar
+    @GetMapping("/desactivar/{id}")
+    public String desactivar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        String mensaje = usuarioService.desactivarUsuario(id);
+        redirectAttributes.addFlashAttribute("mensaje", mensaje);
+        return "redirect:/usuario/usuarios";
+    }
+
+    @GetMapping("/reactivar/{id}")
+    public String reactivar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        String mensaje = usuarioService.reactivarUsuario(id);
+        redirectAttributes.addFlashAttribute("mensaje", mensaje);
+        return "redirect:/usuario/usuarios"; // página con usuarios desactivados
+    }
+
+    @GetMapping("/buscar")
+    public String buscarUsuariosPorNombre(@RequestParam(value = "nombre", required = false) String nombre, Model model) {
+        List<Usuario> usuarios;
+        if (nombre == null || nombre.trim().isEmpty()) {
+            usuarios = usuarioService.getUsuarios();
+        } else {
+                usuarios = usuarioService.buscarUsuariosPorNombre(nombre);
+        }
+        model.addAttribute("usuarios", usuarios);
+        model.addAttribute("nombreBuscado", nombre); // para resaltar coincidencias
+        return "usuario/usuarios";
     }
 }
