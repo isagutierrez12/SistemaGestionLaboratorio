@@ -6,6 +6,7 @@ package com.laboratorio.repository;
 
 import com.laboratorio.model.Paciente;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,4 +35,7 @@ public interface PacienteRepository extends JpaRepository<Paciente, String> {
     List<Paciente> findByActivoTrue();
     
     List<Paciente> findByActivoFalse();
+        
+    Optional<Paciente> findByCedula(String cedula);
+
 }
