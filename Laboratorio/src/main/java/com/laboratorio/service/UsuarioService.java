@@ -43,4 +43,6 @@ public interface UsuarioService {
     //Lista los usuarios inactivos.
     
     public List<Usuario> buscarUsuariosPorNombre(String nombre);
+    
+    List<Usuario> buscarUsuariosPorNombreCoincidente(String nombre);
 }

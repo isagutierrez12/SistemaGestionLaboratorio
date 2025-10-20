@@ -176,5 +176,12 @@ public class UsuarioServiceImpl implements UsuarioService {
    public List<Usuario> buscarUsuariosPorNombre(String nombre){
        return usuarioRepository.findByNombre(nombre);
    }
+   
+    public List<Usuario> buscarUsuariosPorNombreCoincidente(String nombre) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return getUsuarios(); 
+        }
+        return usuarioRepository.buscarUsuariosPorNombreCoincidente(nombre.trim());
+    }
 }
 

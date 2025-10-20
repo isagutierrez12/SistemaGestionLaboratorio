@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/paciente")
@@ -76,6 +77,16 @@ public class PacienteController {
         model.addAttribute("query", query);
         model.addAttribute("page", "list");
         return "paciente/pacientes";
+    }
+
+    @GetMapping("/buscar/json")
+    @ResponseBody
+    public List<Paciente> buscarPacientesJson(@RequestParam("query") String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return pacienteService.getPacientesActivos();
+        } else {
+            return pacienteService.buscarPacientes(query.trim());
+        }
     }
 
     @GetMapping("/editar/{id}")

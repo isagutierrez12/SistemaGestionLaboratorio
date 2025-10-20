@@ -5,8 +5,6 @@ import java.util.List;
 
 public interface PacienteService extends CrudService<Paciente>{
 
-
-    
     int getMaxSequenceForYear(String anio);
     List<Paciente> buscarPacientes(String query);
     

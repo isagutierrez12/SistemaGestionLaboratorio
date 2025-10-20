@@ -28,6 +28,8 @@
                                     <a th:href="@{/usuario/agregar}" class="btn-register"> Agregar</a>                    
                                 </div>
 
+                                <div th:replace="~{usuario/fragmentos :: busqueda}"></div>
+
                                 <!-- Table with stripped rows -->
                                 <table class="table datatable">
                                     <thead>
@@ -40,7 +42,7 @@
                                             <th style="text-align:center;">Activo</th>        
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="tbodyUsuarios">
                                         <tr th:each="u : ${usuarios}">
                                             <td style="vertical-align: middle; text-align: center;">[[${u.nombre}]]</td>
                                             <td style="vertical-align: middle; text-align: center;">[[${u.primerApellido}]]</td>
@@ -273,6 +275,13 @@
                     </div>
                 </div>
             </section>
+        </section>
+
+        <section th:fragment="busqueda">
+            <div class="d-flex mb-3">
+                <input type="text" id="buscarUsuarioInput" class="form-control me-2" placeholder="Buscar por nombre" />
+                <button class="btn btn-primary" id="btnBuscarUsuario">Buscar</button>
+            </div>
         </section>
 
 
