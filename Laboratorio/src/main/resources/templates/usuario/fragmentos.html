@@ -166,9 +166,9 @@
 
                                     <div class="text-center mt-3">
                                         <button type="submit" class="btn btn-save me-5">Registrar</button>
-                                        <button type="button" class="btn btn-cancel" >
+                                        <a th:href="@{/usuario/usuarios}" class="btn btn-cancel" >
                                             Cancelar
-                                        </button>
+                                        </a>
 
                                     </div>
                                 </form>
@@ -262,7 +262,7 @@
 
                                     <div class="text-center mt-3">
                                         <button type="submit" class="btn btn-save me-5">Actualizar</button>
-                                        <a href="/usuario/lista" class="btn btn-cancel">Cancelar</a>
+                                        <a th:href="@{/usuario/usuarios}"  class="btn btn-cancel">Cancelar</a>
                                     </div>
                                 </form>
 
