@@ -74,4 +74,38 @@ public class UsuarioController {
         model.addAttribute("usuario", usuario);
         return "usuario/modificar";
     }
+
+    @GetMapping("/desactivar/{id}")
+    public String desactivar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        String mensaje = usuarioService.desactivarUsuario(id);
+        redirectAttributes.addFlashAttribute("mensaje", mensaje);
+        return "redirect:/usuario/usuarios";
+    }
+
+    @GetMapping("/reactivar/{id}")
+    public String reactivar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        String mensaje = usuarioService.reactivarUsuario(id);
+        redirectAttributes.addFlashAttribute("mensaje", mensaje);
+        return "redirect:/usuario/inactivos"; // página con usuarios desactivados
+    }
+
+    @GetMapping("/buscar")
+    public String buscarUsuariosPorNombre(@RequestParam(value = "nombre", required = false) String nombre, Model model) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            model.addAttribute("advertencia", "Debe ingresar al menos un criterio de búsqueda");
+            return "usuario/usuarios"; // recarga la misma vista
+        }
+        try {
+            List<Usuario> usuarios = usuarioService.buscarUsuariosPorNombre(nombre);
+            if (usuarios.isEmpty()) {
+                model.addAttribute("advertencia", "No existe ningún usuario con ese nombre.");
+            }
+            model.addAttribute("usuarios", usuarios);
+            model.addAttribute("nombreBuscado", nombre); // para resaltar coincidencias
+        } catch (Exception e) {
+            model.addAttribute("error", "No se pudo realizar la búsqueda. Intente nuevamente.");
+        }
+        return "usuario/usuarios";
+    }
 }
+
