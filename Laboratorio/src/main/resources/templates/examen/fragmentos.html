@@ -29,45 +29,62 @@
 
                                 <div th:replace="~{examen/fragmentos :: busqueda}"></div>
 
-                                <!-- Tabla -->
-                                <table class="table datatable">
-                                    <thead>
-                                        <tr>        
-                                            <th style="text-align:center;">Nombre</th>            
-                                            <th style="text-align:center;">Área</th>
-                                            <th style="text-align:center;">Precio</th>
-                                            <th style="text-align:center;">Unidad</th>
-                                            <th style="text-align:center;">Rango</th>           
-                                            <th style="text-align:center;">Condiciones</th>        
-                                            <th style="text-align:center;">Activo</th>        
-                                            <th style="text-align:center;">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="e : ${examenes}">
-                                            <td>[[${e.nombre}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${e.area}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${e.precio}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${e.unidad}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${e.valorMinimo}]] - [[${e.valorMaximo}]]</td>
-                                            <td>[[${e.condiciones}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">
-                                                <span th:text="${e.activo} ? 'Activo' : 'Inactivo'"></span>
-                                            </td>
-                                            <td class="actions-cell" style="vertical-align: middle; text-align: center;">
-                                                <a th:href="@{/examen/modificar/{id}(id=${e.idExamen})}" class="btn-edit" title="Editar">
-                                                    <i class="bi bi-pencil"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <!-- Fin de tabla -->
+                                <div class="card">
+                                    <div class="card-body">
+                                        <!-- Catalog (replaces table) -->
+                                        <div class="catalog">
+                                            <div class="test" th:each="e : ${examenes}">
+                                                <!-- Header -->
+                                                <div class="test-header">
+                                                    <span class="code">[[${e.codigo}]]</span>
+                                                    <h3>[[${e.nombre}]]</h3>
+                                                </div>
 
+                                                <!-- Body -->
+                                                <div class="test-body">
+                                                   
+
+                                                    <div class="test-info">
+                                                        <div class="info-row">
+                                                            <strong>Area:</strong> [[${e.area}]]
+                                                        </div>
+                                                        <div class="info-row">
+                                                            <strong>Condiciones</strong> [[${e.condiciones}]]
+                                                        </div>
+                                                        <div class="info-row">
+                                                            <strong>Precio</strong> $[[${e.precio}]]
+                                                        </div>
+                                                        <div class="info-row">
+                                                            <strong>Rango</strong> [[${e.valorMinimo}]] - [[${e.valorMaximo}]] [[${e.unidad}]]
+                                                        </div>
+                                                        <div class="info-row description">
+                                                            <strong>Estado</strong>
+                                                            <span th:text="${e.activo} ? 'Activo' : 'Inactivo'"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Footer -->
+                                                <div class="test-footer">
+                                                    <a th:href="@{/examen/modificar/{id}(id=${e.idExamen})}" class="btn-exam" title="Edit">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+
+                                                    
+                                                </div>
+                                            </div> <!-- End test -->
+                                        </div> <!-- End catalog -->
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
                     </div>
+                </div>
+
+                </div>
+                </div>
+
+                </div>
                 </div>
             </section>
 
@@ -322,7 +339,7 @@
                                     <table class="table datatable align-middle text-center">
                                         <thead>
                                             <tr>
-                                              
+                                                <th></th>   
                                                 <th>Nombre</th>            
                                                 <th>Área</th>
                                                 <th>Precio</th>
@@ -353,7 +370,7 @@
                                     </table>
 
                                     <div class="d-flex justify-content-between align-items-center mt-3">
-                                     
+
                                         <button type="submit" class="btn btn-success">Continuar</button>
                                     </div>
                                 </form>
@@ -387,7 +404,7 @@
                                 <!-- Toolbar -->
                                 <div class="proforma-toolbar">
                                     <div class="toolbar-left">
-                                     
+
                                         <button class="btn-action" title="Print"><i class="fa-solid fa-print"></i></button>
                                         <button class="btn-action" title="Export PDF"><i class="fa-solid fa-file-export"></i></button>
                                     </div>
@@ -397,9 +414,9 @@
                                 <div class="proforma-header">
                                     <h2>Proforma</h2>
                                     <div class="proforma-info">
-                                       <p><strong>Fecha:</strong> <span th:text="${fechaActual}"></span></p>
-                                       
-                                       
+                                        <p><strong>Fecha:</strong> <span th:text="${fechaActual}"></span></p>
+
+
                                     </div>
                                 </div>
 
@@ -417,7 +434,7 @@
                                         <tr th:each="e : ${examenes}">
                                             <td th:text="${e.codigo}">LAB-001</td>
                                             <td th:text="${e.nombre}">Complete Blood Count</td>
-                                          
+
                                             <td th:text="${e.condiciones}">8-hour fasting</td>
                                             <td th:text="${e.precio}">$25.00</td>
                                         </tr>
@@ -427,7 +444,7 @@
                                 <!-- Total -->
                                 <div class="proforma-total">
                                     <p><strong>Total:</strong> 
-                                       <p><strong>Total:</strong> <span th:text="${total}">0.00</span></p>
+                                        <p><strong>Total:</strong> <span th:text="${total}">0.00</span></p>
                                     </p>
                                 </div>
 
