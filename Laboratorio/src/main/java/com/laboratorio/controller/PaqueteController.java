@@ -4,6 +4,8 @@
  */
 package com.laboratorio.controller;
 
+import com.laboratorio.model.DetallePaquete;
+import com.laboratorio.repository.DetallePaqueteRepository;
 import com.laboratorio.model.Examen;
 import com.laboratorio.model.Paquete;
 import com.laboratorio.service.ExamenService;
@@ -26,11 +28,13 @@ public class PaqueteController {
 
     private final ExamenService examenService;
     private final PaqueteService paqueteService;
+    private final DetallePaqueteRepository detallePaqueteRepository;
 
     @Autowired
-    public PaqueteController(PaqueteService paqueteService, ExamenService examenService) {
+    public PaqueteController(PaqueteService paqueteService, ExamenService examenService, DetallePaqueteRepository detallePaqueteRepository) {
         this.examenService = examenService;
         this.paqueteService = paqueteService;
+        this.detallePaqueteRepository = detallePaqueteRepository;
     }
 
     //listado
@@ -51,16 +55,19 @@ public class PaqueteController {
     @PostMapping("/guardar")
     public String guardarPaquete(@ModelAttribute("paquete") Paquete paquete) {
         paqueteService.save(paquete);
-        return "redirect:/paquete/modificar/" + paquete.getIdPaquete();
+        return "redirect:/paquete/paquetes";
     }
 
 // Editar
     @GetMapping("/modificar/{idPaquete}")
     public String modificarPaquete(@PathVariable Long idPaquete, Model model) {
-       Paquete p = new Paquete();
+        Paquete p = new Paquete();
         p.setIdPaquete(idPaquete);
         Paquete paquete = paqueteService.get(p);
         model.addAttribute("paquete", paquete);
+
+        List<DetallePaquete> detalles = detallePaqueteRepository.findByPaqueteIdPaquete(idPaquete);
+        model.addAttribute("detallesPaquete", detalles);
 
         // dropdown de exámenes activos
         List<Examen> examenesActivos = examenService.getAll().stream()
@@ -79,7 +86,7 @@ public class PaqueteController {
         paqueteService.delete(p);
         return "redirect:/paquete/paquetes";
     }
-    
+
 // Buscar
     @GetMapping("/buscar")
     public String buscarPaquete(@RequestParam("query") String query, Model model) {
@@ -88,9 +95,7 @@ public class PaqueteController {
         return "paquete/paquetes";
     }
 
-
     //otros
-    
     //getionar los examenes en modificar paquete
     @PostMapping("/{idPaquete}/agregar-examen")
     public String agregarExamen(@PathVariable Long idPaquete, @RequestParam("idExamen") Long idExamen) {

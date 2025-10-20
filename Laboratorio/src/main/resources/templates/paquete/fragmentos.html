@@ -108,22 +108,22 @@
 
                                         <div class="col-md-6 mb-3">
                                             <label for="nombre" class="form-label">Código</label>
-                                            <input type="text" class="form-control text-center" id="codigo" name="codigo" required = true/>
+                                            <input type="text" class="form-control text-center" id="codigo" name="codigo"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label for="area" class="form-label">Nombre</label>
-                                            <input type="text" class="form-control text-center" id="nombre" name="nombre" required />
+                                            <input type="text" class="form-control text-center" id="nombre" name="nombre" required ='true' />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label for="precio" class="form-label">Descripción</label>
-                                            <input type="number" step="0.01" class="form-control text-center" id="descripcion" name="descripcion" required />
+                                            <input type="text" class="form-control text-center" id="descripcion" name="descripcion" required='true' />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label for="precio" class="form-label">Precio</label>
-                                            <input type="number" step="0.01" class="form-control text-center" id="precio" name="precio" required />
+                                            <input type="number" step="0.01" class="form-control text-center" id="precio" name="precio" required='true' />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
@@ -173,8 +173,10 @@
                             <div class="card-body">
 
 
-                                <div class="text-center md-2 mb-6" style="margin-top: 20px;">
-                                    <img src="assets/img/logo-1.png" alt="Logo Laboratorio" class="logo-img" style="max-width: 150px;">
+                                <div class="text-center mb-5" style="margin-top: 20px;">
+                                    <img th:src="@{/assets/img/logo-1.png}" alt="Logo Laboratorio"
+                                         class="logo-img" style="max-width: 150px;"
+                                         onerror="this.style.display='none'" />
                                 </div>
 
 
@@ -190,22 +192,22 @@
                                     <input type="hidden" th:field="*{idPaquete}" />
                                     <div class="col-md-6 mb-3">
                                         <label for="inputCodigoPaquete" class="form-label">Código del paquete</label>
-                                        <input type="text" class="form-control" id="inputNombreExamen" th:field="*{codigo}">
+                                        <input type="text" class="form-control" id="inputCodigoPaquete" th:field="*{codigo}"/>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label for="inputNombrePaquete" class="form-label">Nombre del paquete</label>
-                                        <input type="text" class="form-control" id="inputNombreExamen" th:field="*{nombre}">
+                                        <input type="text" class="form-control" id="inputNombrePaquete" th:field="*{nombre}"/>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label for="inputDescripcion" class="form-label">Descripción</label>
-                                        <input type="text" class="form-control" id="inputArea" th:field="*{descripcion}">
+                                        <input type="text" class="form-control" id="inputDescripcion" th:field="*{descripcion}"/>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label for="inputDuracion" class="form-label">Precio</label>
-                                        <input type="number" class="form-control" id="inputPrecio" th:field="*{precio}">
+                                        <label for="inputPrecio" class="form-label">Precio</label>
+                                        <input type="number" class="form-control" id="inputPrecio" th:field="*{precio}"/>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
@@ -232,8 +234,8 @@
                                 <form class="d-flex gap-2 align-items-end" th:action="@{|/paquete/${paquete.idPaquete}/agregar-examen|}" method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                     <div class="flex-grow-1">
-                                        <label class="form-label">Seleccionar examen activo</label>
-                                        <select name="idExamen" class="form-select" required>
+                                        <label class="form-label">Seleccionar examen</label>
+                                        <select name="idExamen" class="form-select" required = true>
                                             <option value="">Seleccione...</option>
                                             <option th:each="ex : ${examenesActivos}"
                                                     th:value="${ex.idExamen}"
@@ -257,7 +259,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr th:each="d : ${paquete.detalles}">
+                                            <tr th:each="d : ${detallesPaquete}">
                                                 <td>[[${d.examen.nombre}]]</td>
                                                 <td>[[${d.examen.area}]]</td>
                                                 <td>[[${d.examen.precio}]]</td>
@@ -272,7 +274,7 @@
                                                     </form>
                                                 </td>
                                             </tr>
-                                            <tr th:if="${#lists.isEmpty(paquete.detalles)}">
+                                            <tr th:if="${#lists.isEmpty(detallesPaquete)}">
                                                 <td colspan="4" class="text-center text-muted">No hay exámenes agregados aún</td>
                                             </tr>
                                         </tbody>

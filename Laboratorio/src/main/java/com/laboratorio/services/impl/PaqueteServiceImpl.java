@@ -5,6 +5,7 @@ import com.laboratorio.model.Paquete;
 import com.laboratorio.model.DetallePaquete;
 import com.laboratorio.repository.PaqueteRepository;
 import com.laboratorio.repository.DetallePaqueteRepository;
+import com.laboratorio.repository.ExamenRepository;
 import com.laboratorio.service.ExamenService;
 import com.laboratorio.service.PaqueteService;
 import java.util.List;
@@ -17,15 +18,15 @@ public class PaqueteServiceImpl implements PaqueteService {
 
     private final PaqueteRepository paqueteRepository;
     private final DetallePaqueteRepository detalleRepository;
-    private final ExamenService examenService;
+    private final ExamenRepository examenRepository;
 
     @Autowired
     public PaqueteServiceImpl(PaqueteRepository paqueteRepository,
                               DetallePaqueteRepository detalleRepository,
-                              ExamenService examenService) {
+                              ExamenRepository examenRepository) {
         this.paqueteRepository = paqueteRepository;
         this.detalleRepository = detalleRepository;
-        this.examenService = examenService;
+        this.examenRepository = examenRepository;
     }
 
     @Override
@@ -63,15 +64,14 @@ public class PaqueteServiceImpl implements PaqueteService {
     @Override
     @Transactional
     public void agregarExamen(Long idPaquete, Long idExamen) {
-        Paquete paquete = paqueteRepository.findById(idPaquete)
-                .orElseThrow(() -> new IllegalArgumentException("Paquete no encontrado"));
-        Examen examen = new Examen();
-        examen.setIdExamen(idExamen);
-        //evitar duplicados
-        if (!detalleRepository.existsByPaqueteAndExamen(paquete, examen)) {
+        Paquete paqueteRef = paqueteRepository.getReferenceById(idPaquete);
+        Examen examenRef = examenRepository.getReferenceById(idExamen);
+
+        //evita duplicados
+        if (!detalleRepository.existsByPaqueteIdPaqueteAndExamenIdExamen(idPaquete, idExamen)) {
             DetallePaquete dp = new DetallePaquete();
-            dp.setPaquete(paquete);
-            dp.setExamen(examen);
+            dp.setPaquete(paqueteRef);
+            dp.setExamen(examenRef);
             detalleRepository.save(dp);
         }
     }
@@ -79,10 +79,6 @@ public class PaqueteServiceImpl implements PaqueteService {
     @Override
     @Transactional
     public void quitarExamen(Long idPaquete, Long idExamen) {
-        Paquete paquete = paqueteRepository.findById(idPaquete)
-                .orElseThrow(() -> new IllegalArgumentException("Paquete no encontrado"));
-        Examen examen = new Examen();
-        examen.setIdExamen(idExamen);
-        detalleRepository.deleteByPaqueteAndExamen(paquete, examen);
+        detalleRepository.deleteByPaqueteIdPaqueteAndExamenIdExamen(idPaquete, idExamen);
     }
 }

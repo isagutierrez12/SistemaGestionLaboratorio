@@ -13,9 +13,9 @@ import org.springframework.data.repository.query.Param;
 @EnableJpaRepositories
 public interface DetallePaqueteRepository extends JpaRepository<DetallePaquete, Long> {
 
-    List<DetallePaquete> findByPaquete(Paquete paquete);
+    List<DetallePaquete> findByPaqueteIdPaquete(Long idPaquete);
 
-    boolean existsByPaqueteAndExamen(Paquete paquete, Examen examen);
+    boolean existsByPaqueteIdPaqueteAndExamenIdExamen(Long idPaquete, Long idExamen);
 
-    long deleteByPaqueteAndExamen(Paquete paquete, Examen examen);
+    long deleteByPaqueteIdPaqueteAndExamenIdExamen(Long idPaquete, Long idExamen);
 }
