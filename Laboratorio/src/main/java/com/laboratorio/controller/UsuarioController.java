@@ -75,6 +75,10 @@ public class UsuarioController {
         return "usuario/modificar";
     }
 
+<<<<<<< Updated upstream
+=======
+    //activar y desactivar
+>>>>>>> Stashed changes
     @GetMapping("/desactivar/{id}")
     public String desactivar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         String mensaje = usuarioService.desactivarUsuario(id);
@@ -107,5 +111,9 @@ public class UsuarioController {
         }
         return "usuario/usuarios";
     }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 }
 
