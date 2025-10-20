@@ -53,7 +53,7 @@ public class PacienteController {
     @PostMapping("/guardar")
     public String guardarPaciente(@ModelAttribute("paciente") Paciente paciente) {
         paciente.setFechaCreacion(new Date());
-        
+
         String anio = new SimpleDateFormat("yy").format(paciente.getFechaCreacion());
         int maxSeq = pacienteService.getMaxSequenceForYear(anio);
         paciente.setIdPaciente("P" + anio + "-" + String.format("%04d", maxSeq + 1));
@@ -61,22 +61,22 @@ public class PacienteController {
         pacienteService.save(paciente);
         return "redirect:/paciente/pacientes";
     }
-    
+
     @GetMapping("/buscar")
     public String buscarPacientes(@RequestParam("query") String query, Model model) {
-    List<Paciente> pacientes;
+        List<Paciente> pacientes;
 
-    if (query == null || query.trim().isEmpty()) {
-        pacientes = pacienteService.getPacientesActivos();
-    } else {
-        pacientes = pacienteService.buscarPacientes(query.trim());
+        if (query == null || query.trim().isEmpty()) {
+            pacientes = pacienteService.getPacientesActivos();
+        } else {
+            pacientes = pacienteService.buscarPacientes(query.trim());
+        }
+
+        model.addAttribute("pacientes", pacientes);
+        model.addAttribute("query", query);
+        model.addAttribute("page", "list");
+        return "paciente/pacientes";
     }
-
-    model.addAttribute("pacientes", pacientes);
-    model.addAttribute("query", query);
-    model.addAttribute("page", "list"); 
-    return "paciente/pacientes"; 
-}
 
     @GetMapping("/editar/{id}")
     public String editarPaciente(@PathVariable("id") String id, Model model) {
@@ -88,7 +88,7 @@ public class PacienteController {
         model.addAttribute("page", "edit");
         return "/paciente/editar";
     }
-    
+
     @PostMapping("/actualizar")
     public String actualizarPaciente(@ModelAttribute("paciente") Paciente paciente) {
         Paciente p = pacienteService.getPaciente(paciente.getIdPaciente());
@@ -104,11 +104,14 @@ public class PacienteController {
         p.setEmail(paciente.getEmail());
         p.setActivo(paciente.isActivo());
         p.setFechaNacimiento(paciente.getFechaNacimiento());
+        p.setAlergia(paciente.getAlergia());
+        p.setPadecimiento(paciente.getPadecimiento());
+        p.setContactoEmergencia(paciente.getContactoEmergencia());
 
         pacienteService.save(p);
         return "redirect:/paciente/pacientes";
     }
-    
+
     @GetMapping("/inactivos")
     public String listadoPacientesInactivos(Model model) {
         List<Paciente> pacientes = pacienteService.getPacientesInactivos();
@@ -116,22 +119,21 @@ public class PacienteController {
         model.addAttribute("page", "inactive");
         return "paciente/inactivos";
     }
-    
+
     @GetMapping("/inactivos/buscar")
     public String buscarPacientesInactivos(@RequestParam("query") String query, Model model) {
-    List<Paciente> pacientes;
+        List<Paciente> pacientes;
 
-    if (query == null || query.trim().isEmpty()) {
-        pacientes = pacienteService.getPacientesInactivos();
-    } else {
-        pacientes = pacienteService.buscarPacientesInactivos(query.trim());
+        if (query == null || query.trim().isEmpty()) {
+            pacientes = pacienteService.getPacientesInactivos();
+        } else {
+            pacientes = pacienteService.buscarPacientesInactivos(query.trim());
+        }
+
+        model.addAttribute("pacientes", pacientes);
+        model.addAttribute("query", query);
+        model.addAttribute("page", "inactive");
+        return "paciente/inactivos";
     }
-
-    model.addAttribute("pacientes", pacientes);
-    model.addAttribute("query", query);
-    model.addAttribute("page", "inactive");
-    return "paciente/inactivos"; 
-    }
-
 
 }

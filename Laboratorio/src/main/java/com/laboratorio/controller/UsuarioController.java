@@ -3,14 +3,17 @@ package com.laboratorio.controller;
 import com.laboratorio.model.Usuario;
 import com.laboratorio.service.RolService;
 import com.laboratorio.service.UsuarioService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/usuario")
@@ -75,10 +78,8 @@ public class UsuarioController {
         return "usuario/modificar";
     }
 
-<<<<<<< Updated upstream
-=======
-    //activar y desactivar
->>>>>>> Stashed changes
+
+
     @GetMapping("/desactivar/{id}")
     public String desactivar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         String mensaje = usuarioService.desactivarUsuario(id);
@@ -111,9 +112,6 @@ public class UsuarioController {
         }
         return "usuario/usuarios";
     }
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 }
 
