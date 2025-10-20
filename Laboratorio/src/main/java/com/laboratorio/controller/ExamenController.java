@@ -6,6 +6,8 @@ package com.laboratorio.controller;
 
 import com.laboratorio.model.Examen;
 import com.laboratorio.service.ExamenService;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -55,7 +57,7 @@ public class ExamenController {
 // Editar
     @GetMapping("/modificar/{idExamen}")
     public String modificarExamen(Examen examen, Model model) {
-       examen = examenService.get(examen);
+        examen = examenService.get(examen);
         model.addAttribute("examen", examen);
         return "examen/modificar";
     }
@@ -66,7 +68,7 @@ public class ExamenController {
         examenService.delete(examen);
         return "redirect:/examen/examenes";
     }
-    
+
 // Buscar
     @GetMapping("/buscar")
     public String buscarExamenes(@RequestParam("query") String query, Model model) {
@@ -79,10 +81,29 @@ public class ExamenController {
         }
 
         model.addAttribute("examenes", examenes);
-        model.addAttribute("query", query); 
-        return "examen/examenes"; 
+        model.addAttribute("query", query);
+        return "examen/examenes";
     }
 
-
     //otros
+    // PROFORMA
+    @GetMapping("/proforma")
+    public String listadoProforma(Model model) {
+        model.addAttribute("examenes", examenService.getAll());
+        return "examen/proforma";
+    }
+
+    @PostMapping("/mostrar")
+    public String mostrarProforma(@RequestParam("seleccionados") List<Long> ids, Model model) {
+        List<Examen> seleccionados = examenService.findById(ids);
+        double total = seleccionados.stream()
+                .map(Examen::getPrecio)
+                .mapToDouble(BigDecimal::doubleValue)
+                .sum();
+        System.out.println(seleccionados);
+        model.addAttribute("examenes", seleccionados);
+        model.addAttribute("total", total);
+        model.addAttribute("fechaActual", LocalDate.now());
+        return "examen/mostrar-proforma";
+    }
 }

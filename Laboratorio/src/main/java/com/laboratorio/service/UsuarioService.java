@@ -30,4 +30,19 @@ public interface UsuarioService {
     
     // Se elimina el usuario que tiene el id pasado por parámetro
     public void delete(Usuario usuario);
+    
+     public String desactivarUsuario(Long idUsuario);
+    // Se desactiva el usuario
+    public List<Usuario> getUsuariosActivos();
+    // lista los usuarios activos
+
+    public String reactivarUsuario(Long idUsuario);
+    //Reactiva un usuario previamente inactivo.
+    
+    public List<Usuario> getUsuariosInactivos();    
+    //Lista los usuarios inactivos.
+    
+    public List<Usuario> buscarUsuariosPorNombre(String nombre);
+    
+    List<Usuario> buscarUsuariosPorNombreCoincidente(String nombre);
 }
