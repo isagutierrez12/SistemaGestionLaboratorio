@@ -11,4 +11,5 @@ import java.util.List;
 public interface ExamenService extends CrudService<Examen> {
     
     List<Examen> buscarExamenes(String query); 
+    public List<Examen> findById(List<Long> ids);
 }
