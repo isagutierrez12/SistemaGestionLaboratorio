@@ -11,9 +11,10 @@ import org.springframework.data.repository.query.Param;
 @EnableJpaRepositories
 public interface ExamenRepository extends JpaRepository<Examen, Long> {
 
-    @Query("SELECT e FROM Examen e " +
-           "WHERE LOWER(e.nombre) LIKE LOWER(CONCAT('%', :query, '%')) " +
-           "OR LOWER(e.area) LIKE LOWER(CONCAT('%', :query, '%'))")
+    @Query("SELECT e FROM Examen e "
+            + "WHERE LOWER(e.nombre) LIKE LOWER(CONCAT('%', :query, '%')) "
+            + "OR LOWER(e.area) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<Examen> buscarPorQuery(@Param("query") String query);
 
+  
 }

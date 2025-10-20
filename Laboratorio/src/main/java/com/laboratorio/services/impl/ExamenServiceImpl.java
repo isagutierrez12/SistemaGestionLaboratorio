@@ -41,4 +41,7 @@ public class ExamenServiceImpl implements ExamenService {
     public List<Examen> buscarExamenes(String query) {
         return examenRepository.buscarPorQuery(query);
     }
+    public List<Examen> findById(List<Long> ids){
+        return examenRepository.findAllById(ids);
+    }
 }

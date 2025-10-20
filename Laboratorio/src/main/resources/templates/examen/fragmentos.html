@@ -206,7 +206,7 @@
                                 <form class="row custom-gx gy-4 mt-4" th:action="@{/examen/guardar}" th:object="${examen}" method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-                                                     <input type="hidden" th:field="*{idExamen}" />
+                                    <input type="hidden" th:field="*{idExamen}" />
                                     <div class="col-md-6 mb-3">
                                         <label for="inputNombreExamen" class="form-label">Nombre del examen</label>
                                         <input type="text" class="form-control" id="inputNombreExamen" th:field="*{nombre}">
@@ -251,7 +251,7 @@
                                     </div>
                                     <div class="col-12 text-center mt-3">
                                         <button type="submit" class="btn btn-save me-2">Registrar</button>
-                                        <a th:href="@{/paciente/pacientes}" class="btn btn-cancel">Cancelar</a>
+                                        <a th:href="@{/examen/examenes}" class="btn btn-cancel">Cancelar</a>
                                     </div>
 
                                 </form>
@@ -289,6 +289,185 @@
                 <button type="submit" class="btn btn-primary">Buscar</button>
             </form>
         </section>
+
+        <!-- Fargmento de proformas -->
+        <section th:fragment="proforma" id="main" class="main">
+
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item">Exámenes</li>
+                        <li class="breadcrumb-item active">Datos</li>
+                    </ol>
+                </nav>
+            </div><!-- End Page Title -->
+
+            <section class="section">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="card">
+                            <div class="card-body">
+
+                                <div class="datatable-controls mb-3 d-flex justify-content-between">
+
+                                    <p>Proforma</p>
+                                </div>
+
+
+
+                                <!-- Tabla -->
+                                <form th:action="@{/examen/mostrar}" method="post" id="formExamenes">
+                                    <table class="table datatable align-middle text-center">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 40px;">
+                                                    <input type="checkbox" id="selectAll">
+                                                </th>
+                                                <th>Nombre</th>            
+                                                <th>Área</th>
+                                                <th>Precio</th>
+                                                <th>Unidad</th>
+                                                <th>Rango</th>           
+                                                <th>Condiciones</th>        
+                                                <th>Activo</th>        
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="e : ${examenes}">
+                                                <td>
+                                                    <input type="checkbox" name="seleccionados" th:value="${e.idExamen}" class="exam-check">
+                                                </td>
+                                                <td>[[${e.nombre}]]</td>
+                                                <td>[[${e.area}]]</td>
+                                                <td>[[${e.precio}]]</td>
+                                                <td>[[${e.unidad}]]</td>
+                                                <td>[[${e.valorMinimo}]] - [[${e.valorMaximo}]]</td>
+                                                <td>[[${e.condiciones}]]</td>
+                                                <td>
+                                                    <span th:text="${e.activo} ? 'Activo' : 'Inactivo'"></span>
+                                                </td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <p id="countSelected" class="mb-0">0 seleccionados</p>
+                                        <button type="submit" class="btn btn-success">Continuar</button>
+                                    </div>
+                                </form>
+                                <!-- Fin de tabla -->
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+        </section><!-- End #main -->
+
+
+        <!-- Vista de la proforma -->
+        <section th:fragment="vista-proforma" class="section">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+
+                            <div class="datatable-controls">
+                                <button id="btnRegistro" class="btn-register" type="button" 
+                                        onclick="window.location.href = '@{/examen/proforma}'">
+                                    Regresar
+                                </button>                      
+                            </div>
+
+                            <div class="proforma-container">
+                                <!-- Toolbar -->
+                                <div class="proforma-toolbar">
+                                    <div class="toolbar-left">
+                                     
+                                        <button class="btn-action" title="Print"><i class="fa-solid fa-print"></i></button>
+                                        <button class="btn-action" title="Export PDF"><i class="fa-solid fa-file-export"></i></button>
+                                    </div>
+                                </div>
+
+                                <!-- Header -->
+                                <div class="proforma-header">
+                                    <h2>Proforma</h2>
+                                    <div class="proforma-info">
+                                       <p><strong>Fecha:</strong> <span th:text="${fechaActual}"></span></p>
+                                       
+                                       
+                                    </div>
+                                </div>
+
+                                <!-- Table -->
+                                <table class="proforma-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Codigo</th>
+                                            <th>Nombre del Exámen</th>
+                                            <th>Condiciones</th>
+                                            <th>Precio</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="e : ${examenes}">
+                                            <td th:text="${e.codigo}">LAB-001</td>
+                                            <td th:text="${e.nombre}">Complete Blood Count</td>
+                                          
+                                            <td th:text="${e.condiciones}">8-hour fasting</td>
+                                            <td th:text="${e.precio}">$25.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <!-- Total -->
+                                <div class="proforma-total">
+                                    <p><strong>Total:</strong> 
+                                       <p><strong>Total:</strong> <span th:text="${total}">0.00</span></p>
+                                    </p>
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="proforma-footer">
+                                    <p>This proforma is valid for 7 days from the issue date.</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <script>
+            // Seleccionar/deseleccionar todos
+            const selectAll = document.getElementById("selectAll");
+            const checkboxes = document.querySelectorAll(".exam-check");
+            const countSelected = document.getElementById("countSelected");
+
+            selectAll.addEventListener("change", function (e) {
+                checkboxes.forEach(ch => ch.checked = e.target.checked);
+                actualizarContador();
+            });
+
+            checkboxes.forEach(ch => {
+                ch.addEventListener("change", actualizarContador);
+            });
+
+            function actualizarContador() {
+                const seleccionados = document.querySelectorAll(".exam-check:checked").length;
+                countSelected.textContent = `${seleccionados} seleccionado${seleccionados !== 1 ? 's' : ''}`;
+                selectAll.checked = (seleccionados === checkboxes.length);
+            }
+        </script>
+
 
         <!-- Preloader -->
         <div th:replace="~{layout/layout :: jsfiles-admin}"></div>

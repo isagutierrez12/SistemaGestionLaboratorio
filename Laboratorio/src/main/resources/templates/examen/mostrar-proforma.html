@@ -1,0 +1,34 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head  th:replace="~{layout/admin :: head}">
+        <title>Laboratorio Clinico Calderon Piedra</title>
+        <meta charset="UTF-8" />
+
+    </head>
+    <body>
+        <!-- aside -->
+        <aside th:replace="~{layout/admin :: aside}"></aside>
+        <header th:replace="~{layout/admin :: header}"></header>
+        <!-- Preloader -->
+        <main th:replace="~{examen/fragmentos :: vista-proforma}"></main>
+        <div id="preloader"></div>
+        <div th:replace="~{layout/admin :: jsfiles}"></div>
+  
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+        <script>
+            document.querySelector('.fa-file-export').addEventListener('click', () => {
+                const element = document.querySelector('.proforma-container');
+                const opt = {
+                    margin: 0.5,
+                    filename: 'proforma.pdf',
+                    image: {type: 'jpeg', quality: 0.98},
+                    html2canvas: {scale: 2},
+                    jsPDF: {unit: 'in', format: 'letter', orientation: 'portrait'}
+                };
+                html2pdf().set(opt).from(element).save();
+            });
+        </script>
+
+    </body>
+</html>
