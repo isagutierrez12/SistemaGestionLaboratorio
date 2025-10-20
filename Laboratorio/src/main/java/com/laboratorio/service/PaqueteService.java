@@ -4,12 +4,15 @@
  */
 package com.laboratorio.service;
 
-import com.laboratorio.model.Examen;
+import com.laboratorio.model.Paquete;
 import com.laboratorio.model.RutaPermit;
 import java.util.List;
 
-public interface ExamenService extends CrudService<Examen> {
+public interface PaqueteService extends CrudService<Paquete> {
     
-    List<Examen> buscarExamenes(String query); 
-    public List<Examen> findById(List<Long> ids);
+    List<Paquete> buscarPaquetes(String query);
+
+    void agregarExamen(Long idPaquete, Long idExamen);
+
+    void quitarExamen(Long idPaquete, Long idExamen);
 }

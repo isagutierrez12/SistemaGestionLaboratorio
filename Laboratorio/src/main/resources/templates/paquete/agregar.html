@@ -6,12 +6,12 @@
     </head>
     <body>
         <!-- aside -->
-        <aside th:replace="~{layout/admin :: aside}"></aside>
+        <aside th:replace="~{layout/admin :: aside-edit}"></aside>
         <header th:replace="~{layout/admin :: header}"></header>
         <!-- Preloader -->
-        <main th:replace="~{paciente/fragmentos :: main}"></main>
+        <main th:replace="~{paquete/fragmentos :: form-paquete}"></main>
+
         <div id="preloader"></div>
         <div th:replace="~{layout/admin :: jsfiles}"></div>
-        <script src="/assets/js/pacientes.js"></script>
     </body>
 </html>
