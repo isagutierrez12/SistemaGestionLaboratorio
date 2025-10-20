@@ -15,4 +15,7 @@ public interface PacienteService extends CrudService<Paciente>{
     List<Paciente> getPacientesActivos();
     
     List<Paciente> getPacientesInactivos();
+    
+    Paciente get(String id); // ID tipo String
+
 }

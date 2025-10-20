@@ -67,6 +67,10 @@ public class PacienteServiceImpl implements PacienteService {
     public List<Paciente> getPacientesInactivos() {
         return pacienteRepository.findByActivoFalse();
     }
-
+    @Override
+    public Paciente get(String id) {
+        return pacienteRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Paciente no encontrado con id: " + id));
+    }
 
 }
