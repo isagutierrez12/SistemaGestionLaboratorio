@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -97,24 +98,14 @@ public class UsuarioController {
         return "redirect:/usuario/inactivos"; // página con usuarios desactivados
     }
 
-    @GetMapping("/buscar")
-    public String buscarUsuariosPorNombre(@RequestParam(value = "nombre", required = false) String nombre, Model model) {
+    @GetMapping("/buscarJSON")
+    @ResponseBody
+    public List<Usuario> buscarUsuariosJSON(@RequestParam(value = "nombre", required = false) String nombre) {
         if (nombre == null || nombre.trim().isEmpty()) {
-            model.addAttribute("advertencia", "Debe ingresar al menos un criterio de búsqueda");
-            return "usuario/usuarios"; // recarga la misma vista
+            return usuarioService.getUsuarios(); // muestra todos si está vacío
         }
-        try {
-            List<Usuario> usuarios = usuarioService.buscarUsuariosPorNombre(nombre);
-            if (usuarios.isEmpty()) {
-                model.addAttribute("advertencia", "No existe ningún usuario con ese nombre.");
-            }
-            model.addAttribute("usuarios", usuarios);
-            model.addAttribute("nombreBuscado", nombre); // para resaltar coincidencias
-        } catch (Exception e) {
-            model.addAttribute("error", "No se pudo realizar la búsqueda. Intente nuevamente.");
-        }
-        return "usuario/usuarios";
+        // Aquí hacemos la búsqueda que contenga la cadena (ignore case)
+        return usuarioService.buscarUsuariosPorNombreCoincidente(nombre.trim());
     }
 
 }
-
