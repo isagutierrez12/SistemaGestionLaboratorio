@@ -23,10 +23,10 @@
                             <div class="card-body">
 
                                 <div class="datatable-controls">
-                                    <button id="btnRegistro" class="btn-register" type="button"
-                                            onclick="window.location.href = 'inventory-create.html'">
+                                    <a id="btnRegistro" class="btn-register" type="button"
+                                            th:href="@{/inventario/agregar}">
                                         Registro
-                                    </button>
+                                    </a>
                                 </div>
                                 <table class="table datatable">
                                     <thead>
@@ -75,6 +75,105 @@
 
 
         </main><!-- End #main -->
+        
+        
+        
+        <!-- Fragmento de agregar -->
+        <section id="main" class="main" th:fragment="agregar">
+
+    <div class="pagetitle">
+      <nav>
+        <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="dashboard.html">Inicio</a></li>
+          <li class="breadcrumb-item"><a href="inventory-index.html">Inventario</a></li>
+          <li class="breadcrumb-item active">Registrar Articulo</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+  <section class="section">
+  <div class="row">
+    <div class="col-lg-12">
+
+      <div class="card">
+        <div class="card-body">
+
+          <div class="text-center md-2 mb-6" style="margin-top: 20px;">
+            <img src="assets/img/logo-1.png" alt="Logo Laboratorio" class="logo-img" style="max-width: 150px;">
+          </div>
+
+          <!-- Title -->
+          <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
+            Agregar Insumo
+          </h4>
+
+       
+          <form class="row custom-gx gy-4 mt-4">
+
+            <div class="col-md-6 mb-3">
+              <label for="inputNombreInsumo" class="form-label">Nombre del insumo</label>
+              <input type="text" class="form-control" id="inputNombreInsumo">
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="inputCategoria" class="form-label">Tipo / Categoría</label>
+              <select id="inputCategoria" class="form-select">
+                <option selected>Seleccione...</option>
+                <option value="material-recoleccion">Material de Recolección</option>
+                <option value="equipos-analisis">Equipos de Análisis</option>
+                <option value="reactivos">Reactivos</option>
+                <option value="otros">Otros</option>
+              </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="inputCantidad" class="form-label">Cantidad inicial</label>
+              <input type="number" class="form-control" id="inputCantidad" min="0">
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="inputFechaVencimiento" class="form-label">Fecha de vencimiento</label>
+              <input type="date" class="form-control" id="inputFechaVencimiento">
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="inputEstado" class="form-label">Estado</label>
+              <select id="inputEstado" class="form-select">
+                <option selected>Seleccione...</option>
+                <option value="disponible">Disponible</option>
+                <option value="agotado">Agotado</option>
+                <option value="vencido">Vencido</option>
+                <option value="en-uso">En uso</option>
+              </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="inputProveedor" class="form-label">Proveedor</label>
+              <input type="text" class="form-control" id="inputProveedor">
+            </div>
+
+            <div class="col-md-12 mb-3">
+              <label for="inputImagen" class="form-label">Imagen del insumo</label>
+              <input type="file" class="form-control" id="inputImagen" accept="image/*">
+            </div>
+
+            <div class="text-center mt-3">
+              <button type="submit" class="btn btn-save me-5">Guardar</button>
+              <button type="button" class="btn btn-cancel" onclick="window.location.href='inventario-index.html'">
+                Cancelar
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+  </section>
 
         <!-- Preloader -->
         <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
