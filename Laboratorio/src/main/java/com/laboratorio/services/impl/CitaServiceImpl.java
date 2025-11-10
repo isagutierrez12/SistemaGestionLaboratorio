@@ -39,5 +39,9 @@ public class CitaServiceImpl implements CitaService{
     public void delete(Cita entity) {
         citaRepository.delete(entity);
     }
+    @Override
+    public Cita getById(Long id) {
+    return citaRepository.findById(id).orElse(null);
+    }
     
 }

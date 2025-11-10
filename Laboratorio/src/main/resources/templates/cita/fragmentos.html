@@ -3,10 +3,10 @@
         <title>Laboratorio Clinico Calderon Piedra</title>
         <meta charset="UTF-8" />
          <style>
-            #calendar {
-                margin: 20px auto;
-                max-width: 100%;
-            }
+        #calendar {
+            margin: 20px auto;
+            max-width: 100%;
+        }
         </style>
         <style>
             .select2-container--default .select2-selection--multiple {
@@ -25,7 +25,7 @@
               margin-right: 6px;
             }
         </style>
-            <style>
+        <style>
             .hora-btn {
               border: 1px solid #1c94a4;
               color: #1c94a4;
@@ -63,13 +63,11 @@
               cursor: pointer;
               margin-left: 5px;
             }
-          </style>
+         </style>
     </head>
     <body>
        
-
 <!-- Agenda de citas -->
-
     <section th:fragment="main" id="main" class="main">
         <div class="pagetitle">
             <nav>
@@ -125,17 +123,18 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <a id="editarCitaBtn" class="btn btn-primary">Editar</a>
           </div>
         </div>
       </div>
     </div>
 
    <script th:inline="javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var citas = /*[[${citas}]]*/ [];
+    document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var citas = /*[[${citas}]]*/ [];
 
-        var eventos = citas.map(function(cita) {
+    var eventos = citas.map(function(cita) {
         return {
             id: cita.idCita,
             title: cita.paciente,
@@ -149,22 +148,22 @@
         };
     });
 
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            locale: 'es',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-            },
-            buttonText: {
-                today: 'Hoy',
-                month: 'Mes',
-                week: 'Semana',
-                day: 'Día',
-                list: 'Lista'
-            },
-            events: eventos,
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+        },
+        buttonText: {
+            today: 'Hoy',
+            month: 'Mes',
+            week: 'Semana',
+            day: 'Día',
+            list: 'Lista'
+        },
+        events: eventos,
 
         eventClick: function(info) {
             var cita = info.event;
@@ -193,6 +192,8 @@
 
             var modal = new bootstrap.Modal(document.getElementById('detalleCitaModal'));
             modal.show();
+            
+            document.getElementById("editarCitaBtn").href = "/cita/modificar/" + cita.id;
 
             info.jsEvent.preventDefault();
         },
@@ -204,17 +205,15 @@
 
         calendar.render();
     });
-       </script>
+    </script>
 
-    <!-- Incluye SweetAlert para el modal bonito -->
+    <!-- Incluye SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
    
 
     </section>
 
- 
-<!--  Formulario de Registro de Cita -->
-
+<!-- FORMULARIO DE REGISTRO DE CITA -->
     <section th:fragment="form-cita" id="main" class="main">
 
       <div class="pagetitle">
@@ -323,8 +322,6 @@
       </section>
     </section>
 
-
-
     <script>
       document.addEventListener("DOMContentLoaded", function () {
 
@@ -396,75 +393,106 @@
     </script>
 
 <!-- Modificar Cita -->
-        <section th:fragment="modificar" id="main" class="main">
-            <div class="pagetitle">
-                <nav>
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
-                        <li class="breadcrumb-item">Editar</li>
-                        <li class="breadcrumb-item active">Cita</li>
-                    </ol>
-                </nav>
-            </div>
+    <section th:fragment="modificar" id="main" class="main">
+        <div class="pagetitle">
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                    <li class="breadcrumb-item">Editar</li>
+                    <li class="breadcrumb-item active">Cita</li>
+                </ol>
+            </nav>
+        </div>
 
-            <section class="section">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="card-body">
+        <section class="section">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
 
-                                <h4 class="text-center mb-4" style="color:#1c94a4;font-weight:bold;">Editar Cita</h4>
+                            <h4 class="text-center mb-4" style="color:#1c94a4;font-weight:bold;">Editar Cita</h4>
 
-                                <form th:action="@{/cita/guardar}" th:object="${cita}" method="post">
-                                    <input type="hidden" th:field="*{idCita}" />
-                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <form th:action="@{/cita/actualizar}" th:object="${cita}" method="post">
+                                <input type="hidden" th:field="*{idCita}" />
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="fechaCita" class="form-label">Fecha y hora</label>
-                                            <input type="datetime-local" id="fechaCita" th:field="*{fechaCita}" class="form-control" required="required" />
-                                        </div>
+                                <!-- Fecha y hora -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fechaCita" class="form-label">Fecha y hora</label>
+                                        <input type="datetime-local" id="fechaCita" th:field="*{fechaCita}" class="form-control" required="required"/>
+                                    </div>
 
-                                        <div class="col-md-6 mb-3">
-                                            <label for="estado" class="form-label">Estado</label>
-                                            <select id="estado" th:field="*{estado}" class="form-select" required="required">
-                                                <option value="PENDIENTE">Pendiente</option>
-                                                <option value="CONFIRMADA">Confirmada</option>
-                                                <option value="CANCELADA">Cancelada</option>
-                                            </select>
-                                        </div>
+                                    <!-- Estado -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="estado" class="form-label">Estado</label>
+                                        <select id="estado" th:field="*{estado}" class="form-select" required="required">
+                                            <option value="PENDIENTE" th:selected="${cita.estado == 'PENDIENTE'}">Pendiente</option>
+                                            <option value="CONFIRMADA" th:selected="${cita.estado == 'CONFIRMADA'}">Confirmada</option>
+                                            <option value="CANCELADA" th:selected="${cita.estado == 'CANCELADA'}">Cancelada</option>
+                                        </select>
+                                    </div>
 
-                                        <div class="col-md-12 mb-3">
-                                            <label for="notas" class="form-label">Notas</label>
-                                            <textarea id="notas" th:field="*{notas}" class="form-control" rows="3"></textarea>
-                                        </div>
+                                    <!-- Notas -->
+                                    <div class="col-md-12 mb-3">
+                                        <label for="notas" class="form-label">Notas</label>
+                                        <textarea id="notas" th:field="*{notas}" class="form-control" rows="3"></textarea>
+                                    </div>
+                                </div>
 
-                                        <div class="col-12 text-center mt-3">
-                                            <button type="submit" class="btn btn-save me-2">Actualizar</button>
-                                            <a th:href="@{/cita/citas}" class="btn btn-cancel">Cancelar</a>
+                                <!-- Exámenes -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Exámenes</label>
+                                        <div class="form-check" th:each="examen : ${examenesDisponibles}">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="examenesSeleccionados" 
+                                                   th:value="${examen.idExamen}"
+                                                   th:checked="${cita.solicitud.detalles.?[examen != null].![examen.idExamen].contains(examen.idExamen)}"></input>
+                                            <label class="form-check-label" th:text="${examen.nombre}">Examen</label>
                                         </div>
                                     </div>
-                                </form>
 
-                            </div>
+                                    <!-- Paquetes -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Paquetes</label>
+                                        <div class="form-check" th:each="paquete : ${paquetesDisponibles}">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="paquetesSeleccionados" 
+                                                   th:value="${paquete.idPaquete}"
+                                                   th:checked="${cita.solicitud.detalles.?[paquete != null].![paquete.idPaquete].contains(paquete.idPaquete)}"></input>
+                                            <label class="form-check-label" th:text="${paquete.nombre}">Paquete</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Botones -->
+                                <div class="col-12 text-center mt-3">
+                                    <button type="submit" class="btn btn-save me-2">Actualizar</button>
+                                    <a th:href="@{/cita/citas}" class="btn btn-cancel">Cancelar</a>
+                                </div>
+
+                            </form>
+
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
         </section>
+    </section>
 
-        <!-- ========================================================= -->
-        <!-- 🔍 BUSQUEDA -->
-        <!-- ========================================================= -->
-        <section th:fragment="busqueda">
-            <form method="get" th:action="@{/cita/buscar}" class="d-flex mb-3">
-                <input type="text" name="query" th:value="${query}" class="form-control me-2" placeholder="Buscar por estado o nota" />
-                <button type="submit" class="btn btn-primary">Buscar</button>
-            </form>
-        </section>
+    
+    <!-- Modificar Cita -->
 
-        <!-- Preloader -->
-        <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
+    <section th:fragment="busqueda">
+        <form method="get" th:action="@{/cita/buscar}" class="d-flex mb-3">
+            <input type="text" name="query" th:value="${query}" class="form-control me-2" placeholder="Buscar por estado o nota" />
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+    </section>
+
+    <!-- Preloader -->
+    <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
 
     </body>
 </html>
