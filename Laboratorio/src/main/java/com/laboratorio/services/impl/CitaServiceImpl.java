@@ -14,6 +14,11 @@ import org.springframework.stereotype.Service;
 public class CitaServiceImpl implements CitaService{
 
     private CitaRepository citaRepository;
+    
+    public CitaServiceImpl(CitaRepository citaRepository) {
+        this.citaRepository = citaRepository;
+    }
+    
     @Override
     public List<Cita> getAll() {
          return citaRepository.findAll();
