@@ -4,6 +4,7 @@
  */
 package com.laboratorio.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,11 +21,15 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "inventario")
+
+
 public class Inventario implements Serializable{
 
     private static final long serialVersionUID = 1l;
     @Id
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_inventario")
     private Long idInventario;
      @ManyToOne
     @JoinColumn(name = "id_insumo", referencedColumnName = "id_insumo")

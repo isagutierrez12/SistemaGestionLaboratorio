@@ -12,5 +12,5 @@ import com.laboratorio.model.RutaPermit;
  * @author melanie
  */
 public interface CitaService  extends CrudService<Cita>{
-    
+    Cita getById(Long idCita);
 }

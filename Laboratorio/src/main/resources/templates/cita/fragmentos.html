@@ -1,0 +1,498 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{layout/layout :: head-admin}">
+        <title>Laboratorio Clinico Calderon Piedra</title>
+        <meta charset="UTF-8" />
+         <style>
+        #calendar {
+            margin: 20px auto;
+            max-width: 100%;
+        }
+        </style>
+        <style>
+            .select2-container--default .select2-selection--multiple {
+            border-radius: 10px;
+            border: 1px solid #1c94a4;
+            padding: 4px;
+            }
+            .select2-selection__choice {
+              background-color: #1c94a4 !important;
+              color: white !important;
+              border-radius: 8px !important;
+              font-weight: 500;
+            }
+            .select2-selection__choice__remove {
+              color: white !important;
+              margin-right: 6px;
+            }
+        </style>
+        <style>
+            .hora-btn {
+              border: 1px solid #1c94a4;
+              color: #1c94a4;
+              background-color: #fff;
+              border-radius: 8px;
+              padding: 8px 14px;
+              cursor: pointer;
+              transition: all 0.2s ease;
+            }
+            .hora-btn:hover {
+              background-color: #1c94a4;
+              color: #fff;
+            }
+            .hora-btn.selected {
+              background-color: #1c94a4;
+              color: #fff;
+              font-weight: bold;
+            }
+
+            /* 🔹 Checkboxes estilizados */
+            .opciones-lista {
+              max-height: 220px;
+              overflow-y: auto;
+              border: 1px solid #dee2e6;
+              border-radius: 6px;
+              padding: 10px;
+            }
+            .form-check {
+              margin-bottom: 6px;
+            }
+            .form-check-input {
+              cursor: pointer;
+            }
+            .form-check-label {
+              cursor: pointer;
+              margin-left: 5px;
+            }
+         </style>
+    </head>
+    <body>
+       
+<!-- Agenda de citas -->
+    <section th:fragment="main" id="main" class="main">
+        <div class="pagetitle">
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                    <li class="breadcrumb-item active">Agenda de Citas</li>
+                </ol>
+            </nav>
+        </div>
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+
+                        <!-- Encabezado -->
+                        <div class="datatable-controls mb-3 d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">Agenda de Citas</h4>
+                            <a th:href="@{/cita/agregar}" class="btn btn-primary">Nueva Cita</a>
+                        </div>
+
+                        <!-- Calendario -->
+                        <div id="calendar"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FullCalendar -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+    <!-- Modal de Detalles -->
+    <div class="modal fade" id="detalleCitaModal" tabindex="-1" aria-labelledby="detalleCitaLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="detalleCitaLabel">Detalles de la Cita</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p><strong>Paciente:</strong> <span id="detallePaciente"></span></p>
+            <p><strong>Fecha:</strong> <span id="detalleFecha"></span></p>
+            <p><strong>Estado:</strong> <span id="detalleEstado"></span></p>
+            <p><strong>Notas:</strong> <span id="detalleNotas"></span></p>
+            <p><strong>Exámenes:</strong></p>
+            <ul id="detalleExamenes" class="mb-2"></ul>
+
+            <p><strong>Paquetes:</strong></p>
+            <ul id="detallePaquetes"></ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <a id="editarCitaBtn" class="btn btn-primary">Editar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+   <script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var citas = /*[[${citas}]]*/ [];
+
+    var eventos = citas.map(function(cita) {
+        return {
+            id: cita.idCita,
+            title: cita.paciente,
+            start: cita.fechaCita,
+            extendedProps: {
+                estado: cita.estado,
+                notas: cita.notas,
+                examenes: cita.examenes,
+                paquetes: cita.paquetes
+            }
+        };
+    });
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+        },
+        buttonText: {
+            today: 'Hoy',
+            month: 'Mes',
+            week: 'Semana',
+            day: 'Día',
+            list: 'Lista'
+        },
+        events: eventos,
+
+        eventClick: function(info) {
+            var cita = info.event;
+
+            document.getElementById("detallePaciente").textContent = cita.title;
+            document.getElementById("detalleFecha").textContent = new Date(cita.start).toLocaleString('es-CR');
+            document.getElementById("detalleEstado").textContent = cita.extendedProps.estado || 'Pendiente';
+            document.getElementById("detalleNotas").textContent = cita.extendedProps.notas || 'Sin notas';
+
+            // Llenar listas
+            var listaExamenes = document.getElementById("detalleExamenes");
+            listaExamenes.innerHTML = "";
+            (cita.extendedProps.examenes || []).forEach(function(examen) {
+                var li = document.createElement("li");
+                li.textContent = examen;
+                listaExamenes.appendChild(li);
+            });
+
+            var listaPaquetes = document.getElementById("detallePaquetes");
+            listaPaquetes.innerHTML = "";
+            (cita.extendedProps.paquetes || []).forEach(function(paquete) {
+                var li = document.createElement("li");
+                li.textContent = paquete;
+                listaPaquetes.appendChild(li);
+            });
+
+            var modal = new bootstrap.Modal(document.getElementById('detalleCitaModal'));
+            modal.show();
+            
+            document.getElementById("editarCitaBtn").href = "/cita/modificar/" + cita.id;
+
+            info.jsEvent.preventDefault();
+        },
+
+        dateClick: function(info) {
+            window.location.href = '/cita/agregar?fecha=' + info.dateStr;
+        }
+        });
+
+        calendar.render();
+    });
+    </script>
+
+    <!-- Incluye SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   
+
+    </section>
+
+<!-- FORMULARIO DE REGISTRO DE CITA -->
+    <section th:fragment="form-cita" id="main" class="main">
+
+      <div class="pagetitle">
+        <nav>
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+            <li class="breadcrumb-item active">Registrar Cita</li>
+          </ol>
+        </nav>
+      </div>
+
+      <section class="section">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+
+                <div class="text-center my-4">
+                  <img th:src="@{/assets/img/logo-1.png}" style="max-width:150px;" />
+                </div>
+
+                <h4 class="text-center mb-4" style="color:#1c94a4;font-weight:bold;">Registrar Cita</h4>
+
+                <form th:action="@{/cita/guardar}" th:object="${cita}" method="post">
+                  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                  <input type="hidden" name="idSolicitud" th:value="${idSolicitud}" />
+                  <input type="hidden" id="horaCitaSeleccionada" name="horaCita" />
+
+                  <div class="row">
+                    <!-- PACIENTE -->
+                    <div class="col-md-6 mb-3">
+                      <label for="idPaciente" class="form-label">Paciente</label>
+                      <select id="idPaciente" name="idPaciente" class="form-select" required="required">
+                        <option value="">Seleccione...</option>
+                        <option th:each="p : ${pacientes}" 
+                                th:value="${p.idPaciente}" 
+                                th:text="${p.nombre} + ' ' + ${p.primerApellido} + ' ' + ${p.segundoApellido}">
+                        </option>
+                      </select>
+                    </div>
+
+                    <!-- FECHA -->
+                    <div class="col-md-6 mb-3">
+                    <label for="fechaCita" class="form-label">Fecha y hora de la cita</label>
+                    <input type="datetime-local" id="fechaCita" name="fechaCita" class="form-control" required ="required" />
+                    </div>
+
+                    <!-- HORAS -->
+                    <div class="col-md-12 mb-3">
+                      <label class="form-label">Seleccione Hora</label>
+                      <div id="contenedorHoras" class="d-flex flex-wrap gap-2"></div>
+                    </div>
+
+               <!-- EXÁMENES -->
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Exámenes</label>
+                  <div id="listaExamenes" class="opciones-lista">
+                    <div th:each="e : ${examenesDisponibles}" class="form-check">
+                      <input class="form-check-input examen-checkbox" type="checkbox"
+                             th:id="'examen_' + ${e.idExamen}"
+                             name="examenesSeleccionados"
+                             th:value="${e.idExamen}"></input>
+                      <label class="form-check-label" th:for="'examen_' + ${e.idExamen}"
+                             th:text="${e.nombre}"></label>
+                    </div>
+                  </div>
+                </div>
+
+                    <!-- PAQUETES -->
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Paquetes</label>
+                      <div id="listaPaquetes" class="opciones-lista">
+                        <div th:each="p : ${paquetesDisponibles}" class="form-check">
+                          <input class="form-check-input paquete-checkbox" type="checkbox"
+                                 th:id="'paquete_' + ${p.idPaquete}"
+                                 name="paquetesSeleccionados"
+                                 th:value="${p.idPaquete}"
+                                 th:data-examenes="${#strings.listJoin(p.detalles.^[#this.examen.idExamen], ',')}"
+                                 th:data-nombres="${#strings.listJoin(p.detalles.^[#this.examen.nombre], ', ')}"
+                                 th:title="'Incluye: ' + ${#strings.listJoin(p.detalles.^[#this.examen.nombre], ', ')}"></input>
+                          <label class="form-check-label" th:for="'paquete_' + ${p.idPaquete}"
+                                 th:text="${p.nombre}"></label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- NOTAS -->
+                    <div class="col-md-12 mb-3">
+                      <label for="notas" class="form-label">Notas</label>
+                      <textarea id="notas" th:field="*{notas}" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <input type="hidden" name="estado" value="PENDIENTE" />
+
+                    <div class="col-12 text-center mt-3">
+                      <button type="submit" class="btn btn-save me-2">Guardar</button>
+                      <a th:href="@{/cita/citas}" class="btn btn-cancel">Cancelar</a>
+                    </div>
+                  </div>
+                </form>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+
+        // Simular horas disponibles
+        const horasBase = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+
+        function generarHorasSimuladas(fecha) {
+          const random = fecha ? fecha.charCodeAt(fecha.length - 1) % 3 : 0;
+          if (random === 0) return ['08:00','09:00','10:00','11:00','12:00'];
+          if (random === 1) return ['13:00','14:00','15:00'];
+          return ['09:00','10:00','16:00','17:00'];
+        }
+
+        function mostrarHoras(fecha) {
+          const contenedor = document.getElementById('contenedorHoras');
+          contenedor.innerHTML = '';
+          const disponibles = generarHorasSimuladas(fecha);
+          disponibles.forEach(hora => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'hora-btn';
+            btn.textContent = hora;
+            btn.dataset.hora = hora;
+            btn.addEventListener('click', () => {
+              document.querySelectorAll('.hora-btn').forEach(b => b.classList.remove('selected'));
+              btn.classList.add('selected');
+              document.getElementById('horaCitaSeleccionada').value = hora;
+            });
+            contenedor.appendChild(btn);
+          });
+        }
+
+        mostrarHoras();
+        document.getElementById('fechaCita').addEventListener('change', function() {
+          mostrarHoras(this.value);
+        });
+      });
+    </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+      // === Control de exámenes incluidos en paquetes ===
+      const paqueteCheckboxes = document.querySelectorAll('.paquete-checkbox');
+      const examenCheckboxes = document.querySelectorAll('.examen-checkbox');
+
+      paqueteCheckboxes.forEach(paquete => {
+        paquete.addEventListener('change', () => {
+          const examenesIncluidos = paquete.dataset.examenes ? paquete.dataset.examenes.split(',') : [];
+
+          examenesIncluidos.forEach(id => {
+            const examen = document.querySelector(`.examen-checkbox[value="${id.trim()}"]`);
+            if (examen) {
+              if (paquete.checked) {
+                examen.checked = false;
+                examen.disabled = true;
+                examen.parentElement.classList.add('text-muted');
+                examen.parentElement.title = "Incluido en el paquete seleccionado";
+              } else {
+                examen.disabled = false;
+                examen.parentElement.classList.remove('text-muted');
+                examen.parentElement.removeAttribute('title');
+              }
+            }
+          });
+        });
+      });
+
+    });
+    </script>
+
+<!-- Modificar Cita -->
+    <section th:fragment="modificar" id="main" class="main">
+        <div class="pagetitle">
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                    <li class="breadcrumb-item">Editar</li>
+                    <li class="breadcrumb-item active">Cita</li>
+                </ol>
+            </nav>
+        </div>
+
+        <section class="section">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+
+                            <h4 class="text-center mb-4" style="color:#1c94a4;font-weight:bold;">Editar Cita</h4>
+
+                            <form th:action="@{/cita/actualizar}" th:object="${cita}" method="post">
+                                <input type="hidden" th:field="*{idCita}" />
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                                <!-- Fecha y hora -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fechaCita" class="form-label">Fecha y hora</label>
+                                        <input type="datetime-local" id="fechaCita" th:field="*{fechaCita}" class="form-control" required="required"/>
+                                    </div>
+
+                                    <!-- Estado -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="estado" class="form-label">Estado</label>
+                                        <select id="estado" th:field="*{estado}" class="form-select" required="required">
+                                            <option value="PENDIENTE" th:selected="${cita.estado == 'PENDIENTE'}">Pendiente</option>
+                                            <option value="CONFIRMADA" th:selected="${cita.estado == 'CONFIRMADA'}">Confirmada</option>
+                                            <option value="CANCELADA" th:selected="${cita.estado == 'CANCELADA'}">Cancelada</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Notas -->
+                                    <div class="col-md-12 mb-3">
+                                        <label for="notas" class="form-label">Notas</label>
+                                        <textarea id="notas" th:field="*{notas}" class="form-control" rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Exámenes -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Exámenes</label>
+                                        <div class="form-check" th:each="examen : ${examenesDisponibles}">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="examenesSeleccionados" 
+                                                   th:value="${examen.idExamen}"
+                                                   th:checked="${cita.solicitud.detalles.?[examen != null].![examen.idExamen].contains(examen.idExamen)}"></input>
+                                            <label class="form-check-label" th:text="${examen.nombre}">Examen</label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Paquetes -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Paquetes</label>
+                                        <div class="form-check" th:each="paquete : ${paquetesDisponibles}">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="paquetesSeleccionados" 
+                                                   th:value="${paquete.idPaquete}"
+                                                   th:checked="${cita.solicitud.detalles.?[paquete != null].![paquete.idPaquete].contains(paquete.idPaquete)}"></input>
+                                            <label class="form-check-label" th:text="${paquete.nombre}">Paquete</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Botones -->
+                                <div class="col-12 text-center mt-3">
+                                    <button type="submit" class="btn btn-save me-2">Actualizar</button>
+                                    <a th:href="@{/cita/citas}" class="btn btn-cancel">Cancelar</a>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+
+    
+    <!-- Modificar Cita -->
+
+    <section th:fragment="busqueda">
+        <form method="get" th:action="@{/cita/buscar}" class="d-flex mb-3">
+            <input type="text" name="query" th:value="${query}" class="form-control me-2" placeholder="Buscar por estado o nota" />
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+    </section>
+
+    <!-- Preloader -->
+    <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
+
+    </body>
+</html>

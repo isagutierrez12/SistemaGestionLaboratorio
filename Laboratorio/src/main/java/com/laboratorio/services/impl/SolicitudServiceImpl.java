@@ -42,7 +42,12 @@ public class SolicitudServiceImpl implements SolicitudService {
     public Solicitud get(Solicitud solicitud) {
         return solicitudRepository.findById(solicitud.getIdSolicitud()).orElse(null);
     }
-
+    
+     @Override
+    public Solicitud getById(Long id) {
+        return solicitudRepository.findById(id).orElse(null);
+    }
+    
     @Override
     public void save(Solicitud solicitud) {
         // Establece fecha y estado si es nueva solicitud
