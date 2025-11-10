@@ -13,8 +13,8 @@ public class InventarioTestRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Long idCita = 2L; // usa el id real de tu BD
-        String estadoCita = "TERMINADA"; // o "TERMINADA" o "CANCELADA"
+        Long idCita = 2L;
+        String estadoCita = "TERMINADA";
 
         System.out.println("🔹 Ejecutando prueba de ajuste de inventario...");
         inventarioService.ajustarInventarioPorCita(idCita, estadoCita);
