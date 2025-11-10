@@ -81,4 +81,8 @@ public class PaqueteServiceImpl implements PaqueteService {
     public void quitarExamen(Long idPaquete, Long idExamen) {
         detalleRepository.deleteByPaqueteIdPaqueteAndExamenIdExamen(idPaquete, idExamen);
     }
+    @Override
+    public Paquete getById(Long id) {
+    return paqueteRepository.findById(id).orElse(null);
+    }
 }
