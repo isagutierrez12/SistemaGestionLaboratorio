@@ -1,83 +1,259 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head th:replace="~{layout/layout :: head-admin}">
-        <title>Laboratorio Clinico Calderon Piedra</title>
+        <title>Inventario - Laboratorio Clinico Calderon Piedra</title>
         <meta charset="UTF-8" />
     </head>
     <body>
-        <main id="main" class="main">
+        <!-- ======= Listado Inventario ======= -->
+        <section th:fragment="main" id="main" class="main" >
+
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
-                        <li class="breadcrumb-item active">Inventory</li>
-
+                        <li class="breadcrumb-item">Inventario</li>
+                        <li class="breadcrumb-item active">Datos</li>
                     </ol>
                 </nav>
             </div><!-- End Page Title -->
 
-            <section class="section" th:fragment="main">
+            <section class="section">
                 <div class="row">
                     <div class="col-lg-12">
 
                         <div class="card">
                             <div class="card-body">
 
-                                <div class="datatable-controls">
-                                    <button id="btnRegistro" class="btn-register" type="button"
-                                            onclick="window.location.href = 'inventory-create.html'">
-                                        Registro
-                                    </button>
+                                <div class="datatable-controls d-flex justify-content-between align-items-center gap-2 mb-3">
+                                    <a th:href="@{/inventario/agregar}" class="btn btn-primary">Registrar Nuevo</a>
                                 </div>
-                                <table class="table datatable">
+
+                                <!-- Tabla de Inventario -->
+                                <table id="tablaInventario" class="table ">
                                     <thead>
                                         <tr>
-                                            <th>Código</th>
-                                            <th>Nombre</th>
-                                            <th>Tipo/Categoría</th>
-                                            <th>Unidad de medida</th>
-                                            <th>Fecha de Vencimiento</th>
-                                            <th>Stock minimo</th>
-                                            <th>Stock actual</th>
-                                            <th>Estado</th>
-                                            <th>Acciones</th>
-
-
+                                            <th style="text-align:center;">Código de Barras</th>
+                                            <th style="text-align:center;">Nombre Insumo</th>
+                                            <th style="text-align:center;">Tipo</th>
+                                            <th style="text-align:center;">Stock Actual</th>
+                                            <th style="text-align:center;">Stock Bloqueado</th>
+                                            <th style="text-align:center;">Stock Mínimo</th>
+                                            <th style="text-align:center;">Fecha Vencimiento</th>
+                                            <th style="text-align:center;">Fecha Apertura</th>
+                                            <th style="text-align:center;">Estado</th>
+                                            <th style="text-align:center;">Acciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr th:each="i : ${inventarios}">
-                                            <td style="vertical-align: middle; text-align: center;">[[${i.codigo}]]</td>
-                                            <td style="vertical-align: middle; text-align: center; "> [[${i.nombre}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${i.tipo}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${i.unidadMedida}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${i.fechaVencimiento}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${i.stockMinimo}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${i.stockActual}]]</td>
-                                             <td style="vertical-align: middle; text-align: center;">  <span th:text="${i.activo} ? 'Activo' : 'Inactivo'"></span></td>
-                                            <td class="actions-cell" style="vertical-align: middle; text-align: center;">
-                                                <a href="inventory-edit.html" class="btn-edit" title="Editar">
+
+                                    <tbody id="tbodyInventario">
+                                        <tr th:each="inv : ${inventarios}">
+                                            <td style="vertical-align: middle; text-align: center;">[[${inv.codigoBarras}]]</td>
+                                            <td style="vertical-align: middle; text-align: center;">[[${inv.insumo.nombre}]]</td>
+                                            <td style="vertical-align: middle; text-align: center;">[[${inv.insumo.tipo}]]</td>
+                                            <td style="vertical-align: middle; text-align: center;">[[${inv.stockActual}]]</td>
+                                            <td style="vertical-align: middle; text-align: center;">[[${inv.stockBloqueado}]]</td>
+                                            <td style="vertical-align: middle; text-align: center;">[[${inv.stockMinimo}]]</td>
+                                            <td style="vertical-align: middle; text-align: center;">[[${inv.fechaVencimiento}]]</td>
+                                            <td style="vertical-align: middle; text-align: center;">[[${inv.fechaApertura}]]</td>
+                                            <td style="vertical-align: middle; text-align: center;">
+                                                <span th:text="${inv.activo} ? 'Activo' : 'Inactivo'"></span>
+                                            </td>
+                                            <td class="actions-cell d-flex align-items-center justify-content-center"
+                                                style=" gap: 20px;">
+                                                <a th:href="@{/inventario/modificar/{id}(id=${inv.idInventario})}"
+                                                   class="btn-edit" title="Editar">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
                                             </td>
-
                                         </tr>
-
-                                       
                                     </tbody>
                                 </table>
+                                <!-- End Table -->
+
+                            </div><!-- End card-body -->
+                        </div><!-- End card -->
+
+                    </div><!-- End col -->
+                </div><!-- End row -->
+            </section>
+
+        </section><!-- End #main -->
+
+
+        <!-- ======= Agregar Inventario ======= -->
+        <section th:fragment="agregar" id="main" class="main">
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/inventario}">Inventario</a></li>
+                        <li class="breadcrumb-item active">Registrar Inventario</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <section class="section">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="text-center mb-5 mt-3">
+                                    <img th:src="@{/assets/img/logo-1.png}" alt="Logo Laboratorio" style="max-width:150px;">
+                                </div>
+
+                                <h4 class="text-center mb-4" style="color:#1c94a4; font-weight:bold;">Agregar Inventario</h4>
+
+                                <form th:action="@{/inventario/guardar}" th:object="${inventario}" method="post" class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Insumo</label>
+                                        <select class="form-select" th:field="*{insumo.idInsumo}" required>
+                                            <option value="">Seleccione un insumo...</option>
+                                            <option th:each="insumo : ${insumos}" 
+                                                    th:value="${insumo.idInsumo}" 
+                                                    th:text="${insumo.nombre}"></option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Código de Barras</label>
+                                        <input type="text" class="form-control" th:field="*{codigoBarras}" required>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Stock Actual</label>
+                                        <input type="number" class="form-control" th:field="*{stockActual}" min="0">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Stock Bloqueado</label>
+                                        <input type="number" class="form-control" th:field="*{stockBloqueado}" min="0">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Stock Mínimo</label>
+                                        <input type="number" class="form-control" th:field="*{stockMinimo}" min="0">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fecha de Vencimiento</label>
+                                        <input type="date" class="form-control" th:field="*{fechaVencimiento}">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fecha de Apertura</label>
+                                        <input type="date" class="form-control" th:field="*{fechaApertura}">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Estado</label>
+                                        <select class="form-select" th:field="*{activo}">
+                                            <option value="true">Activo</option>
+                                            <option value="false">Inactivo</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="text-center mt-3">
+                                        <button type="submit" class="btn btn-save me-3 btn-primary">Guardar</button>
+                                        <a th:href="@{/inventario}" class="btn btn-secondary">Cancelar</a>
+                                    </div>
+                                </form>
 
                             </div>
                         </div>
-
                     </div>
                 </div>
             </section>
+        </section>
 
+        <!-- ======= Modificar Inventario ======= -->
+        <section th:fragment="modificar" id="main" class="main">
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/inventario}">Inventario</a></li>
+                        <li class="breadcrumb-item active">Editar Inventario</li>
+                    </ol>
+                </nav>
+            </div>
 
-        </main><!-- End #main -->
+            <section class="section">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
 
-        <!-- Preloader -->
+                                <div class="text-center mb-4 mt-3">
+                                    <img th:src="@{/assets/img/logo-1.png}" alt="Logo Laboratorio" style="max-width:150px;">
+                                </div>
+
+                                <h4 class="text-center mb-4" style="color:#1c94a4; font-weight:bold;">Editar Inventario</h4>
+
+                                <form th:action="@{/inventario/actualizar}" th:object="${inventario}" method="post" class="row g-4">
+                                    <input type="hidden" th:field="*{idInventario}" />
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Insumo</label>
+                                        <select class="form-select" th:field="*{insumo.idInsumo}">
+                                            <option th:each="insumo : ${insumos}" 
+                                                    th:value="${insumo.idInsumo}"
+                                                    th:text="${insumo.nombre}"
+                                                    th:selected="${insumo.idInsumo == inventario.insumo.idInsumo}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Código de Barras</label>
+                                        <input type="text" class="form-control" th:field="*{codigoBarras}" required>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Stock Actual</label>
+                                        <input type="number" class="form-control" th:field="*{stockActual}" min="0">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Stock Bloqueado</label>
+                                        <input type="number" class="form-control" th:field="*{stockBloqueado}" min="0">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Stock Mínimo</label>
+                                        <input type="number" class="form-control" th:field="*{stockMinimo}" min="0">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fecha de Vencimiento</label>
+                                        <input type="date" class="form-control" th:field="*{fechaVencimiento}">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fecha de Apertura</label>
+                                        <input type="date" class="form-control" th:field="*{fechaApertura}">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Estado</label>
+                                        <select class="form-select" th:field="*{activo}">
+                                            <option value="true">Activo</option>
+                                            <option value="false">Inactivo</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="text-center mt-3">
+                                        <button type="submit" class="btn btn-primary me-3">Guardar Cambios</button>
+                                        <a th:href="@{/inventario}" class="btn btn-secondary">Cancelar</a>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+
         <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
-
     </body>
 </html>

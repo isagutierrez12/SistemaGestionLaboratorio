@@ -9,42 +9,37 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name = "inventario")
-public class Inventario {
-@Id
+
+
+public class Inventario implements Serializable{
+
+    private static final long serialVersionUID = 1l;
+    @Id
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_inventario")
     private Long idInventario;
+     @ManyToOne
+    @JoinColumn(name = "id_insumo", referencedColumnName = "id_insumo")
+    private Insumo insumo;
+    private String codigoBarras; 
+    private int stockActual; 
+    private int stockBloqueado; 
+    private int stockMinimo; 
+    private LocalDate fechaVencimiento; 
+    private LocalDate fechaApertura; 
+    private boolean activo; 
 
-    /*@ManyToOne
-    @JoinColumn(name = "id_insumo", nullable = false)
-    private Insumo insumo; // Asumiendo que tienes una entidad Insumo*/
-
-    @Column(name = "codigo_barras", nullable = false)
-    private String codigoBarras;
-
-    @Column(name = "stock_actual")
-    private int stockActual;
-
-    @Column(name = "stock_bloqueado")
-    private int stockBloqueado;
-
-    @Column(name = "stock_minimo")
-    private int stockMinimo;
-
-    @Column(name = "fecha_vencimiento")
-    private LocalDate  fechaVencimiento;
-
-    @Column(name = "fecha_apertura")
-    private LocalDate   fechaApertura;
-
-    @Column(name = "activo")
-    private boolean activo;
 }

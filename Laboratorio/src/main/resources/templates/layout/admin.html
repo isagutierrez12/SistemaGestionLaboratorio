@@ -66,79 +66,20 @@
                     </li><!-- End Search Icon-->
 
                     <li class="nav-item dropdown">
-
                         <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
                             <i class="bi bi-bell"></i>
-                            <span class="badge badge-number" style="background-color: #0c6c74; color: white;">4</span>
-                        </a><!-- End Notification Icon -->
+                            <span id="badge-count" class="badge badge-number" style="background-color: #0c6c74; color: white;">0</span>
+                        </a>
 
-                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+                        <ul id="notification-list" class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                             <li class="dropdown-header">
-                                You have 4 new notifications
-                                <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                <span id="notification-title">Cargando notificaciones...</span>
                             </li>
-                            <li>
-                                <hr class="dropdown-divider" />
-                            </li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <!-- Aquí JS insertará las notificaciones -->
+                        </ul>
+                    </li>
 
-                            <li class="notification-item">
-                                <i class="bi bi-exclamation-circle text-warning"></i>
-                                <div>
-                                    <h4>Lorem Ipsum</h4>
-                                    <p>Quae dolorem earum veritatis oditseno</p>
-                                    <p>30 min. ago</p>
-                                </div>
-                            </li>
-
-                            <li>
-                                <hr class="dropdown-divider" />
-                            </li>
-
-                            <li class="notification-item">
-                                <i class="bi bi-x-circle text-danger"></i>
-                                <div>
-                                    <h4>Atque rerum nesciunt</h4>
-                                    <p>Quae dolorem earum veritatis oditseno</p>
-                                    <p>1 hr. ago</p>
-                                </div>
-                            </li>
-
-                            <li>
-                                <hr class="dropdown-divider" />
-                            </li>
-
-                            <li class="notification-item">
-                                <i class="bi bi-check-circle text-success"></i>
-                                <div>
-                                    <h4>Sit rerum fuga</h4>
-                                    <p>Quae dolorem earum veritatis oditseno</p>
-                                    <p>2 hrs. ago</p>
-                                </div>
-                            </li>
-
-                            <li>
-                                <hr class="dropdown-divider" />
-                            </li>
-
-                            <li class="notification-item">
-                                <i class="bi bi-info-circle text-primary"></i>
-                                <div>
-                                    <h4>Dicta reprehenderit</h4>
-                                    <p>Quae dolorem earum veritatis oditseno</p>
-                                    <p>4 hrs. ago</p>
-                                </div>
-                            </li>
-
-                            <li>
-                                <hr class="dropdown-divider" />
-                            </li>
-                            <li class="dropdown-footer">
-                                <a href="#">Mostrar Todas las notificaciones</a>
-                            </li>
-
-                        </ul><!-- End Notification Dropdown Items -->
-
-                    </li><!-- End Notification Nav -->
 
                     <li class="nav-item dropdown pe-3">
 
@@ -238,7 +179,7 @@
                                 <i class="bi bi-circle"></i><span>General</span>
                             </a>
                         </li>
-                          <li>
+                        <li>
                             <a th:href="@{/examen/proforma}">
                                 <i class="bi bi-circle"></i><span>Proforma</span>
                             </a>
@@ -276,6 +217,9 @@
                             <a  th:href="@{/inventario/inventarios}">
                                 <i class="bi bi-circle"></i><span>General</span>
                             </a>
+                            <a  th:href="@{/insumo/insumos}">
+                                <i class="bi bi-circle"></i><span>Insumos</span>
+                            </a>
                         </li>
                     </ul>
                 </li><!-- End Tables Nav -->
@@ -312,6 +256,7 @@
 
             <!-- Template Main JS File -->
             <script th:src="@{/assets/js/main.js}"></script>
+             <script th:src="@{/assets/js/notificaciones.js}"></script>
         </div>
     </body>
 </html>
