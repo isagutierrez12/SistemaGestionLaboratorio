@@ -1,0 +1,264 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{layout/layout :: head-admin}">
+        <title>Laboratorio Clinico Calderon Piedra</title>
+        <meta charset="UTF-8" />
+    </head>
+    <body>
+
+        <section th:fragment="main" id="main" class="main" th:if="${page == 'list'}">
+
+
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                        <li class="breadcrumb-item active">Auditorías</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div th:replace="~{auditoria/fragmentos :: filtrosFecha}"></div>
+
+            <div th:replace="~{auditoria/fragmentos :: filtrosAuditoria}"></div>
+
+            <div th:replace="~{auditoria/fragmentos :: catalogoAuditoria}"></div>
+
+            <section class="section">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+
+                                <h5 class="card-title">Desglose de Auditorías</h5>
+
+                                <div class="catalog">
+                                    <div class="test" th:each="a : ${auditorias}">
+                                        <!-- Header -->
+                                        <div class="test-header">
+                                            <span class="code">#[[${a.id}]]</span>
+                                            <h3 style="padding-bottom: 0.5rem !important;">[[${a.modulo}]]</h3>
+                                            <span th:text="${a.accion}"></span>
+                                        </div>
+
+                                        <!-- Body -->
+                                        <div class="test-body">
+                                            <div class="test-info">
+                                                <div class="info-row">
+                                                    <strong>Usuario:</strong> [[${a.usuario}]]
+                                                </div>
+                                                <div class="info-row">
+                                                    <strong>ID de Entidad:</strong> [[${a.idEntidad}]]
+                                                </div>
+                                                <div class="info-row">
+                                                    <strong>Fecha:</strong> [[${#dates.format(a.fechaHora, 'dd/MM/yyyy HH:mm:ss')}]]
+                                                </div>
+                                                <div class="info-row description">
+                                                    <strong>Descripción:</strong> [[${a.descripcion}]]
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div> <!-- End test -->
+                                </div> <!-- End catalog -->
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fragmento filtrosAuditoria -->
+            <section th:fragment="filtrosAuditoria">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <input type="text" id="filtroUsuario" class="form-control" placeholder="Filtrar por usuario">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" id="filtroModulo" class="form-control" placeholder="Filtrar por módulo">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" id="filtroAccion" class="form-control" placeholder="Filtrar por acción">
+                            </div>
+                        </div>
+                        <button id="btnRestaurar" class="btn btn-save me-2 mt-3">Restaurar</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fragmento catalogoAuditoria -->
+            <section th:fragment="catalogoAuditoria">
+                <div class="catalog" id="contenedorAuditorias">
+                    <div class="test" th:each="a : ${auditorias}">
+                        <!-- Header -->
+                        <div class="test-header">
+                            <span class="code">#[[${a.id}]]</span>
+                            <h3>[[${a.modulo}]]</h3>
+                            <span th:text="${a.accion}" class="badge bg-primary ms-2"></span>
+                        </div>
+                        <!-- Body -->
+                        <div class="test-body">
+                            <div class="test-info">
+                                <div class="info-row"><strong>Usuario:</strong> [[${a.usuario}]]</div>
+                                <div class="info-row"><strong>ID de Entidad:</strong> [[${a.idEntidad}]]</div>
+                                <div class="info-row"><strong>Fecha:</strong> [[${#dates.format(a.fechaHora, 'dd/MM/yyyy HH:mm:ss')}]]</div>
+                                <div class="info-row description"><strong>Descripción:</strong> [[${a.descripcion}]]</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fragmento filtrosFecha -->
+            <section th:fragment="filtrosFecha">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="fechaInicio" class="form-label">Fecha inicio:</label>
+                        <input type="date" id="fechaInicio" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="fechaFin" class="form-label">Fecha fin:</label>
+                        <input type="date" id="fechaFin" class="form-control" />
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- templates/auditoria/fragmentos/criticos.html -->
+            <section th:fragment="catalogoCriticos">
+                <div class="section">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-body">
+
+                                    <h5 class="card-title">Desglose de Auditorías Críticas</h5>
+
+                                    <div class="catalog">
+                                        <div class="test" th:each="a : ${auditorias}">
+                                            <!-- Header -->
+                                            <div class="test-header">
+                                                <span class="code">#[[${a.id}]]</span>
+                                                <h3 style="padding-bottom: 0.5rem !important;">[[${a.tipoEvento}]]</h3>
+                                            </div>
+
+                                            <!-- Body -->
+                                            <div class="test-body">
+                                                <div class="test-info">
+                                                    <div class="info-row">
+                                                        <strong>Usuario:</strong> [[${a.usuario}]]
+                                                    </div>
+                                                    <div class="info-row">
+                                                        <strong>ID de Usuario:</strong> [[${a.usuarioId}]]
+                                                    </div>
+                                                    <div class="info-row">
+                                                        <strong>Fecha:</strong> [[${#dates.format(a.fechaHora, 'dd/MM/yyyy HH:mm:ss')}]]
+                                                    </div>
+                                                    <div class="info-row description">
+                                                        <strong>Descripción:</strong> [[${a.descripcion}]]
+                                                    </div>
+                                                    <div class="info-row" th:if="${a.tiempoActivo != null}">
+                                                        <strong>Tiempo activo:</strong> [[${a.tiempoActivo}]] minutos
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div> <!-- End test -->
+                                    </div> <!-- End catalog -->
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section th:fragment="resumenAuditoria">
+                <div class="row">
+
+                    <!-- Tarjeta CREAR -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card text-white bg-primary mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">CREAR</h5>
+                                <p class="card-text">Cantidad: <span>5</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta ACTUALIZAR -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card text-white bg-warning mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">ACTUALIZAR</h5>
+                                <p class="card-text">Cantidad: <span>3</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta ACTIVAR -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card text-white bg-success mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">ACTIVAR</h5>
+                                <p class="card-text">Cantidad: <span>2</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Gráfico de Auditoría -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Resumen de Acciones</h5>
+                                <canvas id="graficoAcciones" style="max-height: 400px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- Script para Chart.js -->
+             <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const ctx = document.getElementById('graficoAcciones').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['CREAR', 'ACTUALIZAR', 'ACTIVAR'],
+                    datasets: [{
+                        label: 'Cantidad de Acciones',
+                        data: [5, 3, 2],
+                        backgroundColor: [
+                            'rgba(0, 123, 255, 0.7)',
+                            'rgba(255, 193, 7, 0.7)',
+                            'rgba(40, 167, 69, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(0, 123, 255)',
+                            'rgb(255, 193, 7)',
+                            'rgb(40, 167, 69)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stepSize: 1
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+    </body>
+</html>
