@@ -12,10 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
 
-/**
- *
- * @author soportetecnico
- */
+
 @EnableJpaRepositories
 public interface SolicitudRepository extends JpaRepository<Solicitud, Long>{
     

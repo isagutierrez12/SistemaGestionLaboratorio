@@ -4,11 +4,10 @@
  */
 package com.laboratorio.service;
 
-import com.laboratorio.model.Inventario;
-
+import com.laboratorio.model.Insumo;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface InventarioService extends CrudService<Inventario>{
-    public void ajustarInventarioPorCita(Long idCita, String nuevoEstado) ;
+public interface InsumoService extends CrudService<Insumo>{
+    
 }

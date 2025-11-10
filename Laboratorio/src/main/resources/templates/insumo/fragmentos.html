@@ -1,0 +1,234 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{layout/layout :: head-admin}">
+        <title>Laboratorio Clinico Calderon Piedra - Insumos</title>
+        <meta charset="UTF-8" />
+    </head>
+
+    <body>
+        <!-- LISTA DE INSUMOS -->
+        <section th:fragment="main" id="main" class="main">
+
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item active">Insumos</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <section class="section">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+
+                                <div class="datatable-controls mb-3 d-flex justify-content-between">
+                                    <a th:href="@{/insumo/agregar}" class="btn btn-primary">Agregar Insumo</a>
+                                </div>
+
+                                <table class="table datatable align-middle text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Tipo</th>
+                                            <th>Cantidad por unidad</th>
+                                            <th>Unidad de medida</th>
+                                            <th>Estado</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="i : ${insumos}">
+                                            <td>[[${i.nombre}]]</td>
+                                            <td>[[${i.tipo}]]</td>
+                                            <td>[[${i.cantidadPorUnidad}]]</td>
+                                            <td>[[${i.unidadMedida}]]</td>
+                                            <td>
+                                                <span th:text="${i.activo} ? 'Activo' : 'Inactivo'"></span>
+                                            </td>
+                                            <td>
+                                                <a th:href="@{/insumo/modificar/{id}(id=${i.idInsumo})}" 
+                                                   class="btn btn-outline-primary btn-sm" title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- AGREGAR INSUMO -->
+        <section th:fragment="agregar" id="main" class="main">
+
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/insumo}">Insumos</a></li>
+                        <li class="breadcrumb-item active">Registrar</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <section class="section">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="card">
+                            <div class="card-body">
+
+                                <div class="text-center mb-5" style="margin-top: 20px;">
+                                    <img th:src="@{/assets/img/logo-1.png}" alt="Logo Laboratorio"
+                                         class="logo-img" style="max-width: 150px;"
+                                         onerror="this.style.display='none'" />
+                                </div>
+
+                                <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
+                                    Registrar Insumo
+                                </h4>
+
+                                <form th:action="@{/insumo/guardar}" th:object="${insumo}" method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                                    <div class="row">
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Nombre</label>
+                                            <input type="text" th:field="*{nombre}" class="form-control text-center" required />
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Tipo</label>
+                                            <select th:field="*{tipo}" class="form-select text-center" required>
+                                                <option value="">Seleccione...</option>
+                                                <option value="CAJA">CAJA</option>
+                                                <option value="BOTELLA">BOTELLA</option>
+                                                <option value="TUBO_AGUJA">TUBO/AGUJA/OTROS</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Cantidad por unidad</label>
+                                            <input type="number" th:field="*{cantidadPorUnidad}" class="form-control text-center" min="0" />
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Unidad de medida</label>
+                                            <input type="text" th:field="*{unidadMedida}" class="form-control text-center" />
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Estado</label>
+                                            <select th:field="*{activo}" class="form-select text-center" required>
+                                                <option value="true">Activo</option>
+                                                <option value="false">Inactivo</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-12 text-center mt-3">
+                                            <button type="submit" class="btn btn-save me-2">Guardar</button>
+                                            <a th:href="@{/insumo}" class="btn btn-cancel">Cancelar</a>
+                                        </div>
+
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- MODIFICAR INSUMO -->
+        <section th:fragment="modificar" id="main" class="main">
+
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/insumo}">Insumos</a></li>
+                        <li class="breadcrumb-item active">Editar</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <section class="section">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="card">
+                            <div class="card-body">
+
+                                <div class="text-center mb-5" style="margin-top: 20px;">
+                                    <img th:src="@{/assets/img/logo-1.png}" alt="Logo Laboratorio"
+                                         class="logo-img" style="max-width: 150px;"
+                                         onerror="this.style.display='none'" />
+                                </div>
+
+                                <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
+                                    Editar Insumo
+                                </h4>
+
+                                <form th:action="@{/insumo/guardar}" th:object="${insumo}" method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <input type="hidden" th:field="*{idInsumo}" />
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Nombre</label>
+                                            <input type="text" th:field="*{nombre}" class="form-control text-center" required />
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Tipo</label>
+                                            <select th:field="*{tipo}" class="form-select text-center" required>
+                                                <option value="CAJA">CAJA</option>
+                                                <option value="BOTELLA">BOTELLA</option>
+                                                <option value="TUBO_AGUJA">TUBO/AGUJA/OTROS</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Cantidad por unidad</label>
+                                            <input type="number" th:field="*{cantidadPorUnidad}" class="form-control text-center" min="0" />
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Unidad de medida</label>
+                                            <input type="text" th:field="*{unidadMedida}" class="form-control text-center" />
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Estado</label>
+                                            <select th:field="*{activo}" class="form-select text-center">
+                                                <option value="true">Activo</option>
+                                                <option value="false">Inactivo</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-12 text-center mt-3">
+                                            <button type="submit" class="btn btn-save me-2">Guardar Cambios</button>
+                                            <a th:href="@{/insumo}" class="btn btn-cancel">Cancelar</a>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
+    </body>
+</html>
