@@ -8,10 +8,13 @@ import com.laboratorio.model.Rol;
 import com.laboratorio.model.Usuario;
 import com.laboratorio.repository.RolRepository;
 import com.laboratorio.repository.UsuarioRepository;
+import com.laboratorio.service.AuditoriaCriticosService;
 import com.laboratorio.service.UsuarioService;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +26,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     private UsuarioRepository usuarioRepository;
     @Autowired
     private RolRepository rolRepository;
+    @Autowired
+    @Lazy
+    private AuditoriaCriticosService auditoriaCriticosService;
 
     @Override
     @Transactional(readOnly = true)
@@ -80,7 +86,6 @@ public class UsuarioServiceImpl implements UsuarioService {
             rolRepository.save(rol);
 
         } else {
-            // Usuario existente
             Usuario existente = usuarioRepository.findById(usuario.getIdUsuario())
                     .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
@@ -91,7 +96,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             existente.setPrimerApellido(usuario.getPrimerApellido());
             existente.setSegundoApellido(usuario.getSegundoApellido());
             existente.setUsername(usuario.getUsername());
-            existente.setActivo(usuario.isActivo()); // si quieres permitir cambiar el estado
+            existente.setActivo(usuario.isActivo());
 
             usuarioRepository.save(existente);
 
@@ -101,7 +106,6 @@ public class UsuarioServiceImpl implements UsuarioService {
                 rolExistente = new Rol();
                 rolExistente.setIdUsuario(usuario.getIdUsuario());
             }
-            rolExistente.setIdUsuario(usuario.getIdUsuario());
             switch (rolSeleccionado) {
                 case "1" ->
                     rolExistente.setNombre("ADMIN");
@@ -113,6 +117,10 @@ public class UsuarioServiceImpl implements UsuarioService {
                     throw new IllegalArgumentException("Rol no válido: " + rolSeleccionado);
             }
             rolRepository.save(rolExistente);
+
+            String usuarioQueHaceCambio = SecurityContextHolder.getContext()
+                    .getAuthentication().getName();
+            auditoriaCriticosService.registrarCambioRoles(existente, rolExistente.getNombre(), usuarioQueHaceCambio);
         }
     }
 
@@ -122,6 +130,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         usuarioRepository.delete(usuario);
     }
+
     @Override
     @Transactional
     public String desactivarUsuario(Long idUsuario) {
@@ -137,8 +146,8 @@ public class UsuarioServiceImpl implements UsuarioService {
             usuarioRepository.save(usuario);
             return "Usuario desactivado correctamente";
         } catch (Exception e) {
-        // Captura cualquier error al actualizar el usuario
-        return "Error al cambiar el estado del usuario. Intente nuevamente";
+            // Captura cualquier error al actualizar el usuario
+            return "Error al cambiar el estado del usuario. Intente nuevamente";
         }
     }
 
@@ -147,6 +156,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     public List<Usuario> getUsuariosActivos() {
         return usuarioRepository.findByActivoTrue();
     }
+
     @Override
     @Transactional
     public String reactivarUsuario(Long idUsuario) {
@@ -171,17 +181,17 @@ public class UsuarioServiceImpl implements UsuarioService {
     public List<Usuario> getUsuariosInactivos() {
         return usuarioRepository.findByActivoFalse();
     }
-   @Override
-   @Transactional(readOnly = true)
-   public List<Usuario> buscarUsuariosPorNombre(String nombre){
-       return usuarioRepository.findByNombre(nombre);
-   }
-   
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Usuario> buscarUsuariosPorNombre(String nombre) {
+        return usuarioRepository.findByNombre(nombre);
+    }
+
     public List<Usuario> buscarUsuariosPorNombreCoincidente(String nombre) {
         if (nombre == null || nombre.trim().isEmpty()) {
-            return getUsuarios(); 
+            return getUsuarios();
         }
         return usuarioRepository.buscarUsuariosPorNombreCoincidente(nombre.trim());
     }
 }
-

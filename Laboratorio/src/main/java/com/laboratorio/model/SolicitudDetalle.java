@@ -6,6 +6,7 @@ package com.laboratorio.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,5 +35,7 @@ public class SolicitudDetalle {
     private Examen examen;
 
   
-    private Long idPaquete;
+  @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_paquete", referencedColumnName = "id_paquete")
+    private Paquete paquete;
 }

@@ -1,0 +1,22 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head  th:replace="~{layout/admin :: head}">
+        <title>Laboratorio Clinico Calderon Piedra</title>
+        <meta charset="UTF-8" />
+
+    </head>
+    <body>
+        <!-- aside -->
+        <aside th:replace="~{layout/admin :: aside}"></aside>
+        <header th:replace="~{layout/admin :: header}"></header>
+        <!-- Preloader -->
+        <main id="main" class="main" th:if="${page == 'list'}">
+            <div th:replace="~{auditoria/fragmentos :: filtrosFecha}"></div>
+            <div th:replace="~{auditoria/fragmentos :: filtrosAuditoria}"></div>
+            <div th:replace="~{auditoria/fragmentos :: catalogoAuditoria}"></div>
+        </main>
+        <div id="preloader"></div>
+        <script src="/assets/js/auditoriaF.js"></script>
+        <script src="/assets/js/auditoria.js"></script>
+        <div th:replace="~{layout/admin :: jsfiles}"></div>
+    </body>
+</html>

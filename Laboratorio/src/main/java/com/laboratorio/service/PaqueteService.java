@@ -15,4 +15,7 @@ public interface PaqueteService extends CrudService<Paquete> {
     void agregarExamen(Long idPaquete, Long idExamen);
 
     void quitarExamen(Long idPaquete, Long idExamen);
+    
+    Paquete getById(Long idPaquete);
+
 }
