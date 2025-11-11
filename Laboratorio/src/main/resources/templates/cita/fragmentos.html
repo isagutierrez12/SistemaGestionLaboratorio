@@ -306,7 +306,7 @@
                       <textarea id="notas" th:field="*{notas}" class="form-control" rows="3"></textarea>
                     </div>
 
-                    <input type="hidden" name="estado" value="PENDIENTE" />
+                    <input type="hidden" name="estado" value="AGENDADA" />
 
                     <div class="col-12 text-center mt-3">
                       <button type="submit" class="btn btn-save me-2">Guardar</button>
@@ -427,8 +427,8 @@
                                     <div class="col-md-6 mb-3">
                                         <label for="estado" class="form-label">Estado</label>
                                         <select id="estado" th:field="*{estado}" class="form-select" required="required">
-                                            <option value="PENDIENTE" th:selected="${cita.estado == 'PENDIENTE'}">Pendiente</option>
-                                            <option value="CONFIRMADA" th:selected="${cita.estado == 'CONFIRMADA'}">Confirmada</option>
+                                            <option value="PENDIENTE" th:selected="${cita.estado == 'AGENDADA'}">Agendada</option>
+                                            <option value="CONFIRMADA" th:selected="${cita.estado == 'TERMINADA'}">Terminada</option>
                                             <option value="CANCELADA" th:selected="${cita.estado == 'CANCELADA'}">Cancelada</option>
                                         </select>
                                     </div>

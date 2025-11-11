@@ -13,6 +13,7 @@ import com.laboratorio.model.Solicitud;
 import com.laboratorio.model.SolicitudDetalle;
 import com.laboratorio.service.CitaService;
 import com.laboratorio.service.ExamenService;
+import com.laboratorio.service.InventarioService;
 import com.laboratorio.service.PacienteService;
 import com.laboratorio.service.PaqueteService;
 import com.laboratorio.service.SolicitudService;
@@ -54,6 +55,7 @@ public class CitaController {
     private final PacienteService pacienteService;
     private final PaqueteService paqueteService;
     private EmailServiceImpl emailServiceImpl; 
+    private final InventarioService inventarioService;
             
     @Autowired
     public CitaController(
@@ -63,7 +65,8 @@ public class CitaController {
             ExamenService examenService,
             PacienteService pacienteService,
             PaqueteService paqueteService,
-            EmailServiceImpl emailServiceImpl
+            EmailServiceImpl emailServiceImpl, 
+            InventarioService inventarioService
             ) {
         this.citaService = citaService;
         this.solicitudService = solicitudService;
@@ -72,6 +75,7 @@ public class CitaController {
         this.pacienteService = pacienteService;
         this.paqueteService = paqueteService;
         this.emailServiceImpl = emailServiceImpl;
+        this.inventarioService = inventarioService;
     }
 
     // Listado de citas
@@ -177,11 +181,13 @@ public class CitaController {
         cita.setUsuario(usuarioService.getUsuarioPorUsername(userDetails.getUsername()));
         cita.setFechaCita(fechaCita);
         cita.setNotas(notas);
-        cita.setEstado("Pendiente");
+        cita.setEstado("AGENDADA");
 
         // 6. Guardar solicitud y cita
         solicitudService.save(solicitud);
         citaService.save(cita);
+        System.out.println(cita.getIdCita());
+        inventarioService.ajustarInventarioPorCita(cita.getIdCita(), cita.getEstado());
         // 7. Enviar correo al paciente
         Paciente paciente = solicitud.getPaciente();
 
@@ -301,7 +307,9 @@ public class CitaController {
     model.addAttribute("paquetesDisponibles", paqueteService.getAll());
 
     return "cita/modificar";
-    }    
+    } 
+    
+    
     @PostMapping("/actualizar")
     public String actualizarCita(
         @RequestParam("idCita") Long idCita,
@@ -369,6 +377,7 @@ public class CitaController {
         solicitudService.save(solicitud);
         citaService.save(cita);
 
+        inventarioService.ajustarInventarioPorCita(idCita, estado);
         // 9. Enviar correo al paciente
         Paciente paciente = solicitud.getPaciente();
         String destinatario = paciente.getEmail();
