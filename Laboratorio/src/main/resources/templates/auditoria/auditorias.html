@@ -10,13 +10,13 @@
         <header th:replace="~{layout/admin :: header}"></header>
         <!-- Preloader -->
         <main id="main" class="main" th:if="${page == 'list'}">
-            <div th:replace="~{auditoria/fragmentos :: filtrosFecha}"></div>
-            <div th:replace="~{auditoria/fragmentos :: filtrosAuditoria}"></div>
-            <div th:replace="~{auditoria/fragmentos :: catalogoAuditoria}"></div>
+            <div th:replace="~{auditoria/fragmentos :: catalogoAuditoriaGeneral}"></div>
         </main>
+
         <div id="preloader"></div>
         <script src="/assets/js/auditoriaF.js"></script>
         <script src="/assets/js/auditoria.js"></script>
+        <script src="/assets/js/auditoriaExport.js"></script>
         <div th:replace="~{layout/admin :: jsfiles}"></div>
     </body>
 </html>
