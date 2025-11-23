@@ -34,7 +34,8 @@ public class SolicitudDetalleServiceImpl implements SolicitudDetalleService{
 
     @Override
     public void save(SolicitudDetalle solicitudDetalle) {
-        
+        solicitudDetalleRepository.save(solicitudDetalle);
+
     }
 
     @Override

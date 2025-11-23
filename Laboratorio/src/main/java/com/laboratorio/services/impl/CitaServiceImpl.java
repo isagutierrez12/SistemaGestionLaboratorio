@@ -13,7 +13,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class CitaServiceImpl implements CitaService{
 
+    
     private CitaRepository citaRepository;
+    
+    public CitaServiceImpl(CitaRepository citaRepository) {
+        this.citaRepository = citaRepository;
+    }
+    
     @Override
     public List<Cita> getAll() {
          return citaRepository.findAll();
@@ -32,6 +38,10 @@ public class CitaServiceImpl implements CitaService{
     @Override
     public void delete(Cita entity) {
         citaRepository.delete(entity);
+    }
+    @Override
+    public Cita getById(Long id) {
+    return citaRepository.findById(id).orElse(null);
     }
     
 }

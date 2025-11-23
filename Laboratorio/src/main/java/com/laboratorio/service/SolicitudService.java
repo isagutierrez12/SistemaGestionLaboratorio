@@ -13,4 +13,6 @@ public interface SolicitudService  extends CrudService<Solicitud>{
     List<Solicitud> buscarSolicitudes(String query); 
     List<Solicitud> getAll();
     void guardarConDetalles(Solicitud solicitud, List<Long> examenesSeleccionados);
+    Solicitud getById(Long id);
+
 }

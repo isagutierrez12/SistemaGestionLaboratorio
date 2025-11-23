@@ -9,8 +9,9 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
-
+@EnableJpaRepositories
 public interface PacienteRepository extends JpaRepository<Paciente, String> {
 
     @Query("SELECT COALESCE(MAX(CAST(SUBSTRING(p.idPaciente, 5, 4) AS int)), 0) FROM Paciente p WHERE p.idPaciente LIKE CONCAT('P', :anio, '%')")

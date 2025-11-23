@@ -1,8 +1,10 @@
 package com.laboratorio.services.impl;
 
+import com.laboratorio.model.Auditoria;
 import com.laboratorio.model.Paciente;
 import com.laboratorio.repository.PacienteRepository;
 import com.laboratorio.service.PacienteService;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +31,16 @@ public class PacienteServiceImpl implements PacienteService {
 
     @Override
     public void save(Paciente paciente) {
+        boolean esNuevo = (paciente.getIdPaciente() == null)
+                || !pacienteRepository.existsById(paciente.getIdPaciente());
+
         pacienteRepository.save(paciente);
+
+        if (esNuevo) {
+            registrarAuditoria("CREAR", paciente);
+        } else {
+            registrarAuditoria("ACTUALIZAR", paciente);
+        }
     }
 
     @Override
@@ -47,30 +58,35 @@ public class PacienteServiceImpl implements PacienteService {
 
         return pacienteRepository.buscarActivosPorQuery(query);
     }
-    
+
     @Override
     public List<Paciente> buscarPacientesInactivos(String query) {
         return pacienteRepository.buscarInactivosPorQuery(query);
     }
-    
+
     @Override
     public Paciente getPaciente(String id) {
         return pacienteRepository.findByIdPaciente(id);
     }
-    
+
     @Override
     public List<Paciente> getPacientesActivos() {
         return pacienteRepository.findByActivoTrue();
     }
-    
+
     @Override
     public List<Paciente> getPacientesInactivos() {
         return pacienteRepository.findByActivoFalse();
     }
+
     @Override
     public Paciente get(String id) {
         return pacienteRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Paciente no encontrado con id: " + id));
+    }
+
+    private void registrarAuditoria(String accion, Paciente paciente) {
+        System.out.println("AUDITORÍA → Acción: " + accion + ", Paciente ID: " + paciente.getIdPaciente());
     }
 
 }

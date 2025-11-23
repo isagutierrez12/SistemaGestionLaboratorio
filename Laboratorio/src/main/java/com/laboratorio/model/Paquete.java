@@ -46,4 +46,10 @@ public class Paquete {
         detalles.remove(dp);
         dp.setPaquete(null);
     }
+      public Paquete() {
+    }
+
+    public Paquete(Long idPaquete) {
+        this.idPaquete = idPaquete;
+    }
 }
