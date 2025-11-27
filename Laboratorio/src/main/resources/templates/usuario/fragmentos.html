@@ -4,7 +4,34 @@
         <meta charset="UTF-8" />
 
     </head>
+
     <body>
+
+        <section th:fragment="alertas">
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+            <script th:if="${success}" th:inline="javascript">
+                Swal.fire({
+                title: 'Éxito',
+                        text: /*[[${success}]]*/,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#1c94a4'
+                });
+            </script>
+
+            <script th:if="${mensaje}" th:inline="javascript">
+                Swal.fire({
+                title: /*[[${tipo == 'success' ? 'Éxito' : (tipo == 'warning' ? 'Atención' : 'Error')}]]*/,
+                        text: /*[[${mensaje}]]*/,
+                        icon: /*[[${tipo}]]*/,
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#1c94a4'
+                });
+            </script>
+        </section>
+
+
         <section th:fragment="main" id="main" class="main">
 
             <div class="pagetitle">
@@ -15,7 +42,7 @@
                         <li class="breadcrumb-item active">Datos</li>
                     </ol>
                 </nav>
-            </div><!-- End Page Title -->
+            </div>
 
             <section class="section">
                 <div class="row">
@@ -58,27 +85,24 @@
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
                                             </td>
-
-
                                         </tr>
-
-                                        <!-- Agrega más filas según sea necesario -->
                                     </tbody>
                                 </table>
-
-
-                                <!-- End Table with stripped rows -->
-
                             </div>
                         </div>
-
                     </div>
                 </div>
             </section>
-
-
         </section><!-- End #main -->
 
+        <section th:fragment="busqueda">
+            <div class="d-flex mb-3">
+                <input type="text"
+                       id="busquedaUsuarioInput"
+                       class="form-control me-2"
+                       placeholder="Buscar por usuario, rol o cédula" />
+            </div>
+        </section>
 
         <section th:fragment="agregar" id="main" class="main">
 
@@ -106,7 +130,6 @@
                                          onerror="this.style.display='none'"/>
                                 </div>
 
-
                                 <!-- Title -->
                                 <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
                                     Registrar Usuario
@@ -116,64 +139,93 @@
                                 <form class="row g-4 mt-4" th:action="@{/usuario/guardar}" th:object="${usuario}" method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
+                                    <!-- NOMBRE -->
                                     <div class="col-md-6">
                                         <label for="inputNombreCompleto" class="form-label">Nombre</label>
-                                        <input type="text" class="form-control" id="inputNombreCompleto" name="nombre" />
+                                        <input type="text" class="form-control"
+                                               id="inputNombreCompleto" name="nombre"
+                                               required maxlength="50"
+                                               pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                               title="Solo letras y espacios"/>
                                     </div>
 
+                                    <!-- PRIMER APELLIDO -->
                                     <div class="col-md-6">
                                         <label for="inputPrimerApellido" class="form-label">Primer Apellido</label>
-                                        <input type="text" class="form-control" id="inputPrimerApellido" name="primerApellido" />
+                                        <input type="text" class="form-control"
+                                               id="inputPrimerApellido" name="primerApellido"
+                                               required maxlength="50"
+                                               pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                               title="Solo letras y espacios"/>
                                     </div>
 
+                                    <!-- SEGUNDO APELLIDO -->
                                     <div class="col-md-6">
                                         <label for="inputSegundoApellido" class="form-label">Segundo Apellido</label>
-                                        <input type="text" class="form-control" id="inputSegundoApellido" name="segundoApellido" />
+                                        <input type="text" class="form-control"
+                                               id="inputSegundoApellido" name="segundoApellido"
+                                               required maxlength="50"
+                                               pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                               title="Solo letras y espacios"/>
                                     </div>
 
+                                    <!-- USERNAME -->
                                     <div class="col-md-6">
                                         <label for="inputUsername" class="form-label">Nombre de usuario</label>
-                                        <input type="text" class="form-control" id="inputUsername" name="username" />
-                                        <div th:if="${error}" class="alert alert-danger mt-2">
-                                            <span th:text="${error}"></span>
-                                        </div>
+                                        <input type="text" class="form-control"
+                                               id="inputUsername" name="username"
+                                               required minlength="4" maxlength="20"/>
+
                                     </div>
 
+                                    <!-- CEDULA -->
                                     <div class="col-md-6">
                                         <label for="inputCedula" class="form-label">Cédula</label>
-                                        <input type="text" class="form-control" id="inputCedula" name="cedula" />
+                                        <input type="text" class="form-control"
+                                               id="inputCedula" name="cedula"
+                                               required maxlength="9"
+                                               pattern="[0-9]{9,10}"
+                                               title="Debe contener entre 9 y 10 números"/>
                                     </div>
 
+                                    <!-- PASSWORD -->
                                     <div class="col-md-6">
                                         <label for="inputPassword" class="form-label">Contraseña</label>
-                                        <input type="password" class="form-control" id="inputPassword" name="password" />
+                                        <input type="password" class="form-control"
+                                               id="inputPassword" name="password"
+                                               required minlength="6"
+                                               title="Mínimo 6 caracteres"/>
                                     </div>
 
+                                    <!-- ESTADO -->
                                     <div class="col-md-6">
                                         <label for="inputEstado" class="form-label">Estado</label>
-                                        <select id="inputEstado" name="activo" class="form-select">
-                                            <option selected>Seleccione...</option>
+                                        <select id="inputEstado" name="activo" class="form-select" required>
+                                            <option value="">Seleccione...</option>
                                             <option value="true">Activo</option>
                                             <option value="false">Inactivo</option>
                                         </select>
                                     </div>
 
+                                    <!-- ROL -->
                                     <div class="col-md-6">
                                         <label for="inputRol" class="form-label">Rol</label>
-                                        <select id="inputRol" name="roles" class="form-select">
-                                            <option selected>Seleccione...</option>
+                                        <select id="inputRol" name="roles" class="form-select" required>
+                                            <option value="">Seleccione...</option>
                                             <option value="1">Administrador</option>
                                             <option value="2">Recepcionista</option>
                                             <option value="3">Doctor</option>
                                         </select>
                                     </div>
 
+                                    <div th:if="${error}" class="alert alert-danger" style="margin-top: 30px;">
+                                        <span th:text="${error}"></span>
+                                    </div>
+
                                     <div class="text-center mt-3">
                                         <button type="submit" class="btn btn-save me-5">Registrar</button>
-                                        <button type="submit" class="btn btn-cancel" formaction="/usuario/usuarios" formmethod="get">Cancelar</button>
+                                        <a th:href="@{/usuario/usuarios}" class="btn btn-cancel">Cancelar</a>
                                         </button>
-
-
                                     </div>
                                 </form>
 
@@ -208,7 +260,9 @@
                             <div class="card-body">
 
                                 <div class="text-center md-2 mb-6" style="margin-top: 20px;">
-                                    <img src="assets/img/logo-1.png" alt="Logo Laboratorio" class="logo-img" style="max-width: 150px;" />
+                                    <img th:src="@{/assets/img/logo-1.png}" alt="Logo Laboratorio"
+                                         class="logo-img" style="max-width: 150px;"
+                                         onerror="this.style.display='none'"/>
                                 </div>
 
                                 <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
@@ -220,40 +274,68 @@
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                     <input type="hidden" th:field="*{idUsuario}" />
 
-                                    <div class="col-md-6 mb-3">
-                                        <label for="inputNombreCompleto" class="form-label">Nombre</label>
-                                        <input type="text" class="form-control" id="inputNombreCompleto" th:field="*{nombre}" />
+                                    <!-- NOMBRE -->
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nombre</label>
+                                        <input type="text" class="form-control"
+                                               th:field="*{nombre}" required maxlength="50"
+                                               pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                               title="Solo letras y espacios"/>
                                     </div>
 
-                                    <div class="col-md-6 mb-3">
+                                    <!-- PRIMER APELLIDO -->
+                                    <div class="col-md-6">
                                         <label class="form-label">Primer Apellido</label>
-                                        <input type="text" class="form-control" th:field="*{primerApellido}" />
+                                        <input type="text" class="form-control"
+                                               th:field="*{primerApellido}" required maxlength="50"
+                                               pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                               title="Solo letras y espacios"/>
                                     </div>
 
-                                    <div class="col-md-6 mb-3">
+                                    <!-- SEGUNDO APELLIDO -->
+                                    <div class="col-md-6">
                                         <label class="form-label">Segundo Apellido</label>
-                                        <input type="text" class="form-control" th:field="*{segundoApellido}" />
+                                        <input type="text" class="form-control"
+                                               th:field="*{segundoApellido}" required maxlength="50"
+                                               pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                               title="Solo letras y espacios"/>
                                     </div>
 
-                                    <div class="col-md-6 mb-3">
+                                    <!-- USERNAME -->
+                                    <div class="col-md-6">
                                         <label class="form-label">Nombre de usuario</label>
-                                        <input type="text" class="form-control" th:field="*{username}" />
+                                        <input type="text" class="form-control"
+                                               th:field="*{username}" required minlength="4" maxlength="20"/>
                                     </div>
 
-                                    <div class="col-md-6 mb-3">
+                                    <!-- CEDULA -->
+                                    <div class="col-md-6">
+                                        <label class="form-label">Cédula</label>
+                                        <input type="text" class="form-control"
+                                               th:field="*{cedula}" required maxlength="10"
+                                               pattern="[0-9]{9,10}"
+                                               title="Debe contener entre 9 y 10 números"/>
+                                    </div>
+
+                                    <!-- CONTRASEÑA -->
+                                    <div class="col-md-6">
                                         <label class="form-label">Contraseña</label>
-                                        <input type="password" class="form-control" th:field="*{password}" />
+                                        <input type="password" class="form-control"
+                                               th:field="*{password}" minlength="6"
+                                               title="Mínimo 6 caracteres"/>
                                     </div>
 
-                                    <div class="col-md-6 mb-3">
+                                    <!-- ESTADO -->
+                                    <div class="col-md-6">
                                         <label class="form-label">Estado</label>
-                                        <select class="form-select" th:field="*{activo}">
-
+                                        <select class="form-select" th:field="*{activo}" required>
+                                            <option value="">Seleccione...</option>
                                             <option value="true">Activo</option>
                                             <option value="false">Inactivo</option>
                                         </select>
                                     </div>
 
+                                    <!-- ROL -->
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Rol</label>
                                         <select class="form-select" name="roles">
@@ -264,29 +346,18 @@
                                         </select>
                                     </div>
 
-                                    <div class="text-center mt-3">
-                                        <button type="submit" class="btn btn-save me-5">Actualizar</button>
-                                        <a th:href="@{/usuario/usuarios}"  class="btn btn-cancel">Cancelar</a>
-                                    </div>
-                                </form>
-
                             </div>
+                            <div class="text-center mt-3">
+                                <button type="submit" class="btn btn-save me-5">Actualizar</button>
+                                <a th:href="@{/usuario/usuarios}"  class="btn btn-cancel">Cancelar</a>
+                            </div>
+                            </form>
                         </div>
-
                     </div>
+                </div>
                 </div>
             </section>
         </section>
-
-        <section th:fragment="busqueda">
-            <div class="d-flex mb-3">
-                <input type="text" id="buscarUsuarioInput" class="form-control me-2" placeholder="Buscar por nombre" />
-                <button class="btn btn-primary" id="btnBuscarUsuario">Buscar</button>
-            </div>
-        </section>
-
-
-        <!-- Preloader --> 
 
         <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
     </body>

@@ -42,7 +42,7 @@
 
                                                 <!-- Body -->
                                                 <div class="test-body">
-                                                   
+
 
                                                     <div class="test-info">
                                                         <div class="info-row">
@@ -70,7 +70,7 @@
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
 
-                                                    
+
                                                 </div>
                                             </div> <!-- End test -->
                                         </div> <!-- End catalog -->
@@ -285,27 +285,15 @@
 
         </section>
 
-        <!-- Fragmento botonesBuscar -->
-        <section th:fragment="botonesBuscar">
-            <div class="container">
-                <div class="row">
-                    <div class="">
-                        <button class="btn bg-brown border bg-user-hover" type="submit">
-                            Buscar
-                        </button>
-                    </div>
-                </div>
+
+        <section th:fragment="busqueda">
+            <div class="d-flex mb-3">
+                <input type="text" id="busquedaInput" class="form-control me-2"
+                       placeholder="Buscar por nombre o área" />
             </div>
         </section>
 
-        <!-- Fragmento de búsqueda -->
-        <section th:fragment="busqueda">
-            <form method="get" th:action="@{/examen/buscar}" class="d-flex mb-3">
-                <input type="text" name="query" th:value="${query}" class="form-control me-2" 
-                       placeholder="Buscar por nombre o área" />
-                <button type="submit" class="btn btn-primary">Buscar</button>
-            </form>
-        </section>
+
 
         <!-- Fargmento de proformas -->
         <section th:fragment="proforma" id="main" class="main">
