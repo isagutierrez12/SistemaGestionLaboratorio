@@ -4,9 +4,11 @@ import com.laboratorio.model.Usuario;
 import com.laboratorio.service.RolService;
 import com.laboratorio.service.UsuarioService;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,7 +22,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-
 @Controller
 @RequestMapping("/usuario")
 public class UsuarioController {
@@ -30,7 +31,6 @@ public class UsuarioController {
     @Autowired
     RolService rolService;
 
-    //listado
     @GetMapping("/usuarios")
     public String listadoUsuarios(Model model) {
         var lista = usuarioService.getUsuarios();
@@ -38,25 +38,42 @@ public class UsuarioController {
         return "/usuario/usuarios";
     }
 
-    //agregar
     @GetMapping("/agregar")
     public String agregarUsuarios(Model model) {
+        model.addAttribute("usuario", new Usuario());
         return "/usuario/agregar";
     }
 
     @PostMapping("/guardar")
-    public String guardarUsuario(@ModelAttribute Usuario usuario, @RequestParam("roles") String rolSeleccionado, Model model) {
+    public String guardarUsuario(
+            @Valid @ModelAttribute("usuario") Usuario usuario,
+            BindingResult result,
+            @RequestParam("roles") String rolSeleccionado,
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
-        try {
-            usuarioService.save(usuario, rolSeleccionado);
-            return "redirect:/usuario/usuarios";
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
+        if (result.hasErrors()) {
+            model.addAttribute("errores", result.getAllErrors());
             return "/usuario/agregar";
         }
 
+        try {
+            boolean esNuevo = (usuario.getIdUsuario() == null);
+            usuarioService.save(usuario, rolSeleccionado);
+
+            if (esNuevo) {
+                redirectAttributes.addFlashAttribute("success", "Usuario agregado correctamente");
+            } else {
+                redirectAttributes.addFlashAttribute("success", "Usuario actualizado correctamente");
+            }
+
+            return "redirect:/usuario/usuarios";
+
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("error", ex.getMessage());
+            return "/usuario/agregar";
+        }
     }
-    //editar
 
     @GetMapping("/modificar/{idUsuario}")
     public String modicarUsuario(Usuario usuario, Model model) {
@@ -100,12 +117,13 @@ public class UsuarioController {
 
     @GetMapping("/buscarJSON")
     @ResponseBody
-    public List<Usuario> buscarUsuariosJSON(@RequestParam(value = "nombre", required = false) String nombre) {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            return usuarioService.getUsuarios(); // muestra todos si está vacío
+    public List<Usuario> buscarUsuariosJSON(@RequestParam(value = "query", required = false) String query) {
+
+        if (query == null || query.trim().isEmpty()) {
+            return usuarioService.getUsuariosActivos();
         }
-        // Aquí hacemos la búsqueda que contenga la cadena (ignore case)
-        return usuarioService.buscarUsuariosPorNombreCoincidente(nombre.trim());
+
+        return usuarioService.buscarUsuariosPorQuery(query.trim());
     }
 
 }

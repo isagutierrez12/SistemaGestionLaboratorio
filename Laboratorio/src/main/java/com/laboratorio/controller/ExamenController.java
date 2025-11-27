@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/examen")
@@ -69,20 +70,14 @@ public class ExamenController {
         return "redirect:/examen/examenes";
     }
 
-// Buscar
-    @GetMapping("/buscar")
-    public String buscarExamenes(@RequestParam("query") String query, Model model) {
-        List<Examen> examenes;
-
+    @GetMapping("/buscar/json")
+    @ResponseBody
+    public List<Examen> buscarExamenesJson(@RequestParam("query") String query) {
         if (query == null || query.trim().isEmpty()) {
-            examenes = examenService.getAll();
+            return examenService.getAll();
         } else {
-            examenes = examenService.buscarExamenes(query.trim());
+            return examenService.buscarExamenes(query.trim());
         }
-
-        model.addAttribute("examenes", examenes);
-        model.addAttribute("query", query);
-        return "examen/examenes";
     }
 
     //otros
