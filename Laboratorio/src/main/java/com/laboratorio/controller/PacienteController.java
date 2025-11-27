@@ -5,6 +5,7 @@
 package com.laboratorio.controller;
 
 import com.laboratorio.model.Paciente;
+import com.laboratorio.repository.PacienteRepository;
 import com.laboratorio.service.PacienteService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,22 +17,26 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
+import javax.validation.Valid;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/paciente")
 public class PacienteController {
 
     private final PacienteService pacienteService;
+    private final PacienteRepository pacienteRepository;
 
     @Autowired
-    public PacienteController(PacienteService pacienteService) {
+    public PacienteController(PacienteService pacienteService, PacienteRepository pacienteRepository) {
         this.pacienteService = pacienteService;
+        this.pacienteRepository = pacienteRepository;
     }
 
-    // Listado
     @GetMapping("/pacientes")
     public String listadoPacientes(Model model) {
 
@@ -42,7 +47,6 @@ public class PacienteController {
         return "paciente/pacientes";
     }
 
-// Agregar
     @GetMapping("/agregar")
     public String agregarPaciente(Model model) {
         model.addAttribute("paciente", new Paciente());
@@ -50,17 +54,68 @@ public class PacienteController {
         return "paciente/agregar"; //
     }
 
-// Guardar
     @PostMapping("/guardar")
-    public String guardarPaciente(@ModelAttribute("paciente") Paciente paciente) {
-        paciente.setFechaCreacion(new Date());
+    public String guardarPaciente(
+            @Valid @ModelAttribute("paciente") Paciente paciente,
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
-        String anio = new SimpleDateFormat("yy").format(paciente.getFechaCreacion());
-        int maxSeq = pacienteService.getMaxSequenceForYear(anio);
-        paciente.setIdPaciente("P" + anio + "-" + String.format("%04d", maxSeq + 1));
+        boolean esNuevo = (paciente.getIdPaciente() == null);
 
-        pacienteService.save(paciente);
-        return "redirect:/paciente/pacientes";
+        if (result.hasErrors()) {
+            model.addAttribute("errores", result.getAllErrors());
+            model.addAttribute("page", "create");  // muy importante
+            return "/paciente/agregar";
+        }
+
+        try {
+            if (esNuevo) {
+                if (pacienteRepository.existsByCedula(paciente.getCedula())) {
+                    throw new IllegalArgumentException("La cédula ya está registrada");
+                }
+                if (pacienteRepository.existsByTelefono(paciente.getTelefono())) {
+                    throw new IllegalArgumentException("El teléfono ya está registrado");
+                }
+                if (paciente.getEmail() != null && !paciente.getEmail().isBlank()
+                        && pacienteRepository.existsByEmail(paciente.getEmail())) {
+                    throw new IllegalArgumentException("El correo ya está registrado");
+                }
+            } else {
+                Paciente existente = pacienteRepository.findById(paciente.getIdPaciente())
+                        .orElseThrow(() -> new IllegalArgumentException("Paciente no encontrado"));
+
+                if (!paciente.getCedula().equals(existente.getCedula())
+                        && pacienteRepository.existsByCedula(paciente.getCedula())) {
+                    throw new IllegalArgumentException("La cédula ya está registrada");
+                }
+                if (!paciente.getTelefono().equals(existente.getTelefono())
+                        && pacienteRepository.existsByTelefono(paciente.getTelefono())) {
+                    throw new IllegalArgumentException("El teléfono ya está registrado");
+                }
+                if (paciente.getEmail() != null && !paciente.getEmail().isBlank()
+                        && !paciente.getEmail().equals(existente.getEmail())
+                        && pacienteRepository.existsByEmail(paciente.getEmail())) {
+                    throw new IllegalArgumentException("El correo ya está registrado");
+                }
+            }
+
+            if (esNuevo) {
+                String anio = new SimpleDateFormat("yy").format(new Date());
+                int maxSeq = pacienteService.getMaxSequenceForYear(anio);
+                paciente.setIdPaciente("P" + anio + "-" + String.format("%04d", maxSeq + 1));
+            }
+
+            pacienteService.save(paciente);
+            redirectAttributes.addFlashAttribute("success", "Paciente registrado correctamente");
+            return "redirect:/paciente/pacientes";
+
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("error", ex.getMessage());
+            model.addAttribute("paciente", paciente);
+            model.addAttribute("page", "create"); // clave para mostrar el form
+            return "/paciente/agregar";
+        }
     }
 
     @GetMapping("/buscar")
@@ -101,26 +156,62 @@ public class PacienteController {
     }
 
     @PostMapping("/actualizar")
-    public String actualizarPaciente(@ModelAttribute("paciente") Paciente paciente) {
-        Paciente p = pacienteService.getPaciente(paciente.getIdPaciente());
-        if (p == null) {
+    public String actualizarPaciente(
+            @Valid @ModelAttribute("paciente") Paciente paciente,
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        Paciente existente = pacienteService.getPaciente(paciente.getIdPaciente());
+        if (existente == null) {
             return "redirect:/paciente/pacientes";
         }
+        
+        if (result.hasErrors()) {
+            model.addAttribute("errores", result.getAllErrors());
+            model.addAttribute("paciente", paciente);
+            model.addAttribute("page", "edit");
+            return "/paciente/editar";
+        }
 
-        p.setNombre(paciente.getNombre());
-        p.setPrimerApellido(paciente.getPrimerApellido());
-        p.setSegundoApellido(paciente.getSegundoApellido());
-        p.setCedula(paciente.getCedula());
-        p.setTelefono(paciente.getTelefono());
-        p.setEmail(paciente.getEmail());
-        p.setActivo(paciente.isActivo());
-        p.setFechaNacimiento(paciente.getFechaNacimiento());
-        p.setAlergia(paciente.getAlergia());
-        p.setPadecimiento(paciente.getPadecimiento());
-        p.setContactoEmergencia(paciente.getContactoEmergencia());
+        try {
+            if (!paciente.getCedula().equals(existente.getCedula())
+                    && pacienteRepository.existsByCedula(paciente.getCedula())) {
+                throw new IllegalArgumentException("La cédula ya está registrada");
+            }
+            if (!paciente.getTelefono().equals(existente.getTelefono())
+                    && pacienteRepository.existsByTelefono(paciente.getTelefono())) {
+                throw new IllegalArgumentException("El teléfono ya está registrado");
+            }
+            if (paciente.getEmail() != null && !paciente.getEmail().isBlank()
+                    && !paciente.getEmail().equals(existente.getEmail())
+                    && pacienteRepository.existsByEmail(paciente.getEmail())) {
+                throw new IllegalArgumentException("El correo ya está registrado");
+            }
 
-        pacienteService.save(p);
-        return "redirect:/paciente/pacientes";
+            existente.setNombre(paciente.getNombre());
+            existente.setPrimerApellido(paciente.getPrimerApellido());
+            existente.setSegundoApellido(paciente.getSegundoApellido());
+            existente.setCedula(paciente.getCedula());
+            existente.setTelefono(paciente.getTelefono());
+            existente.setEmail(paciente.getEmail());
+            existente.setActivo(paciente.getActivo());
+            existente.setFechaNacimiento(paciente.getFechaNacimiento());
+            existente.setAlergia(paciente.getAlergia());
+            existente.setPadecimiento(paciente.getPadecimiento());
+            existente.setContactoEmergencia(paciente.getContactoEmergencia());
+
+            pacienteService.save(existente);
+
+            redirectAttributes.addFlashAttribute("success", "Paciente actualizado correctamente");
+            return "redirect:/paciente/pacientes";
+
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("error", ex.getMessage());
+            model.addAttribute("paciente", paciente);
+            model.addAttribute("page", "edit");
+            return "/paciente/editar";
+        }
     }
 
     @GetMapping("/inactivos")
