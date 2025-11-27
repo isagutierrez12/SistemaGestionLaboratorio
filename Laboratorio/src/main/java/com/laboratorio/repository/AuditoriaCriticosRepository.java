@@ -16,17 +16,18 @@ public interface AuditoriaCriticosRepository extends JpaRepository<AuditoriaCrit
     @Query("SELECT a FROM AuditoriaCriticos a ORDER BY a.fechaHora DESC")
     List<AuditoriaCriticos> findAllOrderByFechaHoraDesc();
 
-    @Query("SELECT a FROM AuditoriaCriticos a " +
-           "WHERE (:inicio IS NULL OR a.fechaHora >= :inicio) " +
-           "AND (:fin IS NULL OR a.fechaHora <= :fin) " +
-           "ORDER BY a.fechaHora DESC")
-    List<AuditoriaCriticos> buscarPorRangoFechas(@Param("inicio") LocalDateTime inicio,
-                                                  @Param("fin") LocalDateTime fin);
+    @Query("SELECT a FROM AuditoriaCriticos a WHERE a.usuario LIKE %:usuario% ORDER BY a.fechaHora DESC")
+    List<AuditoriaCriticos> buscarPorUsuario(@Param("usuario") String usuario);
 
-    @Query("SELECT a FROM AuditoriaCriticos a WHERE " +
-           "LOWER(a.usuario) LIKE LOWER(CONCAT('%', :query, '%')) " +
-           "OR LOWER(a.tipoEvento) LIKE LOWER(CONCAT('%', :query, '%')) " +
-           "OR LOWER(a.descripcion) LIKE LOWER(CONCAT('%', :query, '%')) " +
-           "ORDER BY a.fechaHora DESC")
-    List<AuditoriaCriticos> buscarPorQuery(@Param("query") String query);
+    @Query("SELECT a FROM AuditoriaCriticos a WHERE a.tipoEvento LIKE %:tipoEvento% ORDER BY a.fechaHora DESC")
+    List<AuditoriaCriticos> buscarPorTipoEvento(@Param("tipoEvento") String tipoEvento);
+
+    @Query("SELECT a FROM AuditoriaCriticos a WHERE a.fechaHora >= :inicio AND a.fechaHora <= :fin ORDER BY a.fechaHora DESC")
+    List<AuditoriaCriticos> buscarPorRangoFechas(@Param("inicio") LocalDateTime inicio, @Param("fin") LocalDateTime fin);
+
+    @Query("SELECT a FROM AuditoriaCriticos a WHERE a.fechaHora >= :inicio ORDER BY a.fechaHora DESC")
+    List<AuditoriaCriticos> buscarDesdeFecha(@Param("inicio") LocalDateTime inicio);
+
+    @Query("SELECT a FROM AuditoriaCriticos a WHERE a.fechaHora <= :fin ORDER BY a.fechaHora DESC")
+    List<AuditoriaCriticos> buscarHastaFecha(@Param("fin") LocalDateTime fin);
 }

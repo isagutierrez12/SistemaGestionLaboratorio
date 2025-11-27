@@ -4,9 +4,13 @@
  */
 package com.laboratorio.controller;
 
+import com.laboratorio.exporter.AuditoriaPDFExporter;
 import com.laboratorio.model.Auditoria;
 import com.laboratorio.service.AuditoriaService;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -36,7 +40,6 @@ public class AuditoriaController {
         model.addAttribute("page", "list");
         return "auditoria/auditorias";
     }
-    
 
     // Búsqueda (por usuario, módulo o acción)
     @GetMapping("/buscar")
@@ -74,6 +77,57 @@ public class AuditoriaController {
             @RequestParam(value = "fechaFin", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin
     ) {
         return auditoriaService.buscarPorFecha(fechaInicio, fechaFin);
+    }
+
+    @GetMapping("/export/pdf")
+    public void exportToPDF(
+            @RequestParam(required = false) String usuario,
+            @RequestParam(required = false) String modulo,
+            @RequestParam(required = false) String accion,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaFin,
+            HttpServletResponse response) throws IOException {
+
+        if (usuario != null && usuario.isBlank()) {
+            usuario = null;
+        }
+        if (modulo != null && modulo.isBlank()) {
+            modulo = null;
+        }
+        if (accion != null && accion.isBlank()) {
+            accion = null;
+        }
+
+        LocalDateTime inicio = fechaInicio != null ? fechaInicio.atStartOfDay() : null;
+        LocalDateTime fin = fechaFin != null ? fechaFin.atTime(23, 59, 59) : null;
+
+        List<Auditoria> lista = auditoriaService.filtrar(usuario, modulo, accion, inicio, fin);
+ 
+        AuditoriaPDFExporter exporter = new AuditoriaPDFExporter(lista);
+        exporter.export(response);
+    }
+
+    @GetMapping("/export/excel")
+    public void exportarExcel(
+            @RequestParam(required = false) String usuario,
+            @RequestParam(required = false) String modulo,
+            @RequestParam(required = false) String accion,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaFin,
+            HttpServletResponse response
+    ) throws IOException {
+
+        LocalDateTime inicioDT = fechaInicio != null ? fechaInicio.atStartOfDay() : null;
+        LocalDateTime finDT = fechaFin != null ? fechaFin.atTime(23, 59, 59) : null;
+
+        List<Auditoria> auditorias = auditoriaService.filtrar(
+                usuario, modulo, accion, inicioDT, finDT
+        );
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=Auditoria_General.xlsx");
+
+        auditoriaService.exportarExcel(auditorias, response.getOutputStream());
     }
 
 }

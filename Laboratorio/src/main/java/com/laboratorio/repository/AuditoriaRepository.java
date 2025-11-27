@@ -16,7 +16,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories
 public interface AuditoriaRepository extends JpaRepository<Auditoria, Long> {
 
-    @Query("SELECT a FROM Auditoria a WHERE "
+@Query("SELECT a FROM Auditoria a WHERE "
             + "LOWER(a.usuario) LIKE LOWER(CONCAT('%', :query, '%')) "
             + "OR LOWER(a.modulo) LIKE LOWER(CONCAT('%', :query, '%')) "
             + "OR LOWER(a.accion) LIKE LOWER(CONCAT('%', :query, '%')) "
@@ -26,10 +26,10 @@ public interface AuditoriaRepository extends JpaRepository<Auditoria, Long> {
     @Query("SELECT a FROM Auditoria a ORDER BY a.fechaHora DESC")
     List<Auditoria> findAllOrderByFechaHoraDesc();
 
-    @Query("SELECT a FROM Auditoria a "
-            + "WHERE (:inicio IS NULL OR a.fechaHora >= :inicio) "
-            + "AND (:fin IS NULL OR a.fechaHora <= :fin) "
-            + "ORDER BY a.fechaHora DESC")
-    List<Auditoria> buscarPorRangoFechas(@Param("inicio") LocalDateTime inicio,
-            @Param("fin") LocalDateTime fin);
+    List<Auditoria> findByFechaHoraBeforeOrderByFechaHoraDesc(LocalDateTime fin);
+
+    List<Auditoria> findByFechaHoraAfterOrderByFechaHoraDesc(LocalDateTime inicio);
+
+    List<Auditoria> findByFechaHoraBetweenOrderByFechaHoraDesc(LocalDateTime inicio, LocalDateTime fin);
 }
+
