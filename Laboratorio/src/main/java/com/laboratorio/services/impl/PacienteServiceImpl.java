@@ -5,9 +5,11 @@ import com.laboratorio.model.Paciente;
 import com.laboratorio.repository.PacienteRepository;
 import com.laboratorio.service.PacienteService;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PacienteServiceImpl implements PacienteService {
@@ -30,17 +32,47 @@ public class PacienteServiceImpl implements PacienteService {
     }
 
     @Override
+    @Transactional
     public void save(Paciente paciente) {
-        boolean esNuevo = (paciente.getIdPaciente() == null)
+        boolean esNuevo = paciente.getIdPaciente() == null
                 || !pacienteRepository.existsById(paciente.getIdPaciente());
 
-        pacienteRepository.save(paciente);
+        // Validaciones de unicidad
+        if (esNuevo) {
+            if (pacienteRepository.existsByCedula(paciente.getCedula())) {
+                throw new IllegalArgumentException("La cédula ya está registrada");
+            }
+            if (pacienteRepository.existsByTelefono(paciente.getTelefono())) {
+                throw new IllegalArgumentException("El teléfono ya está registrado");
+            }
+            if (paciente.getEmail() != null && !paciente.getEmail().isBlank()
+                    && pacienteRepository.existsByEmail(paciente.getEmail())) {
+                throw new IllegalArgumentException("El correo ya está registrado");
+            }
+        } else {
+            Paciente existente = pacienteRepository.findById(paciente.getIdPaciente())
+                    .orElseThrow(() -> new IllegalArgumentException("Paciente no encontrado"));
+
+            if (!paciente.getCedula().equals(existente.getCedula())
+                    && pacienteRepository.existsByCedula(paciente.getCedula())) {
+                throw new IllegalArgumentException("La cédula ya está registrada");
+            }
+            if (!paciente.getTelefono().equals(existente.getTelefono())
+                    && pacienteRepository.existsByTelefono(paciente.getTelefono())) {
+                throw new IllegalArgumentException("El teléfono ya está registrado");
+            }
+            if (paciente.getEmail() != null && !paciente.getEmail().isBlank()
+                    && !paciente.getEmail().equals(existente.getEmail())
+                    && pacienteRepository.existsByEmail(paciente.getEmail())) {
+                throw new IllegalArgumentException("El correo ya está registrado");
+            }
+        }
 
         if (esNuevo) {
-            registrarAuditoria("CREAR", paciente);
-        } else {
-            registrarAuditoria("ACTUALIZAR", paciente);
+            paciente.setFechaCreacion(new Date());
         }
+
+        pacienteRepository.save(paciente);
     }
 
     @Override
