@@ -34,7 +34,7 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item">Pacientes</li>
                         <li class="breadcrumb-item active">Datos</li>
                     </ol>
@@ -71,7 +71,7 @@
                                             <th style="text-align:center;">Padecimientos</th>  
                                             <th style="text-align:center;">Alergias</th>  
                                             <th style="text-align:center;">Activo</th>        
-                                            <th style="text-align:center;">Acciones</th>
+                                            <th style="text-align:center;"></th>
 
                                         </tr>
                                     </thead>
@@ -92,7 +92,7 @@
                                             </td>
                                             <td class="actions-cell" 
                                                 style="vertical-align: middle; text-align: center; display: flex; justify-content: center; gap: 20px;">
-                                                <a th:href="@{/paciente/editar/{id}(id=${p.idPaciente})}" class="btn-edit" title="Editar">
+                                                <a th:href="@{/paciente/editar/{id}(id=${p.idPaciente})}" class="btn-edit" title="Actualizar">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
                                                 <a th:href="@{/paciente/historial/{id}(id=${p.idPaciente})}" class="btn btn-history" title="Historial">
@@ -117,7 +117,7 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item">Pacientes</li>
                         <li class="breadcrumb-item active">Registrar</li>
                     </ol>
@@ -241,7 +241,7 @@
                                     </div>
 
                                     <div class="col-12 text-center mt-4">
-                                        <button type="submit" class="btn btn-save me-2">Registrar</button>
+                                        <button type="submit" class="btn btn-save me-2">Guardar</button>
                                         <a th:href="@{/paciente/pacientes}" class="btn btn-cancel">Cancelar</a>
                                     </div>
                                 </form>
@@ -263,9 +263,9 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item">Pacientes</li>
-                        <li class="breadcrumb-item active">Editar</li>
+                        <li class="breadcrumb-item active">Actualizar</li>
                     </ol>
                 </nav>
             </div>
@@ -286,7 +286,7 @@
 
                                 <!-- Título -->
                                 <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
-                                    Editar Paciente
+                                    Actualizar Paciente
                                 </h4>
 
                                 <!-- Formulario en dos columnas -->
@@ -396,7 +396,7 @@
 
                                     <!-- Botones -->
                                     <div class="col-12 text-center mt-4">
-                                        <button type="submit" class="btn btn-save me-2">Guardar</button>
+                                        <button type="submit" class="btn btn-save me-2">Actualizar</button>
                                         <a th:href="@{/paciente/pacientes}" class="btn btn-cancel">Cancelar</a>
                                     </div>
                                 </form>
@@ -415,7 +415,7 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item">Pacientes</li>
                         <li class="breadcrumb-item active">Inactivos</li>
                     </ol>

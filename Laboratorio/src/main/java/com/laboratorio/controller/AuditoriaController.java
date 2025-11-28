@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.laboratorio.controller;
 
 import com.laboratorio.exporter.AuditoriaPDFExporter;
@@ -32,7 +28,6 @@ public class AuditoriaController {
         this.auditoriaService = auditoriaService;
     }
 
-    // Listado principal
     @GetMapping("/auditorias")
     public String listarAuditorias(Model model) {
         List<Auditoria> auditorias = auditoriaService.listarTodas();
@@ -41,7 +36,6 @@ public class AuditoriaController {
         return "auditoria/auditorias";
     }
 
-    // Búsqueda (por usuario, módulo o acción)
     @GetMapping("/buscar")
     public String buscarAuditoria(@RequestParam("query") String query, Model model) {
         List<Auditoria> auditorias;
@@ -58,7 +52,6 @@ public class AuditoriaController {
         return "auditoria/listado";
     }
 
-    // Endpoint JSON opcional para búsquedas dinámicas
     @GetMapping("/buscar/json")
     @ResponseBody
     public List<Auditoria> buscarAuditoriaJson(@RequestParam("query") String query) {
@@ -69,7 +62,6 @@ public class AuditoriaController {
         }
     }
 
-    // Endpoint JSON para buscar solo por fecha
     @GetMapping("/buscar/fecha")
     @ResponseBody
     public List<Auditoria> buscarAuditoriaPorFecha(

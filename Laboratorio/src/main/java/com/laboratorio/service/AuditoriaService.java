@@ -109,42 +109,6 @@ public class AuditoriaService {
         return auditorias;
     }
 
-    public void exportarPdf(List<Auditoria> auditorias, OutputStream outputStream) throws IOException {
-        Document document = new Document(PageSize.A4.rotate());
-        PdfWriter.getInstance(document, outputStream);
-
-        document.open();
-
-        Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
-        Paragraph title = new Paragraph("Reporte de Auditoría: Laboratorio Clínico Calderón Piedra", titleFont);
-        title.setAlignment(Element.ALIGN_CENTER);
-        title.setSpacingAfter(20);
-        document.add(title);
-
-        PdfPTable table = new PdfPTable(6);
-        table.setWidthPercentage(100);
-
-        String[] headers = {"ID", "Usuario", "Módulo", "Acción", "Fecha", "Descripción"};
-
-        for (String h : headers) {
-            PdfPCell cell = new PdfPCell(new Phrase(h));
-            cell.setBackgroundColor(Color.LIGHT_GRAY);
-            table.addCell(cell);
-        }
-
-        for (Auditoria a : auditorias) {
-            table.addCell(String.valueOf(a.getId()));
-            table.addCell(a.getUsuario());
-            table.addCell(a.getModulo());
-            table.addCell(a.getAccion());
-            table.addCell(a.getFechaHora().toString());
-            table.addCell(a.getDescripcion());
-        }
-
-        document.add(table);
-        document.close();
-    }
-
     public void exportarExcel(List<Auditoria> auditorias, OutputStream os) throws IOException {
 
         XSSFWorkbook workbook = new XSSFWorkbook();
