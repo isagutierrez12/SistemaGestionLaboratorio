@@ -16,5 +16,6 @@ public interface ExamenRepository extends JpaRepository<Examen, Long> {
             + "OR LOWER(e.area) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<Examen> buscarPorQuery(@Param("query") String query);
 
-  
+  boolean existsByNombreIgnoreCase(String nombre);
+
 }
