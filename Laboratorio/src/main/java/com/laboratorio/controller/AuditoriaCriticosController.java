@@ -40,21 +40,18 @@ public class AuditoriaCriticosController {
         return "auditoria/criticos";
     }
 
-    // JSON búsqueda general
     @GetMapping("/buscar")
     @ResponseBody
     public List<AuditoriaCriticos> buscar(@RequestParam("query") String query) {
         List<AuditoriaCriticos> porUsuario = auditoriaCriticosService.buscarPorUsuario(query);
         List<AuditoriaCriticos> porTipo = auditoriaCriticosService.buscarPorTipoEvento(query);
 
-        // unir resultados sin duplicados
         Set<AuditoriaCriticos> result = new LinkedHashSet<>();
         result.addAll(porUsuario);
         result.addAll(porTipo);
         return new ArrayList<>(result);
     }
 
-    // JSON por fechas
     @GetMapping("/buscar/fecha")
     @ResponseBody
     public List<AuditoriaCriticos> buscarPorFecha(

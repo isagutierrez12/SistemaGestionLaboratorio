@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.laboratorio.service;
 
 import com.laboratorio.model.Auditoria;
@@ -156,7 +152,7 @@ public class AuditoriaService {
 
         Row header = sheet.createRow(0);
 
-        String[] columns = {"ID", "Usuario", "Módulo", "Acción", "Fecha", "Descripción"};
+        String[] columns = {"Fecha", "Módulo", "Usuario", "Descripción"};
 
         for (int i = 0; i < columns.length; i++) {
             header.createCell(i).setCellValue(columns[i]);
@@ -167,12 +163,10 @@ public class AuditoriaService {
         for (Auditoria a : auditorias) {
             Row row = sheet.createRow(rowIdx++);
 
-            row.createCell(0).setCellValue(a.getId());
-            row.createCell(1).setCellValue(a.getUsuario());
-            row.createCell(2).setCellValue(a.getModulo());
-            row.createCell(3).setCellValue(a.getAccion());
-            row.createCell(4).setCellValue(a.getFechaHora().toString());
-            row.createCell(5).setCellValue(a.getDescripcion());
+            row.createCell(0).setCellValue(a.getFechaHora().toString());
+            row.createCell(1).setCellValue(a.getModulo());
+            row.createCell(2).setCellValue(a.getUsuario());
+            row.createCell(3).setCellValue(a.getDescripcion());
         }
 
         for (int i = 0; i < columns.length; i++) {
