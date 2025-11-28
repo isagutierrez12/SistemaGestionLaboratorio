@@ -50,7 +50,7 @@
                             <div class="card-body">
 
                                 <div class="datatable-controls">
-                                    <a th:href="@{/paquete/agregar}" class="btn btn-primary">Agregar Paquete</a>                    
+                                    <a th:href="@{/paquete/agregar}" class="btn btn-primary">Agregar</a>                    
                                 </div>
 
                                 <div th:replace="~{paquete/fragmentos :: busqueda}"></div>
@@ -77,7 +77,7 @@
                                                 <span th:text="${p.activo} ? 'Activo' : 'Inactivo'"></span>
                                             </td>
                                             <td class="actions-cell" style="vertical-align: middle; text-align: center;">
-                                                <a th:href="@{/paquete/modificar/{id}(id=${p.idPaquete})}" class="btn-edit" title="Editar">
+                                                <a th:href="@{/paquete/modificar/{id}(id=${p.idPaquete})}" class="btn-edit" title="Actualizar">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
                                             </td>
@@ -190,7 +190,7 @@
                                         </div>
 
                                         <div class="col-12 text-center mt-3">
-                                            <button type="submit" class="btn btn-save me-2">Registrar</button>
+                                            <button type="submit" class="btn btn-save me-2">Guardar</button>
                                             <a th:href="@{/paquete/paquetes}" class="btn btn-cancel">Cancelar</a>
                                         </div>
 
@@ -210,8 +210,8 @@
                 <nav>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
-                        <li class="breadcrumb-item">Editar</li>
-                        <li class="breadcrumb-item active">Paquete</li>
+                        <li class="breadcrumb-item">Paquetes</li>
+                        <li class="breadcrumb-item active">Actualizar</li>
                     </ol>
                 </nav>
             </div>
@@ -306,7 +306,7 @@
                                     </div>
 
                                     <div class="col-12 text-center mt-3">
-                                        <button type="submit" class="btn btn-save me-2">Guardar</button>
+                                        <button type="submit" class="btn btn-save me-2">Actualizar</button>
                                         <a th:href="@{/paquete/paquetes}" class="btn btn-cancel">Cancelar</a>
                                     </div>
 

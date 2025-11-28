@@ -15,6 +15,7 @@
   
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+        
 
         <script>
             document.querySelector('.fa-file-export').addEventListener('click', () => {
@@ -29,6 +30,8 @@
                 html2pdf().set(opt).from(element).save();
             });
         </script>
+        
+        <script th:src="@{/assets/js/proformaExport.js}"></script>
 
     </body>
 </html>

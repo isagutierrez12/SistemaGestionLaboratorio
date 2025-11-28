@@ -5,6 +5,7 @@
     </head>
     <body>
 
+
         <section th:fragment="alertas">
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -34,12 +35,12 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item">Exámenes</li>
                         <li class="breadcrumb-item active">Datos</li>
                     </ol>
                 </nav>
-            </div><!-- End Page Title -->
+            </div>
 
             <section class="section">
                 <div class="row">
@@ -49,14 +50,13 @@
                             <div class="card-body">
 
                                 <div class="datatable-controls">
-                                    <a th:href="@{/examen/agregar}" class="btn btn-primary">Agregar Examen</a>                    
+                                    <a th:href="@{/examen/agregar}" class="btn btn-primary">Agregar</a>                    
                                 </div>
 
                                 <div th:replace="~{examen/fragmentos :: busqueda}"></div>
 
                                 <div class="card">
                                     <div class="card-body">
-                                        <!-- Catalog (replaces table) -->
                                         <div class="catalog">
                                             <div class="test" th:each="e : ${examenes}">
                                                 <!-- Header -->
@@ -91,7 +91,7 @@
 
                                                 <!-- Footer -->
                                                 <div class="test-footer">
-                                                    <a th:href="@{/examen/modificar/{id}(id=${e.idExamen})}" class="btn-exam" title="Edit">
+                                                    <a th:href="@{/examen/modificar/{id}(id=${e.idExamen})}" class="btn-exam" title="Actualizar">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
                                                 </div>
@@ -106,19 +106,19 @@
             </section>
 
 
-        </section><!-- End #main -->
+        </section>
 
         <section th:fragment="form-examen" id="main" class="main">
 
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item">Exámenes</li>
                         <li class="breadcrumb-item active">Registrar</li>
                     </ol>
                 </nav>
-            </div><!-- End Page Title -->
+            </div>
 
             <section class="section">
                 <div class="row">
@@ -134,7 +134,6 @@
                                          onerror="this.style.display='none'" />
                                 </div>
 
-                                <!-- Título -->
                                 <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
                                     Registrar Examen
                                 </h4>
@@ -203,7 +202,7 @@
                                         </div>
 
                                         <div class="col-12 text-center mt-3">
-                                            <button type="submit" class="btn btn-save me-2">Registrar</button>
+                                            <button type="submit" class="btn btn-save me-2">Guardar</button>
                                             <a th:href="@{/examen/examenes}" class="btn btn-cancel">Cancelar</a>
                                         </div>
                                     </div>
@@ -224,9 +223,9 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
-                        <li class="breadcrumb-item">Editar</li>
-                        <li class="breadcrumb-item active">Examen</li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
+                        <li class="breadcrumb-item">Exámenes</li>
+                        <li class="breadcrumb-item active">Actualizar</li>
                     </ol>
                 </nav>
             </div><!-- End Page Title -->
@@ -248,7 +247,7 @@
 
                                 <!-- Title -->
                                 <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
-                                    Editar Examen
+                                    Actualizar Examen
                                 </h4>
 
                                 <form th:action="@{/examen/actualizar}" th:object="${examen}" method="post">
@@ -347,9 +346,9 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item">Exámenes</li>
-                        <li class="breadcrumb-item active">Datos</li>
+                        <li class="breadcrumb-item active">Proforma</li>
                     </ol>
                 </nav>
             </div><!-- End Page Title -->
@@ -366,9 +365,6 @@
                                     <p>Proforma</p>
                                 </div>
 
-
-
-                                <!-- Tabla -->
                                 <form th:action="@{/examen/mostrar}" method="post" id="formExamenes">
                                     <table class="table datatable align-middle text-center">
                                         <thead>
@@ -434,8 +430,15 @@
                                 <div class="proforma-toolbar">
                                     <div class="toolbar-left">
 
-                                        <button class="btn-action" title="Print"><i class="fa-solid fa-print"></i></button>
-                                        <button class="btn-action" title="Export PDF"><i class="fa-solid fa-file-export"></i></button>
+                                        <button class="btn-action" title="Print" onclick="imprimirProforma()">
+                                            <i class="fa-solid fa-print"></i>
+                                        </button>
+
+                                        <button class="btn-action" title="Export PDF" onclick="exportarProformaPDF()" style="background:white; border:none; cursor:pointer; border-radius:4px; padding:8px 12px;">
+                                            <i class="fa-solid fa-file-export" style="color:#1c94a4;"></i>
+                                        </button>
+
+
                                     </div>
                                 </div>
 
@@ -460,23 +463,22 @@
                                     </thead>
                                     <tbody>
                                         <tr th:each="e : ${examenes}">
-                                            <td th:text="${e.codigo}">LAB-001</td>
-                                            <td th:text="${e.nombre}">Complete Blood Count</td>
+                                            <td th:text="${e.codigo}"></td>
+                                            <td th:text="${e.nombre}"></td>
 
-                                            <td th:text="${e.condiciones}">8-hour fasting</td>
-                                            <td th:text="${e.precio}">$25.00</td>
+                                            <td th:text="${e.condiciones}"></td>
+                                            <td th:text="${e.precio}"></td>
                                         </tr>
                                     </tbody>
                                 </table>
 
-                                <div class="proforma-total">
-                                    <p><strong>Total:</strong> 
-                                        <p><strong>Total:</strong> <span th:text="${total}">0.00</span></p>
+                                <div class="proforma-total"> 
+                                    <p><strong>Total:</strong> <span th:text="${total}"></span></p>
                                     </p>
                                 </div>
 
                                 <div class="proforma-footer">
-                                    <p>This proforma is valid for 7 days from the issue date.</p>
+                                    <p>Este formulario proforma es válido por 15 días a partir de la fecha de emisión.</p>
                                 </div>
                             </div>
 

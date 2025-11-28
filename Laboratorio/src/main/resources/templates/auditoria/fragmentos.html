@@ -10,7 +10,7 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item active">Auditorías</li>
                     </ol>
                 </nav>
@@ -235,44 +235,6 @@
                 </div>
             </div>
         </section>
-
-
-        <!-- Script para Chart.js -->
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const ctx = document.getElementById('graficoAcciones').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['CREAR', 'ACTUALIZAR', 'ACTIVAR'],
-                        datasets: [{
-                                label: 'Cantidad de Acciones',
-                                data: [5, 3, 2],
-                                backgroundColor: [
-                                    'rgba(0, 123, 255, 0.7)',
-                                    'rgba(255, 193, 7, 0.7)',
-                                    'rgba(40, 167, 69, 0.7)'
-                                ],
-                                borderColor: [
-                                    'rgb(0, 123, 255)',
-                                    'rgb(255, 193, 7)',
-                                    'rgb(40, 167, 69)'
-                                ],
-                                borderWidth: 1
-                            }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                stepSize: 1
-                            }
-                        }
-                    }
-                });
-            });
-        </script>
 
     </body>
 </html>
