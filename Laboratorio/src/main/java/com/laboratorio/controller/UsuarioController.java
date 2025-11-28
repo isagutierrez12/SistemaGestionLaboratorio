@@ -62,7 +62,7 @@ public class UsuarioController {
             usuarioService.save(usuario, rolSeleccionado);
 
             if (esNuevo) {
-                redirectAttributes.addFlashAttribute("success", "Usuario agregado correctamente");
+                redirectAttributes.addFlashAttribute("success", "Usuario registrado correctamente");
             } else {
                 redirectAttributes.addFlashAttribute("success", "Usuario actualizado correctamente");
             }

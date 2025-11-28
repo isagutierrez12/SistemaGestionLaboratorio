@@ -4,6 +4,32 @@
         <meta charset="UTF-8" />
     </head>
     <body>
+
+        <section th:fragment="alertas">
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+            <script th:if="${success}" th:inline="javascript">
+                Swal.fire({
+                title: 'Éxito',
+                        text: /*[[${success}]]*/,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#1c94a4'
+                });
+            </script>
+
+            <script th:if="${mensaje}" th:inline="javascript">
+                Swal.fire({
+                title: /*[[${tipo == 'success' ? 'Éxito' : (tipo == 'warning' ? 'Atención' : 'Error')}]]*/,
+                        text: /*[[${mensaje}]]*/,
+                        icon: /*[[${tipo}]]*/,
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#1c94a4'
+                });
+            </script>
+        </section>
+
+
         <section th:fragment="main" id="main" class="main">
 
             <div class="pagetitle">
@@ -58,8 +84,6 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <!-- Fin de tabla -->
-
                             </div>
                         </div>
 
@@ -67,8 +91,14 @@
                 </div>
             </section>
 
+            <section th:fragment="busqueda">
+                <div class="d-flex mb-3">
+                    <input type="text" id="busquedaInput" class="form-control me-2"
+                           placeholder="Buscar por código, nombre o descripción" />
+                </div>
+            </section>
 
-        </section><!-- End #main -->
+        </section>
 
         <section th:fragment="form-paquete" id="main" class="main">
 
@@ -80,7 +110,7 @@
                         <li class="breadcrumb-item active">Registrar</li>
                     </ol>
                 </nav>
-            </div><!-- End Page Title -->
+            </div>
 
             <section class="section">
                 <div class="row">
@@ -89,14 +119,12 @@
                         <div class="card">
                             <div class="card-body">
 
-                                <!-- Logo -->
                                 <div class="text-center mb-5" style="margin-top: 20px;">
                                     <img th:src="@{/assets/img/logo-1.png}" alt="Logo Laboratorio"
                                          class="logo-img" style="max-width: 150px;"
                                          onerror="this.style.display='none'" />
                                 </div>
 
-                                <!-- Título -->
                                 <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
                                     Registrar Paquete
                                 </h4>
@@ -106,33 +134,59 @@
 
                                     <div class="row"> 
 
+                                        <!-- NOMBRE -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="nombre" class="form-label">Código</label>
-                                            <input type="text" class="form-control text-center" id="codigo" name="codigo"/>
+                                            <label for="nombre" class="form-label">Nombre</label>
+                                            <input type="text" 
+                                                   class="form-control text-center" 
+                                                   id="nombre" 
+                                                   th:field="*{nombre}"
+                                                   required
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                                   title="Solo letras y espacios." />
                                         </div>
 
+                                        <!-- DESCRIPCIÓN -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="area" class="form-label">Nombre</label>
-                                            <input type="text" class="form-control text-center" id="nombre" name="nombre" required ='true' />
+                                            <label for="descripcion" class="form-label">Descripción</label>
+                                            <input type="text" 
+                                                   class="form-control text-center" 
+                                                   id="descripcion" 
+                                                   th:field="*{descripcion}"
+                                                   required
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                                   title="Solo letras y espacios." />
                                         </div>
 
-                                        <div class="col-md-6 mb-3">
-                                            <label for="precio" class="form-label">Descripción</label>
-                                            <input type="text" class="form-control text-center" id="descripcion" name="descripcion" required='true' />
-                                        </div>
-
+                                        <!-- PRECIO -->
                                         <div class="col-md-6 mb-3">
                                             <label for="precio" class="form-label">Precio</label>
-                                            <input type="number" step="0.01" class="form-control text-center" id="precio" name="precio" required='true' />
+                                            <input type="number" 
+                                                   step="0.01" 
+                                                   class="form-control text-center" 
+                                                   id="precio" 
+                                                   th:field="*{precio}"
+                                                   required
+                                                   min="0"
+                                                   title="Ingrese solo números o decimales." />
                                         </div>
 
+                                        <!-- ESTADO -->
                                         <div class="col-md-6 mb-3">
                                             <label for="activo" class="form-label">Estado</label>
-                                            <select id="activo" name="activo" class="form-select text-center">
+                                            <select id="activo" 
+                                                    th:field="*{activo}" 
+                                                    class="form-select text-center"
+                                                    required>
                                                 <option value="">Seleccione...</option>
                                                 <option value="true">Activo</option>
                                                 <option value="false">Inactivo</option>
                                             </select>
+                                        </div>
+
+                                        <!-- ERROR -->
+                                        <div th:if="${error}" class="alert alert-danger" style="margin-top: 30px;">
+                                            <span th:text="${error}"></span>
                                         </div>
 
                                         <div class="col-12 text-center mt-3">
@@ -142,17 +196,14 @@
 
                                     </div> 
                                 </form>
-
-
-                            </div> <!-- card-body -->
-                        </div> <!-- card -->
-
-                    </div> <!-- col-lg-12 -->
-                </div> <!-- row -->
+                            </div>
+                        </div> 
+                    </div>
+                </div> 
             </section>
 
         </section>
-        <!-- modificar -->
+
         <section th:fragment="modificar" id="main" class="main">
 
             <div class="pagetitle">
@@ -163,7 +214,7 @@
                         <li class="breadcrumb-item active">Paquete</li>
                     </ol>
                 </nav>
-            </div><!-- End Page Title -->
+            </div>
             <section class="section">
                 <div class="row">
                     <div class="col-lg-12">
@@ -179,45 +230,81 @@
                                          onerror="this.style.display='none'" />
                                 </div>
 
-
-                                <!-- Title -->
                                 <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
                                     Editar Paquete
                                 </h4>
 
-                                <!-- Multi Columns Form -->
                                 <form class="row custom-gx gy-4 mt-4" th:action="@{/paquete/guardar}" th:object="${paquete}" method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
                                     <input type="hidden" th:field="*{idPaquete}" />
+
+                                    <!-- CÓDIGO (readonly, no modificable) -->
                                     <div class="col-md-6 mb-3">
                                         <label for="inputCodigoPaquete" class="form-label">Código del paquete</label>
-                                        <input type="text" class="form-control" id="inputCodigoPaquete" th:field="*{codigo}"/>
+                                        <input type="text"
+                                               class="form-control text-center"
+                                               id="inputCodigoPaquete"
+                                               th:field="*{codigo}"
+                                               readonly
+                                               style="background-color: #e9ecef;" />
                                     </div>
 
+                                    <!-- NOMBRE -->
                                     <div class="col-md-6 mb-3">
-                                        <label for="inputNombrePaquete" class="form-label">Nombre del paquete</label>
-                                        <input type="text" class="form-control" id="inputNombrePaquete" th:field="*{nombre}"/>
+                                        <label class="form-label" for="inputNombrePaquete">Nombre</label>
+                                        <input type="text"
+                                               class="form-control text-center"
+                                               id="inputNombrePaquete"
+                                               th:field="*{nombre}"
+                                               required
+                                               pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                               title="Solo letras y espacios." />
                                     </div>
 
+                                    <!-- DESCRIPCIÓN -->
                                     <div class="col-md-6 mb-3">
-                                        <label for="inputDescripcion" class="form-label">Descripción</label>
-                                        <input type="text" class="form-control" id="inputDescripcion" th:field="*{descripcion}"/>
+                                        <label class="form-label" for="inputDescripcion">Descripción</label>
+                                        <input type="text"
+                                               class="form-control text-center"
+                                               id="inputDescripcion"
+                                               th:field="*{descripcion}"
+                                               required
+                                               pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                               title="Solo letras y espacios." />
                                     </div>
 
+                                    <!-- PRECIO -->
                                     <div class="col-md-6 mb-3">
-                                        <label for="inputPrecio" class="form-label">Precio</label>
-                                        <input type="number" class="form-control" id="inputPrecio" th:field="*{precio}"/>
+                                        <label class="form-label" for="inputPrecio">Precio</label>
+                                        <input type="number"
+                                               class="form-control text-center"
+                                               id="inputPrecio"
+                                               th:field="*{precio}"
+                                               step="0.01"
+                                               required
+                                               min="0"
+                                               title="Ingrese solo números o decimales." />
                                     </div>
 
+                                    <!-- ESTADO -->
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Estado</label>
-                                        <select class="form-select" th:field="*{activo}">
-
+                                        <label class="form-label" for="inputEstado">Estado</label>
+                                        <select class="form-select text-center"
+                                                id="inputEstado"
+                                                th:field="*{activo}"
+                                                required>
+                                            <option value="">Seleccione...</option>
                                             <option value="true">Activo</option>
                                             <option value="false">Inactivo</option>
                                         </select>
                                     </div>
+
+                                    <!-- ERROR -->
+                                    <div th:if="${error}" class="alert alert-danger mt-3">
+                                        <span th:text="${error}"></span>
+                                    </div>
+
                                     <div class="col-12 text-center mt-3">
                                         <button type="submit" class="btn btn-save me-2">Guardar</button>
                                         <a th:href="@{/paquete/paquetes}" class="btn btn-cancel">Cancelar</a>
@@ -291,35 +378,12 @@
 
         </section>
 
-        <!-- Fragmento botonesBuscar -->
-        <section th:fragment="botonesBuscar">
-            <div class="container">
-                <div class="row">
-                    <div class="">
-                        <button class="btn bg-brown border bg-user-hover" type="submit">
-                            Buscar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Fragmento de búsqueda -->
-        <section th:fragment="busqueda">
-            <form method="get" th:action="@{/paquete/buscar}" class="d-flex mb-3">
-                <input type="text" name="query" th:value="${query}" class="form-control me-2" 
-                       placeholder="Buscar por nombre o código" />
-                <button type="submit" class="btn btn-primary">Buscar</button>
-            </form>
-        </section>
-
         <!-- Preloader -->
         <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
 
         <script>
             document.addEventListener("DOMContentLoaded", () => {
             const inputs = document.querySelectorAll("input[pattern]");
-
             inputs.forEach(input => {
             input.addEventListener("input", () => {
             if (input.validity.patternMismatch) {

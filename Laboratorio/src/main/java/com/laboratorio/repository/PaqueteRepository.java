@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.repository.query.Param;
 
 @EnableJpaRepositories
 public interface PaqueteRepository extends JpaRepository<Paquete, Long> {
@@ -18,4 +17,9 @@ public interface PaqueteRepository extends JpaRepository<Paquete, Long> {
     List<Paquete> buscar(String q);
 
     boolean existsByCodigo(String codigo);
+
+    boolean existsByNombre(String nombre);
+    
+    boolean existsByNombreAndIdPaqueteNot(String nombre, Long idPaquete);
+
 }
