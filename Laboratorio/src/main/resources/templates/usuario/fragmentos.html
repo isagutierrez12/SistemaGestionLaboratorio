@@ -141,9 +141,9 @@
 
                                     <!-- NOMBRE -->
                                     <div class="col-md-6">
-                                        <label for="inputNombreCompleto" class="form-label">Nombre</label>
+                                        <label class="form-label">Nombre</label>
                                         <input type="text" class="form-control"
-                                               id="inputNombreCompleto" name="nombre"
+                                               th:field="*{nombre}"
                                                required maxlength="50"
                                                pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
                                                title="Solo letras y espacios"/>
@@ -151,73 +151,68 @@
 
                                     <!-- PRIMER APELLIDO -->
                                     <div class="col-md-6">
-                                        <label for="inputPrimerApellido" class="form-label">Primer Apellido</label>
+                                        <label class="form-label">Primer Apellido</label>
                                         <input type="text" class="form-control"
-                                               id="inputPrimerApellido" name="primerApellido"
+                                               th:field="*{primerApellido}"
                                                required maxlength="50"
-                                               pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
-                                               title="Solo letras y espacios"/>
+                                               pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"/>
                                     </div>
 
                                     <!-- SEGUNDO APELLIDO -->
                                     <div class="col-md-6">
-                                        <label for="inputSegundoApellido" class="form-label">Segundo Apellido</label>
+                                        <label class="form-label">Segundo Apellido</label>
                                         <input type="text" class="form-control"
-                                               id="inputSegundoApellido" name="segundoApellido"
+                                               th:field="*{segundoApellido}"
                                                required maxlength="50"
-                                               pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
-                                               title="Solo letras y espacios"/>
+                                               pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"/>
                                     </div>
 
                                     <!-- USERNAME -->
                                     <div class="col-md-6">
-                                        <label for="inputUsername" class="form-label">Nombre de usuario</label>
+                                        <label class="form-label">Nombre de usuario</label>
                                         <input type="text" class="form-control"
-                                               id="inputUsername" name="username"
+                                               th:field="*{username}"
                                                required minlength="4" maxlength="20"/>
-
                                     </div>
 
                                     <!-- CEDULA -->
                                     <div class="col-md-6">
-                                        <label for="inputCedula" class="form-label">Cédula</label>
+                                        <label class="form-label">Cédula</label>
                                         <input type="text" class="form-control"
-                                               id="inputCedula" name="cedula"
-                                               required maxlength="9"
+                                               th:field="*{cedula}"
+                                               required maxlength="10"
                                                pattern="[0-9]{9,10}"
                                                title="Debe contener entre 9 y 10 números"/>
                                     </div>
 
                                     <!-- PASSWORD -->
                                     <div class="col-md-6">
-                                        <label for="inputPassword" class="form-label">Contraseña</label>
+                                        <label class="form-label">Contraseña</label>
                                         <input type="password" class="form-control"
-                                               id="inputPassword" name="password"
-                                               required minlength="6"
-                                               title="Mínimo 6 caracteres"/>
+                                               th:field="*{password}"
+                                               required minlength="6"/>
                                     </div>
 
                                     <!-- ESTADO -->
                                     <div class="col-md-6">
-                                        <label for="inputEstado" class="form-label">Estado</label>
-                                        <select id="inputEstado" name="activo" class="form-select" required>
+                                        <label class="form-label">Estado</label>
+                                        <select class="form-select" th:field="*{activo}" required>
                                             <option value="">Seleccione...</option>
-                                            <option value="true">Activo</option>
-                                            <option value="false">Inactivo</option>
+                                            <option th:value="true">Activo</option>
+                                            <option th:value="false">Inactivo</option>
                                         </select>
                                     </div>
 
                                     <!-- ROL -->
                                     <div class="col-md-6">
-                                        <label for="inputRol" class="form-label">Rol</label>
+                                        <label class="form-label">Rol</label>
                                         <select id="inputRol" name="roles" class="form-select" required>
                                             <option value="">Seleccione...</option>
-                                            <option value="1">Administrador</option>
-                                            <option value="2">Recepcionista</option>
-                                            <option value="3">Doctor</option>
+                                            <option value="1" th:selected="${rol == '1'}">Administrador</option>
+                                            <option value="2" th:selected="${rol == '2'}">Recepcionista</option>
+                                            <option value="3" th:selected="${rol == '3'}">Doctor</option>
                                         </select>
                                     </div>
-
                                     <div th:if="${error}" class="alert alert-danger" style="margin-top: 30px;">
                                         <span th:text="${error}"></span>
                                     </div>
