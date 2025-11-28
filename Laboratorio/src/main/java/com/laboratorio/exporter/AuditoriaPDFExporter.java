@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.laboratorio.exporter;
 
 import com.laboratorio.model.Auditoria;
@@ -33,13 +29,10 @@ public class AuditoriaPDFExporter {
         celda.setPhrase(new Phrase("Fecha", font));
         table.addCell(celda);
 
-        celda.setPhrase(new Phrase("Usuario", font));
-        table.addCell(celda);
-
         celda.setPhrase(new Phrase("Módulo", font));
         table.addCell(celda);
 
-        celda.setPhrase(new Phrase("Acción", font));
+        celda.setPhrase(new Phrase("Usuario", font));
         table.addCell(celda);
 
         celda.setPhrase(new Phrase("Descripción", font));
@@ -51,18 +44,15 @@ public class AuditoriaPDFExporter {
 
         for (Auditoria a : listaAuditoria) {
             table.addCell(new Phrase(a.getFechaHora().toString(), font));
-            table.addCell(new Phrase(a.getUsuario(), font));
             table.addCell(new Phrase(a.getModulo(), font));
-            table.addCell(new Phrase(a.getAccion(), font));
+            table.addCell(new Phrase(a.getUsuario(), font));
             table.addCell(new Phrase(a.getDescripcion(), font));
         }
     }
 
     public void export(HttpServletResponse response) throws IOException {
         response.setContentType("application/pdf");
-
-        // Nombre del archivo
-        response.setHeader("Content-Disposition", "attachment; filename=auditoria_general.pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=Auditoria_General.pdf");
 
         Document document = new Document(PageSize.A4);
         PdfWriter.getInstance(document, response.getOutputStream());
@@ -76,7 +66,7 @@ public class AuditoriaPDFExporter {
         document.add(titulo);
         document.add(new Paragraph(" "));
 
-        PdfPTable table = new PdfPTable(5);
+        PdfPTable table = new PdfPTable(4); // SOLO 4 COLUMNAS
         table.setWidthPercentage(100f);
         table.setSpacingBefore(10);
 

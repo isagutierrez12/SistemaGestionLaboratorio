@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.laboratorio.exporter;
 
 import com.laboratorio.model.AuditoriaCriticos;
@@ -36,9 +32,6 @@ public class AuditoriaCriticosPDFExporter {
         celda.setPhrase(new Phrase("Usuario", font));
         table.addCell(celda);
 
-        celda.setPhrase(new Phrase("Tipo de Evento", font));
-        table.addCell(celda);
-
         celda.setPhrase(new Phrase("Descripción", font));
         table.addCell(celda);
     }
@@ -49,7 +42,6 @@ public class AuditoriaCriticosPDFExporter {
         for (AuditoriaCriticos a : listaCriticos) {
             table.addCell(new Phrase(a.getFechaHora().toString(), font));
             table.addCell(new Phrase(a.getUsuario(), font));
-            table.addCell(new Phrase(a.getTipoEvento(), font));
             table.addCell(new Phrase(a.getDescripcion(), font));
         }
     }
@@ -57,10 +49,9 @@ public class AuditoriaCriticosPDFExporter {
     public void export(HttpServletResponse response) throws IOException {
         response.setContentType("application/pdf");
 
-        // Nombre del archivo
-        response.setHeader("Content-Disposition", "attachment; filename=auditoria_criticos.pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=Auditoria_Criticos.pdf");
 
-        Document document = new Document(PageSize.A4.rotate()); // lo hacemos horizontal como en auditoría general
+        Document document = new Document(PageSize.A4);
         try {
             PdfWriter.getInstance(document, response.getOutputStream());
             document.open();
@@ -72,7 +63,7 @@ public class AuditoriaCriticosPDFExporter {
 
             document.add(titulo);
 
-            PdfPTable table = new PdfPTable(4); // 4 columnas
+            PdfPTable table = new PdfPTable(3);
             table.setWidthPercentage(100f);
             table.setSpacingBefore(10);
 

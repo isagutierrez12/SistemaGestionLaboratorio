@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.laboratorio.service;
 
 import com.laboratorio.model.AuditoriaCriticos;
@@ -93,7 +89,6 @@ public class AuditoriaCriticosService {
 
         List<AuditoriaCriticos> auditorias;
 
-        // Manejo de fechas según disponibilidad
         if (fechaInicio != null && fechaFin != null) {
             auditorias = auditoriaCriticosRepository.buscarPorRangoFechas(fechaInicio, fechaFin);
         } else if (fechaInicio != null) {
@@ -104,14 +99,12 @@ public class AuditoriaCriticosService {
             auditorias = auditoriaCriticosRepository.findAllOrderByFechaHoraDesc();
         }
 
-        // Filtrado por usuario
         if (usuario != null && !usuario.isEmpty()) {
             auditorias = auditorias.stream()
                     .filter(a -> a.getUsuario().toLowerCase().contains(usuario.toLowerCase()))
                     .toList();
         }
 
-        // Filtrado por tipo de evento
         if (tipoEvento != null && !tipoEvento.isEmpty()) {
             auditorias = auditorias.stream()
                     .filter(a -> a.getTipoEvento().toLowerCase().contains(tipoEvento.toLowerCase()))
@@ -126,7 +119,7 @@ public class AuditoriaCriticosService {
         XSSFSheet sheet = workbook.createSheet("Auditoría Críticos");
 
         Row header = sheet.createRow(0);
-        String[] columns = {"ID", "Usuario", "Tipo Evento", "Fecha", "Descripción"};
+        String[] columns = {"Fecha", "Usuario", "Descripción"};
 
         for (int i = 0; i < columns.length; i++) {
             header.createCell(i).setCellValue(columns[i]);
@@ -135,11 +128,10 @@ public class AuditoriaCriticosService {
         int rowIdx = 1;
         for (AuditoriaCriticos a : auditorias) {
             Row row = sheet.createRow(rowIdx++);
-            row.createCell(0).setCellValue(a.getId());
+            row.createCell(0).setCellValue(a.getFechaHora().toString());
             row.createCell(1).setCellValue(a.getUsuario());
-            row.createCell(2).setCellValue(a.getTipoEvento());
-            row.createCell(3).setCellValue(a.getFechaHora().toString());
-            row.createCell(4).setCellValue(a.getDescripcion());
+            row.createCell(2).setCellValue(a.getDescripcion());
+
         }
 
         for (int i = 0; i < columns.length; i++) {
