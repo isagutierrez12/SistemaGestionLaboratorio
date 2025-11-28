@@ -52,26 +52,31 @@ public class UsuarioController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
+        boolean esNuevo = (usuario.getIdUsuario() == null);
+
         if (result.hasErrors()) {
+            model.addAttribute("usuario", usuario);
+            model.addAttribute("rol", rolSeleccionado);
             model.addAttribute("errores", result.getAllErrors());
-            return "/usuario/agregar";
+            return esNuevo ? "/usuario/agregar" : "/usuario/modificar";
         }
 
         try {
-            boolean esNuevo = (usuario.getIdUsuario() == null);
             usuarioService.save(usuario, rolSeleccionado);
 
-            if (esNuevo) {
-                redirectAttributes.addFlashAttribute("success", "Usuario registrado correctamente");
-            } else {
-                redirectAttributes.addFlashAttribute("success", "Usuario actualizado correctamente");
-            }
+            redirectAttributes.addFlashAttribute("success",
+                    esNuevo ? "Usuario registrado correctamente"
+                            : "Usuario actualizado correctamente");
 
             return "redirect:/usuario/usuarios";
 
         } catch (IllegalArgumentException ex) {
+
+            model.addAttribute("usuario", usuario);
+            model.addAttribute("rol", rolSeleccionado);
             model.addAttribute("error", ex.getMessage());
-            return "/usuario/agregar";
+
+            return esNuevo ? "/usuario/agregar" : "/usuario/modificar";
         }
     }
 
