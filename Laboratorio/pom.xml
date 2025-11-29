@@ -59,7 +59,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-
+    
         <!-- Base de datos -->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -91,6 +91,7 @@
             <artifactId>popper.js</artifactId>
             <version>2.11.7</version>
         </dependency>
+  
 
         <!-- Lombok -->
         <dependency>
