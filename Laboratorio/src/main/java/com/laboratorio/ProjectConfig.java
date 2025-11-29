@@ -49,6 +49,10 @@ public class ProjectConfig implements WebMvcConfigurer {
                 .logout((logout) -> logout
                 .logoutSuccessUrl("/")
                 .permitAll()
+                ).sessionManagement(session -> session
+                .invalidSessionUrl("/login?expired") 
+                .maximumSessions(1) 
+                .expiredUrl("/login?expired") 
                 );
         return http.build();
     }
