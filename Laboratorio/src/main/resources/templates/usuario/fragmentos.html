@@ -66,7 +66,7 @@
                                             <th style="text-align:center;">Segundo Apellido</th>        
                                             <th style="text-align:center;">Usuario</th>
                                             <th style="text-align:center;">Cédula</th>           
-                                            <th style="text-align:center;">Activo</th>        
+                                            <th style="text-align:center;">Estado</th>        
                                         </tr>
                                     </thead>
                                     <tbody id="tbodyUsuarios">
@@ -213,6 +213,7 @@
                                             <option value="3" th:selected="${rol == '3'}">Doctor</option>
                                         </select>
                                     </div>
+                                    
                                     <div th:if="${error}" class="alert alert-danger" style="margin-top: 30px;">
                                         <span th:text="${error}"></span>
                                     </div>

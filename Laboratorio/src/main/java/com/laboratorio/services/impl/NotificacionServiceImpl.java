@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.laboratorio.services.impl;
 
 import com.laboratorio.model.Inventario;
@@ -78,7 +74,7 @@ public class NotificacionServiceImpl implements NotificacionService {
         List<Inventario> inventarios = inventarioRepository.findAll();
 
         for (Inventario inv : inventarios) {
-            if (!inv.isActivo()) continue;
+            if (!inv.getActivo()) continue;
 
             int stockReal = inv.getStockActual() - inv.getStockBloqueado();
             int umbral = inv.getStockMinimo() + 5;
