@@ -189,7 +189,7 @@
 
                                 <h4 class="text-center mb-4" style="color:#1c94a4; font-weight:bold;">Editar Inventario</h4>
 
-                                <form th:action="@{/inventario/actualizar}" th:object="${inventario}" method="post" class="row g-4">
+                                <form th:action="@{/inventario/guardar}" th:object="${inventario}" method="post" class="row g-4">
                                     <input type="hidden" th:field="*{idInventario}" />
 
                                     <div class="col-md-6">
