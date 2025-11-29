@@ -22,16 +22,16 @@ public class PaqueteServiceImpl implements PaqueteService {
 
     @Autowired
     public PaqueteServiceImpl(PaqueteRepository paqueteRepository,
-                              DetallePaqueteRepository detalleRepository,
-                              ExamenRepository examenRepository) {
+            DetallePaqueteRepository detalleRepository,
+            ExamenRepository examenRepository) {
         this.paqueteRepository = paqueteRepository;
         this.detalleRepository = detalleRepository;
         this.examenRepository = examenRepository;
     }
 
     @Override
-    public List<Paquete> getAll() { 
-        return paqueteRepository.findAll(); 
+    public List<Paquete> getAll() {
+        return paqueteRepository.findAll();
     }
 
     @Override
@@ -42,9 +42,23 @@ public class PaqueteServiceImpl implements PaqueteService {
     @Override
     @Transactional
     public void save(Paquete p) {
-        if (p.getCodigo() == null || p.getCodigo().isBlank()) {
-            p.setCodigo("PCK-" + System.currentTimeMillis());
+
+        if (paqueteRepository.existsByCodigo(p.getCodigo())
+                && (p.getIdPaquete() == null)) {
+            throw new IllegalArgumentException("El código ya existe.");
         }
+
+        if (paqueteRepository.existsByNombre(p.getNombre())
+                && (p.getIdPaquete() == null)) {
+            throw new IllegalArgumentException("El nombre ya existe.");
+        }
+
+        if (p.getIdPaquete() != null
+                && paqueteRepository.existsByNombreAndIdPaqueteNot(p.getNombre(), p.getIdPaquete())) {
+
+            throw new IllegalArgumentException("Ya existe otro paquete con ese nombre.");
+        }
+
         paqueteRepository.save(p);
     }
 
@@ -54,10 +68,11 @@ public class PaqueteServiceImpl implements PaqueteService {
         paqueteRepository.delete(p);
     }
 
-
     @Override
     public List<Paquete> buscarPaquetes(String query) {
-        if (query == null || query.isBlank()) return getAll();
+        if (query == null || query.isBlank()) {
+            return getAll();
+        }
         return paqueteRepository.buscar(query.trim());
     }
 
@@ -81,8 +96,15 @@ public class PaqueteServiceImpl implements PaqueteService {
     public void quitarExamen(Long idPaquete, Long idExamen) {
         detalleRepository.deleteByPaqueteIdPaqueteAndExamenIdExamen(idPaquete, idExamen);
     }
+
     @Override
     public Paquete getById(Long id) {
-    return paqueteRepository.findById(id).orElse(null);
+        return paqueteRepository.findById(id).orElse(null);
     }
+
+    @Override
+    public boolean existsByNombre(String nombre) {
+        return paqueteRepository.existsByNombre(nombre);
+    }
+
 }

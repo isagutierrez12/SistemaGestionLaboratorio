@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.laboratorio.service;
 
 import com.laboratorio.model.Auditoria;
@@ -113,42 +109,6 @@ public class AuditoriaService {
         return auditorias;
     }
 
-    public void exportarPdf(List<Auditoria> auditorias, OutputStream outputStream) throws IOException {
-        Document document = new Document(PageSize.A4.rotate());
-        PdfWriter.getInstance(document, outputStream);
-
-        document.open();
-
-        Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
-        Paragraph title = new Paragraph("Reporte de Auditoría: Laboratorio Clínico Calderón Piedra", titleFont);
-        title.setAlignment(Element.ALIGN_CENTER);
-        title.setSpacingAfter(20);
-        document.add(title);
-
-        PdfPTable table = new PdfPTable(6);
-        table.setWidthPercentage(100);
-
-        String[] headers = {"ID", "Usuario", "Módulo", "Acción", "Fecha", "Descripción"};
-
-        for (String h : headers) {
-            PdfPCell cell = new PdfPCell(new Phrase(h));
-            cell.setBackgroundColor(Color.LIGHT_GRAY);
-            table.addCell(cell);
-        }
-
-        for (Auditoria a : auditorias) {
-            table.addCell(String.valueOf(a.getId()));
-            table.addCell(a.getUsuario());
-            table.addCell(a.getModulo());
-            table.addCell(a.getAccion());
-            table.addCell(a.getFechaHora().toString());
-            table.addCell(a.getDescripcion());
-        }
-
-        document.add(table);
-        document.close();
-    }
-
     public void exportarExcel(List<Auditoria> auditorias, OutputStream os) throws IOException {
 
         XSSFWorkbook workbook = new XSSFWorkbook();
@@ -156,7 +116,7 @@ public class AuditoriaService {
 
         Row header = sheet.createRow(0);
 
-        String[] columns = {"ID", "Usuario", "Módulo", "Acción", "Fecha", "Descripción"};
+        String[] columns = {"Fecha", "Módulo", "Usuario", "Descripción"};
 
         for (int i = 0; i < columns.length; i++) {
             header.createCell(i).setCellValue(columns[i]);
@@ -167,12 +127,10 @@ public class AuditoriaService {
         for (Auditoria a : auditorias) {
             Row row = sheet.createRow(rowIdx++);
 
-            row.createCell(0).setCellValue(a.getId());
-            row.createCell(1).setCellValue(a.getUsuario());
-            row.createCell(2).setCellValue(a.getModulo());
-            row.createCell(3).setCellValue(a.getAccion());
-            row.createCell(4).setCellValue(a.getFechaHora().toString());
-            row.createCell(5).setCellValue(a.getDescripcion());
+            row.createCell(0).setCellValue(a.getFechaHora().toString());
+            row.createCell(1).setCellValue(a.getModulo());
+            row.createCell(2).setCellValue(a.getUsuario());
+            row.createCell(3).setCellValue(a.getDescripcion());
         }
 
         for (int i = 0; i < columns.length; i++) {

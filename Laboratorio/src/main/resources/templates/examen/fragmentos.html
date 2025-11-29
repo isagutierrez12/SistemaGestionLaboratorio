@@ -4,17 +4,43 @@
         <meta charset="UTF-8" />
     </head>
     <body>
+
+
+        <section th:fragment="alertas">
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+            <script th:if="${success}" th:inline="javascript">
+                Swal.fire({
+                title: 'Éxito',
+                        text: /*[[${success}]]*/,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#1c94a4'
+                });
+            </script>
+
+            <script th:if="${mensaje}" th:inline="javascript">
+                Swal.fire({
+                title: /*[[${tipo == 'success' ? 'Éxito' : (tipo == 'warning' ? 'Atención' : 'Error')}]]*/,
+                        text: /*[[${mensaje}]]*/,
+                        icon: /*[[${tipo}]]*/,
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#1c94a4'
+                });
+            </script>
+        </section>
+
         <section th:fragment="main" id="main" class="main">
 
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item">Exámenes</li>
                         <li class="breadcrumb-item active">Datos</li>
                     </ol>
                 </nav>
-            </div><!-- End Page Title -->
+            </div>
 
             <section class="section">
                 <div class="row">
@@ -24,14 +50,13 @@
                             <div class="card-body">
 
                                 <div class="datatable-controls">
-                                    <a th:href="@{/examen/agregar}" class="btn btn-primary">Agregar Examen</a>                    
+                                    <a th:href="@{/examen/agregar}" class="btn btn-primary">Agregar</a>                    
                                 </div>
 
                                 <div th:replace="~{examen/fragmentos :: busqueda}"></div>
 
                                 <div class="card">
                                     <div class="card-body">
-                                        <!-- Catalog (replaces table) -->
                                         <div class="catalog">
                                             <div class="test" th:each="e : ${examenes}">
                                                 <!-- Header -->
@@ -42,7 +67,7 @@
 
                                                 <!-- Body -->
                                                 <div class="test-body">
-                                                   
+
 
                                                     <div class="test-info">
                                                         <div class="info-row">
@@ -66,42 +91,34 @@
 
                                                 <!-- Footer -->
                                                 <div class="test-footer">
-                                                    <a th:href="@{/examen/modificar/{id}(id=${e.idExamen})}" class="btn-exam" title="Edit">
+                                                    <a th:href="@{/examen/modificar/{id}(id=${e.idExamen})}" class="btn-exam" title="Actualizar">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
-
-                                                    
                                                 </div>
-                                            </div> <!-- End test -->
-                                        </div> <!-- End catalog -->
+                                            </div> 
+                                        </div> 
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-
-                </div>
-
-                </div>
-                </div>
             </section>
 
 
-        </section><!-- End #main -->
+        </section>
 
         <section th:fragment="form-examen" id="main" class="main">
 
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item">Exámenes</li>
                         <li class="breadcrumb-item active">Registrar</li>
                     </ol>
                 </nav>
-            </div><!-- End Page Title -->
+            </div>
 
             <section class="section">
                 <div class="row">
@@ -117,7 +134,6 @@
                                          onerror="this.style.display='none'" />
                                 </div>
 
-                                <!-- Título -->
                                 <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
                                     Registrar Examen
                                 </h4>
@@ -125,78 +141,91 @@
                                 <form th:action="@{/examen/guardar}" th:object="${examen}" method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-                                    <div class="row"> 
+                                    <div class="row">
 
                                         <div class="col-md-6 mb-3">
                                             <label for="nombre" class="form-label">Nombre</label>
-                                            <input type="text" class="form-control text-center" id="nombre" name="nombre" required />
+                                            <input type="text" class="form-control text-center" id="nombre" th:field="*{nombre}" 
+                                                   required maxlength="100"
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                                   title="Solo letras y espacios"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label for="area" class="form-label">Área</label>
-                                            <input type="text" class="form-control text-center" id="area" name="area" required />
+                                            <input type="text" class="form-control text-center" id="area" th:field="*{area}" 
+                                                   required maxlength="50"
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                                   title="Solo letras y espacios"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label for="precio" class="form-label">Precio</label>
-                                            <input type="number" step="0.01" class="form-control text-center" id="precio" name="precio" required />
+                                            <input type="number" step="0.01" class="form-control text-center" id="precio" th:field="*{precio}" required />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label for="unidad" class="form-label">Unidad</label>
-                                            <input type="text" class="form-control text-center" id="unidad" name="unidad" />
+                                            <input type="text" class="form-control text-center" id="unidad" th:field="*{unidad}" maxlength="20" />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label for="valorMinimo" class="form-label">Valor Mínimo</label>
-                                            <input type="number" step="0.01" class="form-control text-center" id="valorMinimo" name="valorMinimo" />
+                                            <input type="number" step="0.01" class="form-control text-center" id="valorMinimo" th:field="*{valorMinimo}" />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label for="valorMaximo" class="form-label">Valor Máximo</label>
-                                            <input type="number" step="0.01" class="form-control text-center" id="valorMaximo" name="valorMaximo" />
+                                            <input type="number" step="0.01" class="form-control text-center" id="valorMaximo" th:field="*{valorMaximo}" />
                                         </div>
 
                                         <div class="col-md-12 mb-3">
                                             <label for="condiciones" class="form-label">Condiciones</label>
-                                            <textarea class="form-control text-center" id="condiciones" name="condiciones" rows="3"></textarea>
+                                            <textarea class="form-control text-center" id="condiciones" th:field="*{condiciones}" 
+                                                      maxlength="255" pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]*$" 
+                                                      title="Solo letras y espacios" rows="3"></textarea>
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label for="activo" class="form-label">Estado</label>
-                                            <select id="activo" name="activo" class="form-select text-center">
-                                                <option value="">Seleccione...</option>
-                                                <option value="true">Activo</option>
-                                                <option value="false">Inactivo</option>
+                                            <select th:field="*{activo}" class="form-select text-center">
+                                                <option value="">Seleccione...</option> <!-- valor vacío OK -->
+                                                <option th:value="true">Activo</option>
+                                                <option th:value="false">Inactivo</option>
                                             </select>
+
+                                        </div>
+
+                                        <!-- Mensaje de error -->
+                                        <div th:if="${error}" class="alert alert-danger" style="margin-top: 30px;">
+                                            <span th:text="${error}"></span>
                                         </div>
 
                                         <div class="col-12 text-center mt-3">
-                                            <button type="submit" class="btn btn-save me-2">Registrar</button>
+                                            <button type="submit" class="btn btn-save me-2">Guardar</button>
                                             <a th:href="@{/examen/examenes}" class="btn btn-cancel">Cancelar</a>
                                         </div>
-
-                                    </div> 
+                                    </div>
                                 </form>
 
+                            </div> 
+                        </div> 
 
-                            </div> <!-- card-body -->
-                        </div> <!-- card -->
-
-                    </div> <!-- col-lg-12 -->
-                </div> <!-- row -->
+                    </div> 
+                </div> 
             </section>
 
         </section>
+
         <!-- modificar -->
         <section th:fragment="modificar" id="main" class="main">
 
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
-                        <li class="breadcrumb-item">Editar</li>
-                        <li class="breadcrumb-item active">Examen</li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
+                        <li class="breadcrumb-item">Exámenes</li>
+                        <li class="breadcrumb-item active">Actualizar</li>
                     </ol>
                 </nav>
             </div><!-- End Page Title -->
@@ -209,113 +238,117 @@
                             <div class="card-body">
 
 
-                                <div class="text-center md-2 mb-6" style="margin-top: 20px;">
-                                    <img src="assets/img/logo-1.png" alt="Logo Laboratorio" class="logo-img" style="max-width: 150px;">
+                                <div class="text-center mb-4" style="margin-top: 20px;">
+                                    <img th:src="@{/assets/img/logo-1.png}" alt="Logo Laboratorio"
+                                         class="logo-img" style="max-width: 150px;"
+                                         onerror="this.style.display='none'" />
                                 </div>
 
 
                                 <!-- Title -->
                                 <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
-                                    Editar Examen
+                                    Actualizar Examen
                                 </h4>
 
-                                <!-- Multi Columns Form -->
-                                <form class="row custom-gx gy-4 mt-4" th:action="@{/examen/guardar}" th:object="${examen}" method="post">
+                                <form th:action="@{/examen/actualizar}" th:object="${examen}" method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
                                     <input type="hidden" th:field="*{idExamen}" />
-                                    <div class="col-md-6 mb-3">
-                                        <label for="inputNombreExamen" class="form-label">Nombre del examen</label>
-                                        <input type="text" class="form-control" id="inputNombreExamen" th:field="*{nombre}">
-                                    </div>
 
-                                    <div class="col-md-6 mb-3">
-                                        <label for="inputDescripcion" class="form-label">Area</label>
-                                        <input type="text" class="form-control" id="inputArea" th:field="*{area}">
-                                    </div>
+                                    <div class="row">
 
-                                    <div class="col-md-6 mb-3">
-                                        <label for="inputDuracion" class="form-label">Precio</label>
-                                        <input type="number" class="form-control" id="inputPrecio" th:field="*{precio}">
-                                    </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="nombre" class="form-label">Nombre</label>
+                                            <input type="text" class="form-control text-center" id="nombre" th:field="*{nombre}" 
+                                                   required maxlength="100"
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                                   title="Solo letras y espacios"/>
+                                        </div>
 
-                                    <div class="col-md-6 mb-3">
-                                        <label for="inputFecha" class="form-label">Unidad</label>
-                                        <input type="text" class="form-control" id="inputFecha" th:field="*{unidad}">
-                                    </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="area" class="form-label">Área</label>
+                                            <input type="text" class="form-control text-center" id="area" th:field="*{area}" 
+                                                   required maxlength="50"
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                                   title="Solo letras y espacios"/>
+                                        </div>
 
-                                    <div class="col-md-6 mb-3">
-                                        <label for="inputEstado" class="form-label">Valor Minimo</label>
-                                        <input type="text" class="form-control" id="inputValorMinimo" th:field="*{valorMinimo}">
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="inputEstado" class="form-label">Valor Máximo</label>
-                                        <input type="text" class="form-control" id="inputValorMaximo" th:field="*{valorMaximo}">
-                                    </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="precio" class="form-label">Precio</label>
+                                            <input type="number" step="0.01" class="form-control text-center" id="precio" th:field="*{precio}" required />
+                                        </div>
 
-                                    <div class="col-md-6 mb-3">
-                                        <label for="inputImagen" class="form-label">Condiciones</label>
-                                        <input class="form-control" type="text" id="inputImagen" th:field="*{condiciones}">
-                                    </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="unidad" class="form-label">Unidad</label>
+                                            <input type="text" class="form-control text-center" id="unidad" th:field="*{unidad}" maxlength="20" />
+                                        </div>
 
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Estado</label>
-                                        <select class="form-select" th:field="*{activo}">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="valorMinimo" class="form-label">Valor Mínimo</label>
+                                            <input type="number" step="0.01" class="form-control text-center" id="valorMinimo" th:field="*{valorMinimo}" />
+                                        </div>
 
-                                            <option value="true">Activo</option>
-                                            <option value="false">Inactivo</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-12 text-center mt-3">
-                                        <button type="submit" class="btn btn-save me-2">Registrar</button>
-                                        <a th:href="@{/examen/examenes}" class="btn btn-cancel">Cancelar</a>
-                                    </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="valorMaximo" class="form-label">Valor Máximo</label>
+                                            <input type="number" step="0.01" class="form-control text-center" id="valorMaximo" th:field="*{valorMaximo}" />
+                                        </div>
 
+                                        <div class="col-md-12 mb-3">
+                                            <label for="condiciones" class="form-label">Condiciones</label>
+                                            <textarea class="form-control text-center" id="condiciones" th:field="*{condiciones}" 
+                                                      maxlength="255" pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]*$" 
+                                                      title="Solo letras y espacios" rows="3"></textarea>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label for="activo" class="form-label">Estado</label>
+                                            <select th:field="*{activo}" class="form-select text-center">
+                                                <option value="">Seleccione...</option>
+                                                <option th:value="true" th:selected="*{activo} == true">Activo</option>
+                                                <option th:value="false" th:selected="*{activo} == false">Inactivo</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Mensaje de error -->
+                                        <div th:if="${error}" class="alert alert-danger" style="margin-top: 20px;">
+                                            <span th:text="${error}"></span>
+                                        </div>
+
+                                        <div th:if="${errores}" class="alert alert-danger" style="margin-top: 20px;">
+                                            <ul>
+                                                <li th:each="err : ${errores}" th:text="${err.defaultMessage}"></li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="col-12 text-center mt-3">
+                                            <button type="submit" class="btn btn-save me-2">Actualizar</button>
+                                            <a th:href="@{/examen/examenes}" class="btn btn-cancel">Cancelar</a>
+                                        </div>
+                                    </div>
                                 </form>
-
-
 
                             </div>
                         </div>
-
                     </div>
                 </div>
-
             </section>
-
         </section>
 
-        <!-- Fragmento botonesBuscar -->
-        <section th:fragment="botonesBuscar">
-            <div class="container">
-                <div class="row">
-                    <div class="">
-                        <button class="btn bg-brown border bg-user-hover" type="submit">
-                            Buscar
-                        </button>
-                    </div>
-                </div>
+        <section th:fragment="busqueda">
+            <div class="d-flex mb-3">
+                <input type="text" id="busquedaInput" class="form-control me-2"
+                       placeholder="Buscar por nombre o área" />
             </div>
         </section>
 
-        <!-- Fragmento de búsqueda -->
-        <section th:fragment="busqueda">
-            <form method="get" th:action="@{/examen/buscar}" class="d-flex mb-3">
-                <input type="text" name="query" th:value="${query}" class="form-control me-2" 
-                       placeholder="Buscar por nombre o área" />
-                <button type="submit" class="btn btn-primary">Buscar</button>
-            </form>
-        </section>
-
-        <!-- Fargmento de proformas -->
         <section th:fragment="proforma" id="main" class="main">
 
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item">Exámenes</li>
-                        <li class="breadcrumb-item active">Datos</li>
+                        <li class="breadcrumb-item active">Proforma</li>
                     </ol>
                 </nav>
             </div><!-- End Page Title -->
@@ -332,9 +365,6 @@
                                     <p>Proforma</p>
                                 </div>
 
-
-
-                                <!-- Tabla -->
                                 <form th:action="@{/examen/mostrar}" method="post" id="formExamenes">
                                     <table class="table datatable align-middle text-center">
                                         <thead>
@@ -374,19 +404,14 @@
                                         <button type="submit" class="btn btn-success">Continuar</button>
                                     </div>
                                 </form>
-                                <!-- Fin de tabla -->
-
                             </div>
                         </div>
-
                     </div>
                 </div>
             </section>
 
-        </section><!-- End #main -->
+        </section>
 
-
-        <!-- Vista de la proforma -->
         <section th:fragment="vista-proforma" class="section">
             <div class="row">
                 <div class="col-lg-12">
@@ -405,8 +430,15 @@
                                 <div class="proforma-toolbar">
                                     <div class="toolbar-left">
 
-                                        <button class="btn-action" title="Print"><i class="fa-solid fa-print"></i></button>
-                                        <button class="btn-action" title="Export PDF"><i class="fa-solid fa-file-export"></i></button>
+                                        <button class="btn-action" title="Print" onclick="imprimirProforma()">
+                                            <i class="fa-solid fa-print"></i>
+                                        </button>
+
+                                        <button class="btn-action" title="Export PDF" onclick="exportarProformaPDF()" style="background:white; border:none; cursor:pointer; border-radius:4px; padding:8px 12px;">
+                                            <i class="fa-solid fa-file-export" style="color:#1c94a4;"></i>
+                                        </button>
+
+
                                     </div>
                                 </div>
 
@@ -420,7 +452,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Table -->
                                 <table class="proforma-table">
                                     <thead>
                                         <tr>
@@ -432,25 +463,22 @@
                                     </thead>
                                     <tbody>
                                         <tr th:each="e : ${examenes}">
-                                            <td th:text="${e.codigo}">LAB-001</td>
-                                            <td th:text="${e.nombre}">Complete Blood Count</td>
+                                            <td th:text="${e.codigo}"></td>
+                                            <td th:text="${e.nombre}"></td>
 
-                                            <td th:text="${e.condiciones}">8-hour fasting</td>
-                                            <td th:text="${e.precio}">$25.00</td>
+                                            <td th:text="${e.condiciones}"></td>
+                                            <td th:text="${e.precio}"></td>
                                         </tr>
                                     </tbody>
                                 </table>
 
-                                <!-- Total -->
-                                <div class="proforma-total">
-                                    <p><strong>Total:</strong> 
-                                        <p><strong>Total:</strong> <span th:text="${total}">0.00</span></p>
+                                <div class="proforma-total"> 
+                                    <p><strong>Total:</strong> <span th:text="${total}"></span></p>
                                     </p>
                                 </div>
 
-                                <!-- Footer -->
                                 <div class="proforma-footer">
-                                    <p>This proforma is valid for 7 days from the issue date.</p>
+                                    <p>Este formulario proforma es válido por 15 días a partir de la fecha de emisión.</p>
                                 </div>
                             </div>
 
@@ -462,44 +490,38 @@
 
 
         <script>
-            // Seleccionar/deseleccionar todos
+
             const selectAll = document.getElementById("selectAll");
             const checkboxes = document.querySelectorAll(".exam-check");
             const countSelected = document.getElementById("countSelected");
-
             selectAll.addEventListener("change", function (e) {
-                checkboxes.forEach(ch => ch.checked = e.target.checked);
-                actualizarContador();
+            checkboxes.forEach(ch => ch.checked = e.target.checked);
+            actualizarContador();
             });
-
             checkboxes.forEach(ch => {
-                ch.addEventListener("change", actualizarContador);
+            ch.addEventListener("change", actualizarContador);
             });
-
             function actualizarContador() {
-                const seleccionados = document.querySelectorAll(".exam-check:checked").length;
-                countSelected.textContent = `${seleccionados} seleccionado${seleccionados !== 1 ? 's' : ''}`;
-                selectAll.checked = (seleccionados === checkboxes.length);
+            const seleccionados = document.querySelectorAll(".exam-check:checked").length;
+            countSelected.textContent = `${seleccionados} seleccionado${seleccionados !== 1 ? 's' : ''}`;
+            selectAll.checked = (seleccionados === checkboxes.length);
             }
         </script>
 
-
-        <!-- Preloader -->
         <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
 
         <script>
             document.addEventListener("DOMContentLoaded", () => {
-                const inputs = document.querySelectorAll("input[pattern]");
-
-                inputs.forEach(input => {
-                    input.addEventListener("input", () => {
-                        if (input.validity.patternMismatch) {
-                            input.setCustomValidity(input.title);
-                        } else {
-                            input.setCustomValidity("");
-                        }
-                    });
-                });
+            const inputs = document.querySelectorAll("input[pattern]");
+            inputs.forEach(input => {
+            input.addEventListener("input", () => {
+            if (input.validity.patternMismatch) {
+            input.setCustomValidity(input.title);
+            } else {
+            input.setCustomValidity("");
+            }
+            });
+            });
             });
         </script>
 
