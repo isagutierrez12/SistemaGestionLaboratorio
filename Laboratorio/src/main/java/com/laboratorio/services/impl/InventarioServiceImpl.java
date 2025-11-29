@@ -8,6 +8,7 @@ import com.laboratorio.repository.SolicitudDetalleRepository;
 import com.laboratorio.service.InventarioService;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.LocalDate;
 import java.util.List;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -39,6 +40,46 @@ public class InventarioServiceImpl implements InventarioService {
 
     @Override
     public void save(Inventario entity) {
+
+        LocalDate hoy = LocalDate.now();
+
+        if (entity.getStockBloqueado() > entity.getStockActual()) {
+            throw new IllegalArgumentException(
+                    "El Stock Bloqueado no puede ser mayor que el Stock Actual."
+            );
+        }
+
+        if (entity.getStockMinimo() > entity.getStockActual()) {
+            throw new IllegalArgumentException(
+                    "El Stock Mínimo no puede ser mayor que el Stock Actual."
+            );
+        }
+
+        if (entity.getFechaApertura() != null && entity.getFechaApertura().isAfter(hoy)) {
+            throw new IllegalArgumentException(
+                    "La Fecha de Apertura no puede ser posterior a la fecha actual."
+            );
+        }
+
+        if (entity.getFechaVencimiento() != null && entity.getFechaVencimiento().isBefore(hoy)) {
+            throw new IllegalArgumentException(
+                    "La Fecha de Vencimiento no puede estar vencida."
+            );
+        }
+
+        if (entity.getIdInventario() == null) {
+            if (inventarioRepository.existsByInsumo_IdInsumo(entity.getInsumo().getIdInsumo())) {
+                throw new IllegalArgumentException("Este insumo ya tiene un registro en inventario.");
+            }
+        } else {
+            Inventario existente = inventarioRepository.findByInsumo_IdInsumo(entity.getInsumo().getIdInsumo());
+
+            if (existente != null
+                    && !existente.getIdInventario().equals(entity.getIdInventario())) {
+                throw new IllegalArgumentException("Otro inventario ya está asociado a este insumo.");
+            }
+        }
+
         inventarioRepository.save(entity);
     }
 

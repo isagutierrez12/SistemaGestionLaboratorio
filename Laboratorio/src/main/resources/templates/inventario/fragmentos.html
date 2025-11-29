@@ -5,6 +5,30 @@
     </head>
     <body>
 
+        <section th:fragment="alertas">
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+            <script th:if="${success}" th:inline="javascript">
+                Swal.fire({
+                title: 'Éxito',
+                        text: /*[[${success}]]*/,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#1c94a4'
+                });
+            </script>
+
+            <script th:if="${mensaje}" th:inline="javascript">
+                Swal.fire({
+                title: /*[[${tipo == 'success' ? 'Éxito' : (tipo == 'warning' ? 'Atención' : 'Error')}]]*/,
+                        text: /*[[${mensaje}]]*/,
+                        icon: /*[[${tipo}]]*/,
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#1c94a4'
+                });
+            </script>
+        </section>
+
         <section th:fragment="main" id="main" class="main" >
 
             <div class="pagetitle">
@@ -121,52 +145,82 @@
                                 <h4 class="text-center mb-4" style="color:#1c94a4; font-weight:bold;">Registrar Inventario</h4>
 
                                 <form th:action="@{/inventario/guardar}" th:object="${inventario}" method="post" class="row g-4">
+
+                                    <!-- INSUMO -->
                                     <div class="col-md-6">
                                         <label class="form-label">Insumo</label>
                                         <select class="form-select" th:field="*{insumo.idInsumo}" required>
                                             <option value="">Seleccione un insumo...</option>
-                                            <option th:each="insumo : ${insumos}" 
-                                                    th:value="${insumo.idInsumo}" 
+                                            <option th:each="insumo : ${insumos}"
+                                                    th:value="${insumo.idInsumo}"
                                                     th:text="${insumo.nombre}"></option>
                                         </select>
                                     </div>
 
+                                    <!-- CÓDIGO DE BARRAS -->
                                     <div class="col-md-6">
                                         <label class="form-label">Código de Barras</label>
-                                        <input type="text" class="form-control" th:field="*{codigoBarras}" required>
+                                        <input type="text" class="form-control"
+                                               th:field="*{codigoBarras}"
+                                               pattern="^[0-9]+$"
+                                               title="Solo se permiten números"
+                                               required>
                                     </div>
 
+                                    <!-- STOCK ACTUAL -->
                                     <div class="col-md-6">
                                         <label class="form-label">Stock Actual</label>
-                                        <input type="number" class="form-control" th:field="*{stockActual}" min="0">
+                                        <input type="number" class="form-control"
+                                               th:field="*{stockActual}"
+                                               min="0"
+                                               required>
                                     </div>
 
+                                    <!-- STOCK BLOQUEADO -->
                                     <div class="col-md-6">
                                         <label class="form-label">Stock Bloqueado</label>
-                                        <input type="number" class="form-control" th:field="*{stockBloqueado}" min="0">
+                                        <input type="number" class="form-control"
+                                               th:field="*{stockBloqueado}"
+                                               min="0"
+                                               required>
                                     </div>
 
+                                    <!-- STOCK MÍNIMO -->
                                     <div class="col-md-6">
                                         <label class="form-label">Stock Mínimo</label>
-                                        <input type="number" class="form-control" th:field="*{stockMinimo}" min="0">
+                                        <input type="number" class="form-control"
+                                               th:field="*{stockMinimo}"
+                                               min="0"
+                                               required>
                                     </div>
 
+                                    <!-- FECHA DE VENCIMIENTO -->
                                     <div class="col-md-6">
                                         <label class="form-label">Fecha de Vencimiento</label>
-                                        <input type="date" class="form-control" th:field="*{fechaVencimiento}">
+                                        <input type="date" class="form-control"
+                                               th:field="*{fechaVencimiento}"
+                                               required>
                                     </div>
 
+                                    <!-- FECHA DE APERTURA -->
                                     <div class="col-md-6">
                                         <label class="form-label">Fecha de Apertura</label>
-                                        <input type="date" class="form-control" th:field="*{fechaApertura}">
+                                        <input type="date" class="form-control"
+                                               th:field="*{fechaApertura}">
                                     </div>
 
+                                    <!-- ESTADO -->
                                     <div class="col-md-6">
                                         <label class="form-label">Estado</label>
                                         <select class="form-select" th:field="*{activo}">
                                             <option value="true">Activo</option>
                                             <option value="false">Inactivo</option>
                                         </select>
+                                    </div>
+
+                                    <!-- ERROR DEL BACKEND -->
+                                    <div th:if="${error}" class="alert alert-danger" style="margin-top: 30px;">
+                                        <span th:text="${error}"></span>
                                     </div>
 
                                     <div class="text-center mt-3">
@@ -208,7 +262,8 @@
 
                                 <h4 class="text-center mb-4" style="color:#1c94a4; font-weight:bold;">Actualizar Inventario</h4>
 
-                                <form th:action="@{/inventario/actualizar}" th:object="${inventario}" method="post" class="row g-4">
+                                <form th:action="@{/inventario/guardar}" th:object="${inventario}" method="post" class="row g-4">
+
                                     <input type="hidden" th:field="*{idInventario}" />
 
                                     <div class="col-md-6">
@@ -244,13 +299,18 @@
 
                                     <div class="col-md-6">
                                         <label class="form-label">Fecha de Vencimiento</label>
-                                        <input type="date" class="form-control" th:field="*{fechaVencimiento}">
+                                        <input type="date" class="form-control"
+                                               th:field="*{fechaVencimiento}"
+                                               th:value="*{fechaVencimiento != null} ? ${#dates.format(fechaVencimiento, 'yyyy-MM-dd')} : ''">
                                     </div>
 
                                     <div class="col-md-6">
                                         <label class="form-label">Fecha de Apertura</label>
-                                        <input type="date" class="form-control" th:field="*{fechaApertura}">
+                                        <input type="date" class="form-control"
+                                               th:field="*{fechaApertura}"
+                                               th:value="*{fechaApertura != null} ? ${#dates.format(fechaApertura, 'yyyy-MM-dd')} : ''">
                                     </div>
+
 
                                     <div class="col-md-6">
                                         <label class="form-label">Estado</label>
@@ -258,6 +318,10 @@
                                             <option value="true">Activo</option>
                                             <option value="false">Inactivo</option>
                                         </select>
+                                    </div>
+
+                                    <div th:if="${error}" class="alert alert-danger" style="margin-top: 30px;">
+                                        <span th:text="${error}"></span>
                                     </div>
 
                                     <div class="text-center mt-3">

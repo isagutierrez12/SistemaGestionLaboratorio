@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/inventario")
@@ -44,26 +45,66 @@ public class InventarioController {
     }
 
     @GetMapping("/modificar/{idInventario}")
-    public String modificarInventario(Inventario inventario, Model model) {
-        inventario = inventarioService.get(inventario);
+    public String modificarInventario(@PathVariable Long idInventario, Model model) {
+        Inventario inventario = inventarioService.get(new Inventario() {
+            {
+                setIdInventario(idInventario);
+            }
+        });
+
+        if (inventario == null) {
+            model.addAttribute("error", "Inventario no encontrado");
+            return "redirect:/inventario/inventarios";
+        }
+
         model.addAttribute("insumos", insumoService.getAll());
         model.addAttribute("inventario", inventario);
-        System.out.println(inventario.toString());
         return "inventario/modificar";
     }
 
     @PostMapping("/guardar")
-    public String guardarUsuario(@ModelAttribute Inventario insumo, Model model) {
+    public String guardarInventario(@ModelAttribute Inventario inventario,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        boolean esNuevo = (inventario.getIdInventario() == null); 
 
         try {
-            inventarioService.save(insumo);
+            if (!esNuevo) {
+                Inventario original = inventarioService.get(new Inventario() {
+                    {
+                        setIdInventario(inventario.getIdInventario());
+                    }
+                });
+
+                if (original != null) {
+                    if (inventario.getFechaVencimiento() == null) {
+                        inventario.setFechaVencimiento(original.getFechaVencimiento());
+                    }
+                    if (inventario.getFechaApertura() == null) {
+                        inventario.setFechaApertura(original.getFechaApertura());
+                    }
+                }
+            }
+
+            inventarioService.save(inventario);
+
+            redirectAttributes.addFlashAttribute("success",
+                    esNuevo
+                            ? "Inventario registrado correctamente."
+                            : "Inventario modificado correctamente."
+            );
+
             return "redirect:/inventario/inventarios";
+
         } catch (IllegalArgumentException e) {
 
             model.addAttribute("error", e.getMessage());
-            return "/inventario/agregar";
-        }
+            model.addAttribute("insumos", insumoService.getAll());
+            model.addAttribute("inventario", inventario);
 
+            return esNuevo ? "/inventario/agregar" : "/inventario/modificar";
+        }
     }
 
     @GetMapping("/buscarJSON")
