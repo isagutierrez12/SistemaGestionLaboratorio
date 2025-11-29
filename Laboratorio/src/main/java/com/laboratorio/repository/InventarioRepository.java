@@ -28,4 +28,6 @@ public interface InventarioRepository extends JpaRepository<Inventario, Long> {
     """)
     List<Inventario> buscarInventarioPorQuery(@Param("query") String query);
 
+    boolean existsByInsumo_IdInsumo(Long idInsumo);
+
 }
