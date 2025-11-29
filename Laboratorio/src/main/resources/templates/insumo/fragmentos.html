@@ -5,7 +5,7 @@
     </head>
 
     <body>
-        <!-- LISTA DE INSUMOS -->
+
         <section th:fragment="main" id="main" class="main">
 
             <div class="pagetitle">
@@ -27,6 +27,9 @@
                                 <div class="datatable-controls mb-3 d-flex justify-content-between">
                                     <a th:href="@{/insumo/agregar}" class="btn btn-primary">Agregar</a>
                                 </div>
+                                
+                                <div th:replace="~{insumo/fragmentos :: busquedaInsumo}"></div>
+
 
                                 <table class="table datatable align-middle text-center">
                                     <thead>
@@ -39,7 +42,7 @@
                                             <th></th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="tbodyInsumos">
                                         <tr th:each="i : ${insumos}">
                                             <td>[[${i.nombre}]]</td>
                                             <td>[[${i.tipo}]]</td>
@@ -64,6 +67,16 @@
                 </div>
             </section>
         </section>
+
+        <section th:fragment="busquedaInsumo">
+            <div class="d-flex mb-3">
+                <input type="text"
+                       id="busquedaInsumoInput"
+                       class="form-control me-2"
+                       placeholder="Buscar por nombre o tipo" />
+            </div>
+        </section>
+
 
         <!-- AGREGAR INSUMO -->
         <section th:fragment="agregar" id="main" class="main">
