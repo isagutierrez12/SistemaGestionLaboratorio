@@ -2,6 +2,7 @@
     <head th:replace="~{layout/layout :: head-admin}">
         <title>Laboratorio Clinico Calderon Piedra</title>
         <meta charset="UTF-8" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     </head>
     <body>
 
@@ -351,7 +352,7 @@
                         <li class="breadcrumb-item active">Proforma</li>
                     </ol>
                 </nav>
-            </div><!-- End Page Title -->
+            </div>
 
             <section class="section">
                 <div class="row">
@@ -360,95 +361,139 @@
                         <div class="card">
                             <div class="card-body">
 
-                                <div class="datatable-controls mb-3 d-flex justify-content-between">
+                                <div class="datatable-controls d-flex justify-content-between align-items-center mb-4">
 
-                                    <p>Proforma</p>
+                                    <div>
+                                        <p class="m-0" style="font-weight:600; color:#0C6C74;">
+                                            Seleccione los exámenes a incluir en la proforma
+                                        </p>
+                                    </div>
+
+                                    <div class="d-flex gap-2">
+
+                                        <button type="button" class="btn-register" id="btnSeleccionarTodo">
+                                            Todos
+                                        </button>
+
+                                        <button type="button" class="btn-register" id="btnDeseleccionarTodo">
+                                            Restaurar
+                                        </button>
+
+                                        <button form="formExamenes" type="submit"
+                                                class="btn-register" id="btnContinuar" disabled>
+                                            Continuar
+                                        </button>
+
+                                    </div>
+
                                 </div>
 
                                 <form th:action="@{/examen/mostrar}" method="post" id="formExamenes">
                                     <table class="table datatable align-middle text-center">
                                         <thead>
                                             <tr>
-                                                <th></th>   
-                                                <th>Nombre</th>            
+                                                <th></th>
+                                                <th>Nombre</th>
                                                 <th>Área</th>
                                                 <th>Precio</th>
                                                 <th>Unidad</th>
-                                                <th>Rango</th>           
-                                                <th>Condiciones</th>        
-                                                <th>Activo</th>        
-
+                                                <th>Rango</th>
+                                                <th>Condiciones</th>
+                                                <th>Estado</th>
                                             </tr>
                                         </thead>
+                                        <style>
+                                            .fila-inactiva {
+                                                background-color: #a4e2eb !important;
+                                            }
+                                        </style>
+
                                         <tbody>
-                                            <tr th:each="e : ${examenes}">
+                                            <tr th:each="e : ${examenes}"
+                                                th:classappend="${e.activo} ? '' : 'fila-inactiva'">
+
                                                 <td>
-                                                    <input type="checkbox" name="seleccionados" th:value="${e.idExamen}" class="exam-check">
+                                                    <input type="checkbox" name="seleccionados"
+                                                           th:value="${e.idExamen}" class="exam-check"
+                                                           style="
+                                                           appearance: none;
+                                                           -webkit-appearance: none;
+                                                           width: 18px;
+                                                           height: 18px;
+                                                           border: 2px solid #1c94a4;
+                                                           border-radius: 4px;
+                                                           cursor: pointer;
+                                                           position: relative;
+                                                           "
+                                                           oninput="this.style.backgroundColor=this.checked?'#1c94a4':'transparent';
+                                                           this.style.borderColor=this.checked?'#1c94a4':'#1c94a4';">
                                                 </td>
+
                                                 <td>[[${e.nombre}]]</td>
                                                 <td>[[${e.area}]]</td>
                                                 <td>[[${e.precio}]]</td>
                                                 <td>[[${e.unidad}]]</td>
                                                 <td>[[${e.valorMinimo}]] - [[${e.valorMaximo}]]</td>
-                                                <td>[[${e.condiciones}]]</td>
+                                                <td style="text-align: left;">[[${e.condiciones}]]</td>
+
                                                 <td>
                                                     <span th:text="${e.activo} ? 'Activo' : 'Inactivo'"></span>
                                                 </td>
-
                                             </tr>
                                         </tbody>
+
+
                                     </table>
-
-                                    <div class="d-flex justify-content-between align-items-center mt-3">
-
-                                        <button type="submit" class="btn btn-success">Continuar</button>
-                                    </div>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
-
         </section>
 
         <section th:fragment="vista-proforma" class="section">
+
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-
-                            <div class="datatable-controls">
-                                <button id="btnRegistro" class="btn-register" type="button" 
-                                        onclick="window.location.href = '@{/examen/proforma}'">
-                                    Regresar
-                                </button>                      
-                            </div>
 
                             <div class="proforma-container">
                                 <!-- Toolbar -->
                                 <div class="proforma-toolbar">
                                     <div class="toolbar-left">
 
-                                        <button class="btn-action" title="Print" onclick="imprimirProforma()">
-                                            <i class="fa-solid fa-print"></i>
+                                        <!-- Botón imprimir -->
+                                        <button title="Imprimir"
+                                                onclick="imprimirProforma()"
+                                                style="border:none; background:#ffffff; padding:10px; border-radius:8px; cursor:pointer;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="26" viewBox="0 0 24 24" width="26" fill="#1c94a4">
+                                                <path d="M0 0h24v24H0z" fill="none"/>
+                                                <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7.5c-.83 0-1.5-.67-1.5-1.5S18.17 9 19 9s1.5.67 1.5 1.5S19.83 11.5 19 11.5zM17 3H7v4h10V3z"/>
+                                            </svg>
                                         </button>
 
-                                        <button class="btn-action" title="Export PDF" onclick="exportarProformaPDF()" style="background:white; border:none; cursor:pointer; border-radius:4px; padding:8px 12px;">
-                                            <i class="fa-solid fa-file-export" style="color:#1c94a4;"></i>
+
+                                        <!-- Botón exportar PDF -->
+                                        <button title="Exportar PDF"
+                                                onclick="exportarProformaPDF()"
+                                                style="border:none; background:#ffffff; padding:10px; border-radius:8px; cursor:pointer;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="26" width="26" viewBox="0 0 24 24" fill="#1c94a4">
+                                                <path d="M0 0h24v24H0z" fill="none"/>
+                                                <path d="M20 2H8c-1.1 0-2 .9-2 2v4H4v2h2v2H4v2h2v6c0 1.1.9 2 2 2h8l6-6V4c0-1.1-.9-2-2-2zm-6 18H8v-6h6v6zm4-6.5V14h-2v-2h2v.5zM18 7h-8V5h8v2z"/>
+                                            </svg>
                                         </button>
 
 
                                     </div>
                                 </div>
 
-                                <!-- Header -->
+
                                 <div class="proforma-header">
                                     <h2>Proforma</h2>
                                     <div class="proforma-info">
                                         <p><strong>Fecha:</strong> <span th:text="${fechaActual}"></span></p>
-
-
                                     </div>
                                 </div>
 
