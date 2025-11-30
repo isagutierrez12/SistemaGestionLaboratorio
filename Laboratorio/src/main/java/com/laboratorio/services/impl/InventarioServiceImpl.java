@@ -67,6 +67,7 @@ public class InventarioServiceImpl implements InventarioService {
             );
         }
 
+        /*
         if (entity.getIdInventario() == null) {
             if (inventarioRepository.existsByInsumo_IdInsumo(entity.getInsumo().getIdInsumo())) {
                 throw new IllegalArgumentException("Este insumo ya tiene un registro en inventario.");
@@ -79,6 +80,7 @@ public class InventarioServiceImpl implements InventarioService {
                 throw new IllegalArgumentException("Otro inventario ya está asociado a este insumo.");
             }
         }
+*/
 
         inventarioRepository.save(entity);
     }

@@ -5,6 +5,29 @@
     </head>
 
     <body>
+        <section th:fragment="alertas">
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+            <script th:if="${success}" th:inline="javascript">
+                Swal.fire({
+                title: 'Éxito',
+                        text: /*[[${success}]]*/,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#1c94a4'
+                });
+            </script>
+
+            <script th:if="${mensaje}" th:inline="javascript">
+                Swal.fire({
+                title: /*[[${tipo == 'success' ? 'Éxito' : (tipo == 'warning' ? 'Atención' : 'Error')}]]*/,
+                        text: /*[[${mensaje}]]*/,
+                        icon: /*[[${tipo}]]*/,
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#1c94a4'
+                });
+            </script>
+        </section>
 
         <section th:fragment="main" id="main" class="main">
 

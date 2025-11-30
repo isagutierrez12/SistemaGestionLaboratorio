@@ -14,4 +14,6 @@ public interface InsumoRepository extends JpaRepository<Insumo, Long> {
            OR LOWER(i.tipo) LIKE LOWER(CONCAT('%', :query, '%'))
     """)
     List<Insumo> buscarPorQuery(@Param("query") String query);
+    
+    public boolean existsByNombre(String nombre);
 }
