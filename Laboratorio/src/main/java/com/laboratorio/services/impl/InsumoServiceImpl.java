@@ -32,7 +32,6 @@ public class InsumoServiceImpl implements InsumoService {
             }
         }
         insumoRepository.save(entity);
-        
     }
 
     @Override

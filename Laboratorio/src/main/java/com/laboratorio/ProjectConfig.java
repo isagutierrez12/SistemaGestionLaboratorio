@@ -1,5 +1,7 @@
 package com.laboratorio;
 
+import com.laboratorio.config.CustomAuthenticationFailureHandler;
+import com.laboratorio.config.CustomAuthenticationSuccessHandler;
 import com.laboratorio.model.Ruta;
 import com.laboratorio.service.RutaPermitService;
 import com.laboratorio.service.RutaService;
@@ -28,6 +30,13 @@ public class ProjectConfig implements WebMvcConfigurer {
 
     @Autowired
     private RutaService rutaService;
+    
+        
+    @Autowired
+    private CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+    
+    @Autowired
+    private CustomAuthenticationFailureHandler authenticationFailureHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -48,6 +57,8 @@ public class ProjectConfig implements WebMvcConfigurer {
                 })
                 .formLogin((form) -> form
                 .loginPage("/login")
+                        .successHandler(authenticationSuccessHandler) 
+                .failureHandler(authenticationFailureHandler)
                 .defaultSuccessUrl("/paciente/pacientes", true)
                 .permitAll()
                 )

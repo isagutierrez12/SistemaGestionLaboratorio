@@ -8,12 +8,12 @@ import jakarta.servlet.http.HttpSession;
 @RequiredArgsConstructor
 public class SessionTimeoutHandler {
     
-    private static final int WARNING_TIME = 5 * 60 * 1000; // 5 minutos antes en milisegundos
+    private static final int WARNING_TIME = 5 * 60 * 1000; 
     
     private final HttpSession session;
     
     public long getSessionTimeout() {
-        return session.getMaxInactiveInterval() * 1000L; // Convertir a milisegundos
+        return session.getMaxInactiveInterval() * 1000L; 
     }
     
     public long getTimeUntilExpiry() {
