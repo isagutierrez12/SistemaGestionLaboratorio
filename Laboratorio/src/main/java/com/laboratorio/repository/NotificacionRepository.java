@@ -4,7 +4,6 @@
  */
 package com.laboratorio.repository;
 
-
 import com.laboratorio.model.Inventario;
 import com.laboratorio.model.Notificacion;
 import java.time.LocalDateTime;
@@ -13,8 +12,23 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EnableJpaRepositories
-public interface NotificacionRepository extends JpaRepository<Notificacion, Long>{
+public interface NotificacionRepository extends JpaRepository<Notificacion, Long> {
+
     public boolean existsByInventarioAndLeidaFalse(Inventario inventario);
+
     public List<Notificacion> findByFechaCreacionAfterOrderByFechaCreacionDesc(LocalDateTime fecha);
-     boolean existsByInventario_IdInventarioAndTituloContaining(Long idInventario, String titulo);
+
+    boolean existsByInventario_IdInventarioAndTituloContaining(Long idInventario, String titulo);
+
+    public List<Notificacion> findByTipoStartingWithOrderByFechaCreacion(String tipo);
+
+    public List<Notificacion> findByTipoStartingWithAndLeidaFalseOrderByFechaCreacionDesc(String tipo);
+
+    public Long countByTipoStartingWithAndLeidaFalse(String tipo);
+
+    public List<Notificacion> findTop10ByOrderByFechaCreacionDesc();
+
+    public List<Notificacion> findAllByOrderByFechaCreacionDesc();
+
+    public List<Notificacion> findByTipoStartingWithOrderByFechaCreacionDesc(String tipo);
 }

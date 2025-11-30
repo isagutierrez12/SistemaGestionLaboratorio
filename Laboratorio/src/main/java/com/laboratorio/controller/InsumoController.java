@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/insumo")
@@ -39,14 +40,19 @@ public class InsumoController {
     }
 
     @PostMapping("/guardar")
-    public String guardarInsumo(@ModelAttribute Insumo insumo, Model model) {
+    public String guardarInsumo(@ModelAttribute Insumo insumo, Model model, RedirectAttributes redirectAttributes) {
+        boolean esNuevo = (insumo.getIdInsumo() == null);
+        
+        
         try {
             insumoService.save(insumo);
+            redirectAttributes.addFlashAttribute("mensaje",  esNuevo ? "Insumo registrado correctamente" : "Insumo modificado correctamente");
+            redirectAttributes.addFlashAttribute("tipo", "success");
             return "redirect:/insumo/insumos";
         } catch (IllegalArgumentException e) {
-
-            model.addAttribute("error", e.getMessage());
-            return "/insumo/agregar";
+            redirectAttributes.addFlashAttribute("mensaje", e.getMessage());
+            redirectAttributes.addFlashAttribute("tipo", "error");
+            return "redirect:/insumo/agregar";
         }
     }
 

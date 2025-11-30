@@ -1,6 +1,7 @@
 package com.laboratorio.services.impl;
 
 import com.laboratorio.model.Insumo;
+import com.laboratorio.model.Inventario;
 import com.laboratorio.repository.InsumoRepository;
 import com.laboratorio.service.InsumoService;
 import java.util.List;
@@ -25,6 +26,11 @@ public class InsumoServiceImpl implements InsumoService {
 
     @Override
     public void save(Insumo entity) {
+        if (entity.getIdInsumo() == null) {
+            if (insumoRepository.existsByNombre(entity.getNombre())) {
+                throw new IllegalArgumentException("Ya existe un insumo con el mismo nombre.");
+            }
+        }
         insumoRepository.save(entity);
     }
 
