@@ -19,6 +19,7 @@ import com.laboratorio.service.PaqueteService;
 import com.laboratorio.service.SolicitudService;
 import com.laboratorio.service.UsuarioService;
 import com.laboratorio.services.impl.EmailServiceImpl;
+import com.laboratorio.services.impl.WhatsAppServiceImpl;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -48,7 +51,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 public class CitaController {
     
-     private final CitaService citaService;
+    private final CitaService citaService;
     private final SolicitudService solicitudService;
     private final UsuarioService usuarioService;
     private final ExamenService examenService;
@@ -56,6 +59,7 @@ public class CitaController {
     private final PaqueteService paqueteService;
     private EmailServiceImpl emailServiceImpl; 
     private final InventarioService inventarioService;
+    private WhatsAppServiceImpl whatsAppServiceImpl;
             
     @Autowired
     public CitaController(
@@ -66,8 +70,10 @@ public class CitaController {
             PacienteService pacienteService,
             PaqueteService paqueteService,
             EmailServiceImpl emailServiceImpl, 
-            InventarioService inventarioService
-            ) {
+            InventarioService inventarioService,
+            WhatsAppServiceImpl whatsAppServiceImpl
+            ) 
+    {
         this.citaService = citaService;
         this.solicitudService = solicitudService;
         this.usuarioService = usuarioService;
@@ -76,37 +82,40 @@ public class CitaController {
         this.paqueteService = paqueteService;
         this.emailServiceImpl = emailServiceImpl;
         this.inventarioService = inventarioService;
+        this.whatsAppServiceImpl = whatsAppServiceImpl;
     }
 
     // Listado de citas
     @GetMapping("/citas")
     public String listarCitas(Model model) {
        List<CitaCalendarioDTO> citasDTO = citaService.getAll().stream()
-    .map(c -> {
-        var solicitud = c.getSolicitud();
+        // Filtrar solo citas activas
+        .filter(c -> !"CANCELADA".equals(c.getEstado()))
+        .map(c -> {
+            var solicitud = c.getSolicitud();
 
-        // Extraer nombres de exámenes y paquetes
-        List<String> examenes = solicitud.getDetalles().stream()
-            .filter(d -> d.getExamen() != null)
-            .map(d -> d.getExamen().getNombre())
-            .toList();
+            // Extraer nombres de exámenes y paquetes
+            List<String> examenes = solicitud.getDetalles().stream()
+                .filter(d -> d.getExamen() != null)
+                .map(d -> d.getExamen().getNombre())
+                .toList();
 
-        List<String> paquetes = solicitud.getDetalles().stream()
-            .filter(d -> d.getPaquete() != null)
-            .map(d -> d.getPaquete().getNombre())
-            .toList();
+            List<String> paquetes = solicitud.getDetalles().stream()
+                .filter(d -> d.getPaquete() != null)
+                .map(d -> d.getPaquete().getNombre())
+                .toList();
 
-        return new CitaCalendarioDTO(
-            c.getIdCita(),
-            solicitud.getPaciente().getNombre() + " " + solicitud.getPaciente().getPrimerApellido(),
-            c.getFechaCita(),
-            c.getEstado(),
-            c.getNotas(),
-            examenes,
-            paquetes
-        );
-    })
-    .toList();
+            return new CitaCalendarioDTO(
+                c.getIdCita(),
+                solicitud.getPaciente().getNombre() + " " + solicitud.getPaciente().getPrimerApellido(),
+                c.getFechaCita(),
+                c.getEstado(),
+                c.getNotas(),
+                examenes,
+                paquetes
+            );
+        })
+        .toList();
 
     model.addAttribute("citas", citasDTO);
     return "cita/citas";
@@ -158,7 +167,7 @@ public class CitaController {
         // 3. Agregar paquetes (y sus exámenes) a la solicitud
       if (paquetesSeleccionados != null && !paquetesSeleccionados.isEmpty()) {
         for (Long idPaquete : paquetesSeleccionados) {
-            Paquete paquete = paqueteService.getById(idPaquete); // ✅ Correcto
+            Paquete paquete = paqueteService.getById(idPaquete); 
             if (paquete != null) {
                 // Agregar los exámenes del paquete a la solicitud
                 for (DetallePaquete dp : paquete.getDetalles()) {
@@ -172,10 +181,10 @@ public class CitaController {
         }
     }
 
-        // 4. Asignar precio total a la solicitud
+        // Asignar precio total a la solicitud
         solicitud.setPrecioTotal(precioTotal);
 
-        // 5. Crear la cita asociada
+        // Crear la cita asociada
         Cita cita = new Cita();
         cita.setSolicitud(solicitud);
         cita.setUsuario(usuarioService.getUsuarioPorUsername(userDetails.getUsername()));
@@ -183,12 +192,12 @@ public class CitaController {
         cita.setNotas(notas);
         cita.setEstado("AGENDADA");
 
-        // 6. Guardar solicitud y cita
+        // Guardar solicitud y cita
         solicitudService.save(solicitud);
         citaService.save(cita);
         System.out.println(cita.getIdCita());
         inventarioService.ajustarInventarioPorCita(cita.getIdCita(), cita.getEstado());
-        // 7. Enviar correo al paciente
+        // Enviar correo al paciente
         Paciente paciente = solicitud.getPaciente();
 
         String destinatario = paciente.getEmail();
@@ -211,19 +220,26 @@ public class CitaController {
 
             for (SolicitudDetalle detalle : solicitud.getDetalles()) {
                 Examen ex = detalle.getExamen();
-                examenesHtml.append(String.format("""
-                    <tr>
-                        <td>%s</td>
-                        <td>%s</td>
-                        <td style="text-align:right;">₡%.2f</td>
-                    </tr>
-                """, ex.getCodigo(), ex.getNombre(), ex.getPrecio().doubleValue()));
+                
+                String condiciones ="";
+                 if (ex.getCondiciones() != null && !ex.getCondiciones().isBlank()) {
+            condiciones = "<br><small><i>Condiciones: " + ex.getCondiciones() + "</i></small>";
             }
 
-            examenesHtml.append("""
-                    </tbody>
-                </table>
-            """);
+            examenesHtml.append(String.format("""
+                <tr>
+                    <td>%s</td>
+                    <td>%s%s</td>
+                    <td style="text-align:right;">₡%.2f</td>
+                </tr>
+            """, ex.getCodigo(), ex.getNombre(), condiciones, ex.getPrecio().doubleValue()));
+        }
+
+        examenesHtml.append("""
+                </tbody>
+            </table>
+        """);
+
         } else {
             examenesHtml.append("<p><i>No se registraron exámenes en esta cita.</i></p>");
         }
@@ -232,7 +248,7 @@ public class CitaController {
         String fechaFormateada = cita.getFechaCita()
             .format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'a las' HH:mm"));
 
-        //  Construir contenido HTML del correo
+        //  Contenido HTML del correo
         String contenido = """
         <html>
         <body style="font-family: Arial, sans-serif; color: #333;">
@@ -269,14 +285,57 @@ public class CitaController {
 
         //Enviar correo
         emailServiceImpl.enviarCorreoCita(destinatario, asunto, contenido);
-            redirectAttrs.addFlashAttribute("mensaje", "Cita registrada correctamente.");
-            redirectAttrs.addFlashAttribute("clase", "success");
+        redirectAttrs.addFlashAttribute("mensaje", "Cita registrada correctamente.");
+        redirectAttrs.addFlashAttribute("clase", "success");
+            
+        // Enviar MSJ   
+        try {
+            String numeroPaciente = paciente.getTelefono()
+            .replaceAll("[^0-9]", "");
+            if (!numeroPaciente.startsWith("506")) {
+                numeroPaciente = "506" + numeroPaciente;
+            }
+            StringBuilder mensajeWhatsapp = new StringBuilder();
+            mensajeWhatsapp.append("Estimado/a ").append(paciente.getNombre())
+                    .append(" ").append(paciente.getPrimerApellido()).append(" ").append(paciente.getSegundoApellido()).append(",\n\n")
+                    .append("Su cita ha sido registrada correctamente.\n\n")
+                    .append("📅 Detalles de la cita:\n")
+                    .append("- Fecha y hora: ").append(fechaFormateada).append("\n")
+                    .append("- Estado: ").append(cita.getEstado()).append("\n")
+                    .append("- Notas: ").append(cita.getNotas() != null ? cita.getNotas() : "Ninguna").append("\n")
+                    .append("- Precio total: ₡").append(String.format("%.2f", solicitud.getPrecioTotal())).append("\n\n")
+                    .append("🧪 Exámenes y paquetes incluidos:\n");
 
+            // Listar exámenes
+            if (!solicitud.getDetalles().isEmpty()) {
+                 for (SolicitudDetalle detalle : solicitud.getDetalles()) {
+                    if (detalle.getExamen() != null) {
+
+                        Examen ex = detalle.getExamen();
+                        mensajeWhatsapp.append("- ").append(ex.getNombre()).append("\n");
+
+                        if (ex.getCondiciones() != null && !ex.getCondiciones().isBlank()) {
+                            mensajeWhatsapp.append("   Condiciones: ").append(ex.getCondiciones()).append("\n");
+                        }
+                    }
+                }
+                    } else {
+                        mensajeWhatsapp.append("No se registraron exámenes.\n");
+                    }
+
+            mensajeWhatsapp.append("\nGracias por confiar en Laboratorio Clínico.");
+
+            whatsAppServiceImpl.enviarMensaje(numeroPaciente, mensajeWhatsapp.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            // No interrumpir el flujo si falla WhatsApp
+        }
     } catch (Exception e) {
         e.printStackTrace();
         redirectAttrs.addFlashAttribute("mensaje", "Error al registrar la cita.");
         redirectAttrs.addFlashAttribute("clase", "danger");
     }
+    
 
     return "redirect:/cita/citas";
 
@@ -378,78 +437,193 @@ public class CitaController {
         citaService.save(cita);
 
         inventarioService.ajustarInventarioPorCita(idCita, estado);
-        // 9. Enviar correo al paciente
+        // Enviar correo al paciente
         Paciente paciente = solicitud.getPaciente();
         String destinatario = paciente.getEmail();
-        String asunto = "Actualización de cita - Laboratorio Clínico";
-
-        // Construir tabla HTML de exámenes
-        StringBuilder examenesHtml = new StringBuilder();
-        if (!solicitud.getDetalles().isEmpty()) {
-            examenesHtml.append("""
-                    <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 100%;">
-                        <thead style="background-color: #f2f2f2;">
-                            <tr>
-                                <th style="text-align:left;">Código</th>
-                                <th style="text-align:left;">Nombre del Examen</th>
-                                <th style="text-align:right;">Precio</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                """);
-
-            for (SolicitudDetalle detalle : solicitud.getDetalles()) {
-                Examen ex = detalle.getExamen();
-                examenesHtml.append(String.format("""
-                        <tr>
-                            <td>%s</td>
-                            <td>%s</td>
-                            <td style="text-align:right;">₡%.2f</td>
-                        </tr>
-                    """, ex.getCodigo(), ex.getNombre(), ex.getPrecio().doubleValue()));
-            }
-            examenesHtml.append("</tbody></table>");
-        } else {
-            examenesHtml.append("<p><i>No se registraron exámenes en esta cita.</i></p>");
-        }
+        String asunto;
+        String contenido;
 
         // Formatear fecha
         String fechaFormateada = cita.getFechaCita()
                 .format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'a las' HH:mm"));
 
-        // Contenido del correo
-        String contenido = """
+        // Construir HTML de exámenes
+        StringBuilder examenesHtml = new StringBuilder();
+            if (solicitud.getDetalles() != null && !solicitud.getDetalles().isEmpty()) {
+                examenesHtml.append("""
+                <table border="1" cellspacing="0" cellpadding="8" 
+                       style="border-collapse: collapse; width: 100%; margin-top: 10px;">
+                    <thead style="background-color: #f2f2f2;">
+                        <tr>
+                            <th style="text-align:left;">Código</th>
+                            <th style="text-align:left;">Nombre del Examen</th>
+                            <th style="text-align:left;">Condiciones</th>
+                            <th style="text-align:right;">Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            """);
+
+            for (SolicitudDetalle detalle : solicitud.getDetalles()) {
+                Examen ex = detalle.getExamen();
+
+                examenesHtml.append(String.format("""
+                    <tr>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td style="text-align:right;">₡%.2f</td>
+                    </tr>
+                """,
+                        ex.getCodigo(),
+                        ex.getNombre(),
+                        (ex.getCondiciones() != null ? ex.getCondiciones() : "Ninguna"),
+                        ex.getPrecio().doubleValue()
+                ));
+            }
+
+            examenesHtml.append("""
+                    </tbody>
+                </table>
+            """);
+
+        } else {
+            examenesHtml.append("<p><i>No se registraron exámenes en esta cita.</i></p>");
+        }
+
+        if ("CANCELADA".equals(estado)) {
+            asunto = "Cita Cancelada - Laboratorio Clínico";
+            contenido = """
             <html>
             <body style="font-family: Arial, sans-serif; color: #333;">
                 <h2>Estimado/a %s %s %s,</h2>
-                <p>Su cita ha sido actualizada correctamente en nuestro sistema.</p>
-                <h3>📅 Detalles de la cita:</h3>
+                <p>Su cita ha sido <b style='color:red;'>cancelada</b>.</p>
+
+                <h3>📅 Detalles de la cita</h3>
+                <ul>
+                    <li><b>Fecha y hora:</b> %s</li>
+                    <li><b>Notas:</b> %s</li>
+                    <li><b>Precio total:</b> ₡%.2f</li>
+                </ul>
+
+                <h3>🧪 Exámenes incluidos</h3>
+                %s
+
+                <p>Si desea reagendar, por favor contacte al laboratorio.</p>
+
+                <hr/>
+                <p style="font-size: 12px; color: #777;">Este es un mensaje automático, por favor no responder.</p>
+            </body>
+            </html>
+            """.formatted(
+                paciente.getNombre(),
+                paciente.getPrimerApellido(),
+                paciente.getSegundoApellido(),
+                fechaFormateada,
+                (cita.getNotas() != null ? cita.getNotas() : "Ninguna"),
+                solicitud.getPrecioTotal(),
+                examenesHtml.toString()
+            );
+        } else {
+            asunto = "Actualización de cita - Laboratorio Clínico";
+            contenido = """
+            <html>
+            <body style="font-family: Arial, sans-serif; color: #333;">
+                <h2>Estimado/a %s %s %s,</h2>
+                <p>Su cita ha sido actualizada correctamente.</p>
+
+                <h3>📅 Detalles de la cita</h3>
                 <ul>
                     <li><b>Fecha y hora:</b> %s</li>
                     <li><b>Estado:</b> %s</li>
                     <li><b>Notas:</b> %s</li>
                     <li><b>Precio total:</b> ₡%.2f</li>
                 </ul>
-                <h3>🧪 Exámenes y paquetes incluidos:</h3>
+
+                <h3>🧪 Exámenes incluidos</h3>
                 %s
-                <br/>
-                <p>Gracias por confiar en <b>Laboratorio Clínico</b>.</p>
+
                 <hr/>
                 <p style="font-size: 12px; color: #777;">Este es un mensaje automático, por favor no responder.</p>
             </body>
             </html>
-        """.formatted(
+            """.formatted(
                 paciente.getNombre(),
                 paciente.getPrimerApellido(),
                 paciente.getSegundoApellido(),
                 fechaFormateada,
                 cita.getEstado(),
-                (cita.getNotas() != null && !cita.getNotas().isEmpty()) ? cita.getNotas() : "Ninguna",
+                (cita.getNotas() != null ? cita.getNotas() : "Ninguna"),
                 solicitud.getPrecioTotal(),
                 examenesHtml.toString()
-        );
+            );
+        }
 
         emailServiceImpl.enviarCorreoCita(destinatario, asunto, contenido);
+        
+        //Enviar Msj whats app
+        try {
+
+            String numeroPaciente = paciente.getTelefono()
+                    .replaceAll("[^0-9]", "");
+            if (!numeroPaciente.startsWith("506")) {
+                numeroPaciente = "506" + numeroPaciente;
+            }
+
+            StringBuilder mensajeWhatsapp = new StringBuilder();
+
+            // Encabezado según el estado
+            if ("CANCELADA".equals(estado)) {
+                mensajeWhatsapp.append("❌ *Cita Cancelada*\n\n");
+            } else {
+                mensajeWhatsapp.append("🔔 *Actualización de Cita*\n\n");
+            }
+
+            // Datos del paciente
+            mensajeWhatsapp.append("Estimado/a ")
+                    .append(paciente.getNombre()).append(" ")
+                    .append(paciente.getPrimerApellido()).append(" ")
+                    .append(paciente.getSegundoApellido()).append(",\n\n");
+
+            // Detalles de la cita
+            mensajeWhatsapp.append("📅 *Detalles de la cita:*\n")
+                    .append("- Fecha y hora: ").append(fechaFormateada).append("\n")
+                    .append("- Estado: ").append(cita.getEstado()).append("\n")
+                    .append("- Notas: ").append(
+                        cita.getNotas() != null ? cita.getNotas() : "Ninguna"
+                    ).append("\n")
+                    .append("- Precio total: ₡").append(
+                        String.format("%.2f", solicitud.getPrecioTotal())
+                    ).append("\n\n");
+
+            mensajeWhatsapp.append("🧪 *Exámenes incluidos:*\n");
+
+            // Listar exámenes igual que registrar
+            if (!solicitud.getDetalles().isEmpty()) {
+                for (SolicitudDetalle detalle : solicitud.getDetalles()) {
+                    if (detalle.getExamen() != null) {
+
+                        Examen ex = detalle.getExamen();
+                        mensajeWhatsapp.append("- ").append(ex.getNombre()).append("\n");
+
+                        if (ex.getCondiciones() != null && !ex.getCondiciones().isBlank()) {
+                            mensajeWhatsapp.append("   Condiciones: ").append(ex.getCondiciones()).append("\n");
+                        }
+                    }
+                }
+            } else {
+                mensajeWhatsapp.append("No se registraron exámenes.\n");
+            }
+
+            mensajeWhatsapp.append("\nGracias por confiar en Laboratorio Clínico.");
+
+            // Enviar mensaje
+            whatsAppServiceImpl.enviarMensaje(numeroPaciente, mensajeWhatsapp.toString());
+
+        } catch (Exception e) {
+            e.printStackTrace(); 
+            // No detener flujo si WhatsApp falla
+        }
 
         redirectAttrs.addFlashAttribute("mensaje", "Cita actualizada correctamente.");
         redirectAttrs.addFlashAttribute("clase", "success");
@@ -461,8 +635,7 @@ public class CitaController {
     }
 
     return "redirect:/cita/citas";
-}
-
+    }
     // Buscar cita por solicitud o estado
     @GetMapping("/buscar")
     public String buscarCitas(@RequestParam("query") String query, Model model) {
