@@ -1960,3 +1960,23 @@ h6 {
   font-size: 13px;
   color: #0C6C74;
 }
+
+#notification-list {
+    width: 320px;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+
+#notification-list::-webkit-scrollbar {
+    width: 6px;
+}
+#notification-list::-webkit-scrollbar-thumb {
+    background-color: #0c6c74;
+    border-radius: 10px;
+}
+#notification-list::-webkit-scrollbar-track {
+    background: #e9ecef;
+}
+
