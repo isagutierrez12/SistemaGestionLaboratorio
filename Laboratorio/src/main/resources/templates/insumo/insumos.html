@@ -12,5 +12,7 @@
         <main th:replace="~{insumo/fragmentos :: main}"></main>
         <div id="preloader"></div>
         <div th:replace="~{layout/admin :: jsfiles}"></div>
+        <script th:src="@{/assets/js/insumos.js}"></script>
+        <div th:replace="~{insumo/fragmentos :: alertas}"></div>
     </body>
 </html>

@@ -5,13 +5,36 @@
     </head>
     <body>
 
-        <section th:fragment="main" id="main" class="main" th:if="${page == 'list'}">
+        <section th:fragment="alertas">
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+            <script th:if="${success}" th:inline="javascript">
+                Swal.fire({
+                title: 'Éxito',
+                        text: /*[[${success}]]*/,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#1c94a4'
+                });
+            </script>
+
+            <script th:if="${mensaje}" th:inline="javascript">
+                Swal.fire({
+                title: /*[[${tipo == 'success' ? 'Éxito' : (tipo == 'warning' ? 'Atención' : 'Error')}]]*/,
+                        text: /*[[${mensaje}]]*/,
+                        icon: /*[[${tipo}]]*/,
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#1c94a4'
+                });
+            </script>
+        </section>
+
+        <section th:fragment="main" id="main" class="main" th:if="${page == 'list'}">
 
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item">Pacientes</li>
                         <li class="breadcrumb-item active">Datos</li>
                     </ol>
@@ -46,9 +69,8 @@
                                             <th style="text-align:center;">Email</th>   
                                             <th style="text-align:center;">Contacto Emergencia</th>
                                             <th style="text-align:center;">Padecimientos</th>  
-                                            <th style="text-align:center;">Alergias</th>  
-                                            <th style="text-align:center;">Activo</th>        
-                                            <th style="text-align:center;">Acciones</th>
+                                            <th style="text-align:center;">Alergias</th>       
+                                            <th style="text-align:center;"></th>
 
                                         </tr>
                                     </thead>
@@ -60,16 +82,13 @@
                                             <td style="vertical-align: middle; text-align: center;">[[${p.cedula}]]</td>
                                             <td style="vertical-align: middle; text-align: center;">[[${p.fechaNacimiento}]]</td>
                                             <td style="vertical-align: middle; text-align: center;">[[${p.telefono}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.email}]]</td>
+                                            <td style="vertical-align: middle;">[[${p.email}]]</td>
                                             <td style="vertical-align: middle; text-align: center;">[[${p.contactoEmergencia}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.padecimiento}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.alergia}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">
-                                                <span th:text="${p.activo} ? 'Activo' : 'Inactivo'"></span>
-                                            </td>
+                                            <td style="vertical-align: middle;">[[${p.padecimiento}]]</td>
+                                            <td style="vertical-align: middle;">[[${p.alergia}]]</td>
                                             <td class="actions-cell" 
                                                 style="vertical-align: middle; text-align: center; display: flex; justify-content: center; gap: 20px;">
-                                                <a th:href="@{/paciente/editar/{id}(id=${p.idPaciente})}" class="btn-edit" title="Editar">
+                                                <a th:href="@{/paciente/editar/{id}(id=${p.idPaciente})}" class="btn-edit" title="Actualizar">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
                                                 <a th:href="@{/paciente/historial/{id}(id=${p.idPaciente})}" class="btn btn-history" title="Historial">
@@ -80,16 +99,13 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <!-- End Table with stripped rows -->
-
-                            </div> <!-- card-body -->
-                        </div> <!-- card -->
-
-                    </div> <!-- col-lg-12 -->
-                </div> <!-- row -->
+                            </div> 
+                        </div>
+                    </div>
+                </div> 
             </section>
 
-        </section><!-- End #main -->
+        </section>
 
 
         <section th:fragment="form-paciente" id="main" class="main" th:if="${page == 'create'}">
@@ -97,12 +113,12 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item">Pacientes</li>
                         <li class="breadcrumb-item active">Registrar</li>
                     </ol>
                 </nav>
-            </div><!-- End Page Title -->
+            </div>
 
             <section class="section">
                 <div class="row">
@@ -118,7 +134,6 @@
                                          onerror="this.style.display='none'"/>
                                 </div>
 
-                                <!-- Título -->
                                 <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
                                     Registrar Paciente
                                 </h4>
@@ -128,78 +143,110 @@
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
                                     <div class="row">
+
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="nombre" class="form-label">Nombre</label>
-                                            <input type="text" class="form-control text-center" id="nombre" name="nombre" required />
+                                            <input type="text" class="form-control text-center" id="nombre" th:field="*{nombre}"
+                                                   required maxlength="25"
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                                   title="Solo letras y espacios"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="primerApellido" class="form-label">Primer Apellido</label>
-                                            <input type="text" class="form-control text-center" id="primerApellido" name="primerApellido" required />
+                                            <input type="text" class="form-control text-center" id="primerApellido" th:field="*{primerApellido}"
+                                                   required maxlength="25"
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                                   title="Solo letras y espacios"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="segundoApellido" class="form-label">Segundo Apellido</label>
-                                            <input type="text" class="form-control text-center" id="segundoApellido" name="segundoApellido" />
+                                            <input type="text" class="form-control text-center" id="segundoApellido" th:field="*{segundoApellido}"
+                                                   maxlength="25"
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]*$"
+                                                   title="Solo letras y espacios"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="cedula" class="form-label">Cédula</label>
-                                            <input type="text" class="form-control text-center" id="cedula" name="cedula" required />
+                                            <input type="text" class="form-control text-center" id="cedula" th:field="*{cedula}"
+                                                   required maxlength="9"
+                                                   pattern="^\d{1,9}$"
+                                                   title="Máximo 9 dígitos numéricos"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
-                                            <input type="date" class="form-control text-center" id="fechaNacimiento" name="fechaNacimiento" required />
+                                            <input type="date" class="form-control text-center" id="fechaNacimiento" th:field="*{fechaNacimiento}"
+                                                   required/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="telefono" class="form-label">Teléfono</label>
-                                            <input type="text" class="form-control text-center" id="telefono" name="telefono" />
+                                            <input type="text" class="form-control text-center" id="telefono" th:field="*{telefono}"
+                                                   required maxlength="12" minlength="8"
+                                                   pattern="^\d{8,12}$"
+                                                   title="Debe contener entre 8 y 12 números"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="email" class="form-label">Correo electrónico</label>
-                                            <input type="email" class="form-control text-center" id="email" name="email" />
+                                            <input type="email" class="form-control text-center" id="email" th:field="*{email}"
+                                                   pattern="^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$"
+                                                   title="Formato de correo inválido"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="contactoEmergencia" class="form-label">Contacto de Emergencia</label>
-                                            <input type="text" class="form-control text-center" id="contactoEmergencia" name="contactoEmergencia" />
+                                            <input type="text" class="form-control text-center" id="contactoEmergencia" th:field="*{contactoEmergencia}"
+                                                   maxlength="12" minlength="8"
+                                                   pattern="^\d{8,12}$"
+                                                   title="Debe contener entre 8 y 12 números"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="padecimiento" class="form-label">Padecimientos</label>
-                                            <input type="text" class="form-control text-center" id="padecimiento" name="padecimiento" />
+                                            <input type="text" class="form-control text-center" id="padecimiento" th:field="*{padecimiento}"
+                                                   maxlength="255"
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]*$"
+                                                   title="Solo letras y espacios"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="alergia" class="form-label">Alergias</label>
-                                            <input type="text" class="form-control text-center" id="alergia" name="alergia" />
+                                            <input type="text" class="form-control text-center" id="alergia" th:field="*{alergia}"
+                                                   maxlength="255"
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]*$"
+                                                   title="Solo letras y espacios"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="estado" class="form-label">Estado</label>
-                                            <select id="estado" name="activo" class="form-select text-center">
+                                            <select id="estado" th:field="*{activo}" class="form-select text-center" required>
                                                 <option value="">Seleccione...</option>
-                                                <option value="true">Activo</option>
-                                                <option value="false">Inactivo</option>
+                                                <option th:value="true">Activo</option>
+                                                <option th:value="false">Inactivo</option>
                                             </select>
                                         </div>
+
+                                    </div> 
+                                    
+                                    <div th:if="${error}" class="alert alert-danger" style="margin-top: 30px;">
+                                        <span th:text="${error}"></span>
                                     </div>
 
-                                    <!-- Botones -->
                                     <div class="col-12 text-center mt-4">
-                                        <button type="submit" class="btn btn-save me-2">Registrar</button>
+                                        <button type="submit" class="btn btn-save me-2">Guardar</button>
                                         <a th:href="@{/paciente/pacientes}" class="btn btn-cancel">Cancelar</a>
                                     </div>
                                 </form>
 
-                            </div> <!-- card-body -->
-                        </div> <!-- card -->
+                            </div> 
+                        </div> 
 
-                    </div> <!-- col-lg-12 -->
-                </div> <!-- row -->
+                    </div> 
+                </div> 
             </section>
 
         </section>
@@ -212,12 +259,12 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item">Pacientes</li>
-                        <li class="breadcrumb-item active">Editar</li>
+                        <li class="breadcrumb-item active">Actualizar</li>
                     </ol>
                 </nav>
-            </div><!-- End Page Title -->
+            </div>
 
             <section class="section">
                 <div class="row">
@@ -235,7 +282,7 @@
 
                                 <!-- Título -->
                                 <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
-                                    Editar Paciente
+                                    Actualizar Paciente
                                 </h4>
 
                                 <!-- Formulario en dos columnas -->
@@ -244,77 +291,115 @@
                                     <input type="hidden" th:field="*{idPaciente}" />
 
                                     <div class="row">
+
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="nombre" class="form-label">Nombre</label>
-                                            <input type="text" class="form-control text-center" id="nombre" th:field="*{nombre}" required />
+                                            <input type="text" class="form-control text-center" id="nombre" th:field="*{nombre}"
+                                                   required maxlength="25"
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                                   title="Solo letras y espacios"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="primerApellido" class="form-label">Primer Apellido</label>
-                                            <input type="text" class="form-control text-center" id="primerApellido" th:field="*{primerApellido}" required />
+                                            <input type="text" class="form-control text-center" id="primerApellido" th:field="*{primerApellido}"
+                                                   required maxlength="25"
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"
+                                                   title="Solo letras y espacios"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="segundoApellido" class="form-label">Segundo Apellido</label>
-                                            <input type="text" class="form-control text-center" id="segundoApellido" th:field="*{segundoApellido}" />
+                                            <input type="text" class="form-control text-center" id="segundoApellido" th:field="*{segundoApellido}"
+                                                   maxlength="25"
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]*$"
+                                                   title="Solo letras y espacios"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="cedula" class="form-label">Cédula</label>
-                                            <input type="text" class="form-control text-center" id="cedula" th:field="*{cedula}" required />
+                                            <input type="text" class="form-control text-center" id="cedula" th:field="*{cedula}"
+                                                   required maxlength="9"
+                                                   pattern="^\d{1,9}$"
+                                                   title="Máximo 9 dígitos numéricos"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
-                                            <input type="date" class="form-control text-center" id="fechaNacimiento" th:field="*{fechaNacimiento}" required />
+                                            <input type="date" class="form-control text-center" id="fechaNacimiento" th:field="*{fechaNacimiento}"
+                                                   required/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="telefono" class="form-label">Teléfono</label>
-                                            <input type="text" class="form-control text-center" id="telefono" th:field="*{telefono}" />
+                                            <input type="text" class="form-control text-center" id="telefono" th:field="*{telefono}"
+                                                   required maxlength="12" minlength="8"
+                                                   pattern="^\d{8,12}$"
+                                                   title="Debe contener entre 8 y 12 números"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="email" class="form-label">Correo electrónico</label>
-                                            <input type="email" class="form-control text-center" id="email" th:field="*{email}" />
+                                            <input type="email" class="form-control text-center" id="email" th:field="*{email}"
+                                                   pattern="^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$"
+                                                   title="Formato de correo inválido"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="contactoEmergencia" class="form-label">Contacto de Emergencia</label>
-                                            <input type="text" class="form-control text-center" id="contactoEmergencia" th:field="*{contactoEmergencia}" />
+                                            <input type="text" class="form-control text-center" id="contactoEmergencia" th:field="*{contactoEmergencia}"
+                                                   maxlength="12" minlength="8"
+                                                   pattern="^\d{8,12}$"
+                                                   title="Debe contener entre 8 y 12 números"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="padecimiento" class="form-label">Padecimientos</label>
-                                            <input type="text" class="form-control text-center" id="padecimiento" th:field="*{padecimiento}" />
+                                            <input type="text" class="form-control text-center" id="padecimiento" th:field="*{padecimiento}"
+                                                   maxlength="255"
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]*$"
+                                                   title="Solo letras y espacios"/>
                                         </div>
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="alergia" class="form-label">Alergias</label>
-                                            <input type="text" class="form-control text-center" id="alergia" th:field="*{alergia}" />
+                                            <input type="text" class="form-control text-center" id="alergia" th:field="*{alergia}"
+                                                   maxlength="255"
+                                                   pattern="^[A-Za-zÁÉÍÓÚáéíóúñÑ ]*$"
+                                                   title="Solo letras y espacios"/>
                                         </div>
 
                                         <div sec:authorize="hasRole('ADMIN')" class="col-md-6 mb-3 text-center">
                                             <label for="estado" class="form-label">Estado</label>
-                                            <select id="estado" th:field="*{activo}" class="form-select text-center">
-                                                <option value="true">Activo</option>
-                                                <option value="false">Inactivo</option>
+                                            <select id="estado" th:field="*{activo}" class="form-select text-center" required>
+                                                <option value="">Seleccione...</option>
+                                                <option th:value="true">Activo</option>
+                                                <option th:value="false">Inactivo</option>
                                             </select>
                                         </div>
+
+                                    </div> <!-- row -->
+
+                                    <!-- Mensaje de error -->
+                                    <div th:if="${error}" class="alert alert-danger text-center mt-3">
+                                        <span th:text="${error}"></span>
                                     </div>
+
+                                    <!-- Pop-up de éxito -->
+                                    <div th:if="${success}" class="alert alert-success text-center mt-3" 
+                                         th:text="${success}"></div>
+
 
                                     <!-- Botones -->
                                     <div class="col-12 text-center mt-4">
-                                        <button type="submit" class="btn btn-save me-2">Guardar</button>
+                                        <button type="submit" class="btn btn-save me-2">Actualizar</button>
                                         <a th:href="@{/paciente/pacientes}" class="btn btn-cancel">Cancelar</a>
                                     </div>
                                 </form>
-
-                            </div> <!-- card-body -->
-                        </div> <!-- card -->
-
-                    </div> <!-- col-lg-12 -->
-                </div> <!-- row -->
+                            </div>
+                        </div> 
+                    </div> 
+                </div>
             </section>
 
         </main>
@@ -326,7 +411,7 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item">Pacientes</li>
                         <li class="breadcrumb-item active">Inactivos</li>
                     </ol>
@@ -349,24 +434,23 @@
                                 <!-- Table with stripped rows -->
                                 <table class="table datatable">
                                     <thead>
-                                        <tr>
-                                            <th style="text-align:center;">ID</th>       
+                                        <tr>      
                                             <th style="text-align:center;">Nombre</th>  
                                             <th style="text-align:center;">Primer Apellido</th>            
                                             <th style="text-align:center;">Segundo Apellido</th>
                                             <th style="text-align:center;">Cédula</th>
                                             <th style="text-align:center;">Fecha de Nacimiento</th>
                                             <th style="text-align:center;">Teléfono</th>
-                                            <th style="text-align:center;">Email</th>           
-                                            <th style="text-align:center;">Activo</th>  
-                                            <th style="text-align:center;">Fecha de creación</th>       
+                                            <th style="text-align:center;">Email</th>
+                                            <th style="text-align:center;">Contacto Emergencia</th>
+                                            <th style="text-align:center;">Padecimientos</th>  
+                                            <th style="text-align:center;">Alergias</th>      
                                             <th style="text-align:center;">Acciones</th>
 
                                         </tr>
                                     </thead>
                                     <tbody id="tbodyPacientes">
                                         <tr th:each="p : ${pacientes}">
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.idPaciente}]]</td>
                                             <td style="vertical-align: middle; text-align: center;">[[${p.nombre}]]</td>
                                             <td style="vertical-align: middle; text-align: center;">[[${p.primerApellido}]]</td>
                                             <td style="vertical-align: middle; text-align: center;">[[${p.segundoApellido}]]</td>
@@ -374,34 +458,29 @@
                                             <td style="vertical-align: middle; text-align: center;">[[${p.fechaNacimiento}]]</td>
                                             <td style="vertical-align: middle; text-align: center;">[[${p.telefono}]]</td>
                                             <td style="vertical-align: middle; text-align: center;">[[${p.email}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">
-                                                <span th:text="${p.activo} ? 'Activo' : 'Inactivo'"></span>
-                                            </td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.fechaCreacion}]]</td>
-                                            <td class="actions-cell" style="vertical-align: middle; text-align: center;">
+                                            <td style="vertical-align: middle; text-align: center;">[[${p.contactoEmergencia}]]</td>
+                                            <td style="vertical-align: middle;">[[${p.padecimiento}]]</td>
+                                            <td style="vertical-align: middle;">[[${p.alergia}]]</td>
+                                             <td class="actions-cell" 
+                                                style="vertical-align: middle; text-align: center; display: flex; justify-content: center; gap: 20px;">
                                                 <a th:href="@{/paciente/editar/{id}(id=${p.idPaciente})}" class="btn-edit" title="Editar">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
-                                                <a th:href="@{/paciente/historial/{id}(id=${p.idPaciente})}" class="btn btn-history" title="Historial">Historial</a>
+                                                <a th:href="@{/paciente/historial/{id}(id=${p.idPaciente})}" class="btn btn-history" title="Historial">
+                                                    Historial</a>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <!-- End Table with stripped rows -->
-
-                            </div> <!-- card-body -->
-                        </div> <!-- card -->
-
-                    </div> <!-- col-lg-12 -->
-                </div> <!-- row -->
+                            </div>
+                        </div> 
+                    </div> 
+                </div> 
             </section>
-
-        </main><!-- End #main -->
+        </main>
 
         </section>
 
-
-        <!-- Fragmento de botonesBuscar -->
         <section th:fragment="botonesBuscar" class="">
             <div class="container">
                 <div class="row">
@@ -414,7 +493,6 @@
             </div>
         </section>
 
-        <!-- Fragmento de búsqueda -->
         <section th:fragment="busqueda">
             <div class="d-flex mb-3">
                 <input type="text" id="busquedaInput" class="form-control me-2"
@@ -431,8 +509,6 @@
             </form>
         </section>
 
-
-        <!-- Preloader -->
         <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
 
         <script src="/assets/js/pacientes.js"></script>

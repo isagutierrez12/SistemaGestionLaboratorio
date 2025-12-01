@@ -140,7 +140,7 @@ public class CitaController {
         solicitud.setPaciente(pacienteService.get(idPaciente));
         solicitud.setUsuario(usuarioService.getUsuarioPorUsername(userDetails.getUsername()));
         solicitud.setFechaSolicitud(LocalDateTime.now());
-        solicitud.setEstado("Pendiente");
+        solicitud.setEstado("Agendada");
 
         double precioTotal = 0.0;
 

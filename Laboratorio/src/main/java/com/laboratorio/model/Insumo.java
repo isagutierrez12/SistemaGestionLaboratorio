@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.laboratorio.model;
 
 import jakarta.persistence.Column;
@@ -13,21 +9,29 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 import java.io.Serializable;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name = "insumo")
 public class Insumo implements Serializable {
-     private static final long serialVersionUID = 1l;
-       @Id
+
+    private static final long serialVersionUID = 1l;
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_insumo")
-    private Long idInsumo; 
-    private String nombre; 
-    private String tipo; 
+    private Long idInsumo;
+    @NotBlank(message = "El nombre del insumo es obligatorio.")
+    @Pattern(regexp = "^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$",
+            message = "El nombre debe contener solo letras y espacios.")
+    @Column(unique = true)
+    private String nombre;
+
+    private String tipo;
     private int cantidadPorUnidad;
-    private String unidadMedida; 
-    private boolean activo; 
-    
+    private String unidadMedida;
+    private boolean activo;
+
 }

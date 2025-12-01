@@ -1,44 +1,61 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const inputBuscar = document.getElementById("buscarUsuarioInput");
-    const btnBuscar = document.getElementById("btnBuscarUsuario");
-    const tbody = document.getElementById("tbodyUsuarios");
+  const input = document.getElementById("busquedaUsuarioInput");
+  const tbody = document.getElementById("tbodyUsuarios");
 
-    function actualizarTabla(usuarios) {
+  if (!input || !tbody) return;
+
+  input.addEventListener("input", function () {
+    const query = input.value.trim();
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="12" class="text-center text-muted">Buscando...</td>
+      </tr>
+    `;
+
+    fetch(`/usuario/buscarJSON?query=${encodeURIComponent(query)}`)
+      .then((response) => {
+        if (!response.ok) throw new Error("Error al buscar usuarios");
+        return response.json();
+      })
+      .then((data) => {
         tbody.innerHTML = "";
-        if (usuarios.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No se encontraron usuarios</td></tr>`;
-            return;
+
+        if (data.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="12" class="text-center text-muted">No se encontraron usuarios</td>
+            </tr>
+          `;
+          return;
         }
 
-        usuarios.forEach(u => {
-            const fila = document.createElement("tr");
-            fila.innerHTML = `
-                <td style="text-align:center;">${u.nombre}</td>
-                <td style="text-align:center;">${u.primerApellido}</td>
-                <td style="text-align:center;">${u.segundoApellido}</td>
-                <td style="text-align:center;">${u.username}</td>
-                <td style="text-align:center;">${u.cedula}</td>
-                <td style="text-align:center;">${u.activo ? 'Activo' : 'Inactivo'}</td>
-                <td style="text-align:center;">
-                    <a href="/usuario/modificar/${u.idUsuario}" class="btn-edit" title="Editar">
-                        <i class="bi bi-pencil"></i>
-                    </a>
-                </td>
-            `;
-            tbody.appendChild(fila);
+        data.forEach((u) => {
+          const fila = document.createElement("tr");
+          fila.innerHTML = `
+            <td style="text-align:center;">${u.nombre}</td>
+            <td style="text-align:center;">${u.primerApellido}</td>
+            <td style="text-align:center;">${u.segundoApellido}</td>
+            <td style="text-align:center;">${u.username}</td>
+            <td style="text-align:center;">${u.cedula}</td>
+            <td style="text-align:center;">${u.activo ? "Activo" : "Inactivo"}</td>
+
+            <td style="text-align:center;">
+                <a href="/usuario/modificar/${u.idUsuario}" class="btn-edit" title="Editar">
+                    <i class="bi bi-pencil"></i>
+                </a>
+            </td>
+          `;
+          tbody.appendChild(fila);
         });
-    }
-
-    function buscarUsuarios() {
-        const nombre = inputBuscar.value.trim();
-        fetch(`/usuario/buscarJSON?nombre=${encodeURIComponent(nombre)}`)
-            .then(response => response.json())
-            .then(data => actualizarTabla(data))
-            .catch(err => console.error(err));
-    }
-
-    btnBuscar.addEventListener("click", buscarUsuarios);
-    inputBuscar.addEventListener("input", buscarUsuarios); // búsqueda dinámica
-
-    buscarUsuarios(); // inicializar con todos los usuarios
+      })
+      .catch((error) => {
+        console.error("Error búsqueda usuarios:", error);
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="12" class="text-center text-danger">Error al cargar resultados</td>
+          </tr>
+        `;
+      });
+  });
 });

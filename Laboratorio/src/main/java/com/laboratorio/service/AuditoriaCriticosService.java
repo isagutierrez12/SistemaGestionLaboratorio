@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.laboratorio.service;
 
 import com.laboratorio.model.AuditoriaCriticos;
@@ -11,8 +7,13 @@ import com.laboratorio.repository.AuditoriaCriticosRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.io.IOException;
+import java.io.OutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 @Service
 public class AuditoriaCriticosService {
@@ -38,10 +39,6 @@ public class AuditoriaCriticosService {
         LocalDateTime inicio = fechaInicio != null ? fechaInicio.atStartOfDay() : null;
         LocalDateTime fin = fechaFin != null ? fechaFin.atTime(23, 59, 59) : null;
         return auditoriaCriticosRepository.buscarPorRangoFechas(inicio, fin);
-    }
-
-    public List<AuditoriaCriticos> buscarAuditoria(String query) {
-        return auditoriaCriticosRepository.buscarPorQuery(query);
     }
 
     public void registrarAuditoriaCritica(AuditoriaCriticos auditoria) {
@@ -78,4 +75,71 @@ public class AuditoriaCriticosService {
                 .findFirst()
                 .orElse(null);
     }
+
+    public List<AuditoriaCriticos> buscarPorUsuario(String usuario) {
+        return auditoriaCriticosRepository.buscarPorUsuario(usuario);
+    }
+
+    public List<AuditoriaCriticos> buscarPorTipoEvento(String tipoEvento) {
+        return auditoriaCriticosRepository.buscarPorTipoEvento(tipoEvento);
+    }
+
+    public List<AuditoriaCriticos> filtrar(String usuario, String tipoEvento,
+            LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+
+        List<AuditoriaCriticos> auditorias;
+
+        if (fechaInicio != null && fechaFin != null) {
+            auditorias = auditoriaCriticosRepository.buscarPorRangoFechas(fechaInicio, fechaFin);
+        } else if (fechaInicio != null) {
+            auditorias = auditoriaCriticosRepository.buscarDesdeFecha(fechaInicio);
+        } else if (fechaFin != null) {
+            auditorias = auditoriaCriticosRepository.buscarHastaFecha(fechaFin);
+        } else {
+            auditorias = auditoriaCriticosRepository.findAllOrderByFechaHoraDesc();
+        }
+
+        if (usuario != null && !usuario.isEmpty()) {
+            auditorias = auditorias.stream()
+                    .filter(a -> a.getUsuario().toLowerCase().contains(usuario.toLowerCase()))
+                    .toList();
+        }
+
+        if (tipoEvento != null && !tipoEvento.isEmpty()) {
+            auditorias = auditorias.stream()
+                    .filter(a -> a.getTipoEvento().toLowerCase().contains(tipoEvento.toLowerCase()))
+                    .toList();
+        }
+
+        return auditorias;
+    }
+
+    public void exportarExcel(List<AuditoriaCriticos> auditorias, OutputStream os) throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("Auditoría Críticos");
+
+        Row header = sheet.createRow(0);
+        String[] columns = {"Fecha", "Usuario", "Descripción"};
+
+        for (int i = 0; i < columns.length; i++) {
+            header.createCell(i).setCellValue(columns[i]);
+        }
+
+        int rowIdx = 1;
+        for (AuditoriaCriticos a : auditorias) {
+            Row row = sheet.createRow(rowIdx++);
+            row.createCell(0).setCellValue(a.getFechaHora().toString());
+            row.createCell(1).setCellValue(a.getUsuario());
+            row.createCell(2).setCellValue(a.getDescripcion());
+
+        }
+
+        for (int i = 0; i < columns.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        workbook.write(os);
+        workbook.close();
+    }
+
 }

@@ -61,18 +61,43 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional
     public void save(Usuario usuario, String rolSeleccionado) {
 
-        if (usuario.getIdUsuario() == null) {
-            // Usuario nuevo
+        boolean esNuevo = usuario.getIdUsuario() == null;
+
+        if (esNuevo) {
+
             if (usuarioRepository.existsByUsername(usuario.getUsername())) {
-                throw new IllegalArgumentException("El nombre de usuario ya está ocupado");
+                throw new IllegalArgumentException("El nombre de usuario ya existe.");
             }
+
+            if (usuarioRepository.existsByCedula(usuario.getCedula())) {
+                throw new IllegalArgumentException("La cédula ingresada ya está registrada.");
+            }
+
+        } else {
+            
+            Usuario existente = usuarioRepository.findById(usuario.getIdUsuario())
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+            if (!usuario.getUsername().equals(existente.getUsername())
+                    && usuarioRepository.existsByUsername(usuario.getUsername())) {
+                throw new IllegalArgumentException("El nombre de usuario ya existe.");
+            }
+
+            if (!usuario.getCedula().equals(existente.getCedula())
+                    && usuarioRepository.existsByCedula(usuario.getCedula())) {
+                throw new IllegalArgumentException("La cédula ingresada ya está registrada.");
+            }
+        }
+
+        if (esNuevo) {
+
             usuario.setFechaCreacion(new Date());
             usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
             usuario = usuarioRepository.save(usuario);
 
-            // Asignar rol inicial
             Rol rol = new Rol();
             rol.setIdUsuario(usuario.getIdUsuario());
+
             switch (rolSeleccionado) {
                 case "1" ->
                     rol.setNombre("ADMIN");
@@ -81,46 +106,48 @@ public class UsuarioServiceImpl implements UsuarioService {
                 case "3" ->
                     rol.setNombre("DOCTOR");
                 default ->
-                    throw new IllegalArgumentException("Rol no válido: " + rolSeleccionado);
+                    throw new IllegalArgumentException("Rol no válido");
             }
+
             rolRepository.save(rol);
 
         } else {
+
             Usuario existente = usuarioRepository.findById(usuario.getIdUsuario())
                     .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+            existente.setNombre(usuario.getNombre());
+            existente.setPrimerApellido(usuario.getPrimerApellido());
+            existente.setSegundoApellido(usuario.getSegundoApellido());
+            existente.setCedula(usuario.getCedula());
+            existente.setUsername(usuario.getUsername());
 
             if (!usuario.getPassword().isEmpty()) {
                 existente.setPassword(passwordEncoder.encode(usuario.getPassword()));
             }
-            existente.setNombre(usuario.getNombre());
-            existente.setPrimerApellido(usuario.getPrimerApellido());
-            existente.setSegundoApellido(usuario.getSegundoApellido());
-            existente.setUsername(usuario.getUsername());
-            existente.setActivo(usuario.isActivo());
 
+            existente.setActivo(usuario.getActivo());
             usuarioRepository.save(existente);
 
-            // Actualizar rol existente en vez de crear uno nuevo
-            Rol rolExistente = rolRepository.findByIdUsuario(usuario.getIdUsuario());
-            if (rolExistente == null) {
-                rolExistente = new Rol();
-                rolExistente.setIdUsuario(usuario.getIdUsuario());
+            // Actualizar rol
+            Rol rol = rolRepository.findByIdUsuario(existente.getIdUsuario());
+            if (rol == null) {
+                rol = new Rol();
+                rol.setIdUsuario(existente.getIdUsuario());
             }
+
             switch (rolSeleccionado) {
                 case "1" ->
-                    rolExistente.setNombre("ADMIN");
+                    rol.setNombre("ADMIN");
                 case "2" ->
-                    rolExistente.setNombre("REP");
+                    rol.setNombre("REP");
                 case "3" ->
-                    rolExistente.setNombre("DOCTOR");
+                    rol.setNombre("DOCTOR");
                 default ->
-                    throw new IllegalArgumentException("Rol no válido: " + rolSeleccionado);
+                    throw new IllegalArgumentException("Rol no válido");
             }
-            rolRepository.save(rolExistente);
 
-            String usuarioQueHaceCambio = SecurityContextHolder.getContext()
-                    .getAuthentication().getName();
-            auditoriaCriticosService.registrarCambioRoles(existente, rolExistente.getNombre(), usuarioQueHaceCambio);
+            rolRepository.save(rol);
         }
     }
 
@@ -139,7 +166,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             if (usuario == null) {
                 return "Usuario no encontrado";
             }
-            if (!usuario.isActivo()) {
+            if (!usuario.getActivo()) {
                 return "El usuario ya está inactivo";
             }
             usuario.setActivo(false);
@@ -165,7 +192,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             if (usuario == null) {
                 return "Usuario no encontrado";
             }
-            if (usuario.isActivo()) {
+            if (usuario.getActivo()) {
                 return "El usuario ya está activo";
             }
             usuario.setActivo(true);
@@ -183,15 +210,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Usuario> buscarUsuariosPorNombre(String nombre) {
-        return usuarioRepository.findByNombre(nombre);
+    public List<Usuario> buscarUsuariosPorQuery(String query) {
+        return usuarioRepository.buscarUsuariosPorQuery(query);
     }
 
-    public List<Usuario> buscarUsuariosPorNombreCoincidente(String nombre) {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            return getUsuarios();
-        }
-        return usuarioRepository.buscarUsuariosPorNombreCoincidente(nombre.trim());
-    }
 }

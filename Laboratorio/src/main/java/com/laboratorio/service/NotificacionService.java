@@ -8,13 +8,22 @@ import com.laboratorio.model.Notificacion;
 import com.laboratorio.model.Usuario;
 import java.util.List;
 
-/**
- *
- * @author melanie
- */
 public interface NotificacionService {
+
     public void notificacionVencimiento();
+
     public List<Notificacion> obtenerNotificacionesRecientes();
+
     public void verificarInventarioBajoStock();
- 
+    public void registrarIntentoFallido(String username, String ip);
+
+    public void resetearIntentosFallidos(String username);
+
+    public void registrarEliminacionMasiva(String entidad, int cantidad, String usuario, String ip);
+
+    public List<Notificacion> obtenerAlertasSeguridad();
+    public List<Notificacion> obtenerTodasLasNotificaciones();
+
+
+  
 }

@@ -189,11 +189,6 @@
                                 <i class="bi bi-circle"></i><span>Paquetes</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="exams-results.html">
-                                <i class="bi bi-circle"></i><span>Resultados</span>
-                            </a>
-                        </li>
                     </ul>
                 </li><!-- End Examenes Nav -->
                 <li class="nav-item">
@@ -223,7 +218,7 @@
                         </li>
                     </ul>
                 </li>
-                
+
                 <li class="nav-item">
                     <a class="nav-link collapsed" data-bs-target="#audit-nav" data-bs-toggle="collapse" href="#">
                         <i class="bi bi-layout-text-window-reverse"></i><span>Auditoría</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -274,7 +269,136 @@
 
             <!-- Template Main JS File -->
             <script th:src="@{/assets/js/main.js}"></script>
-             <script th:src="@{/assets/js/notificaciones.js}"></script>
+            <script th:src="@{/assets/js/notificaciones.js}"></script>
+            <script>
+            </script>
+
+            <script th:inline="javascript">
+                class SessionManager {
+                    constructor() {
+                        this.checkInterval = 30000; // Verificar cada 30 segundos
+                        this.warningShown = false;
+                        this.init();
+                    }
+
+                    init() {
+                        this.checkSessionStatus();
+                        setInterval(() => this.checkSessionStatus(), this.checkInterval);
+
+                        // Resetear el timer con actividad del usuario
+                        ['click', 'keypress', 'mousemove', 'scroll'].forEach(event => {
+                            document.addEventListener(event, () => this.resetWarning(), {passive: true});
+                        });
+                    }
+
+                    async checkSessionStatus() {
+                        console.log("⏳ Verificando sesión...", new Date().toLocaleTimeString());
+                        try {
+                            const response = await fetch('/api/session/status');
+                            const data = await response.json();
+
+                            if (data.active && data.showWarning && !this.warningShown) {
+                                this.showWarning(data.warningTime);
+                            }
+
+                            if (!data.active) {
+                                window.location.href = '/login?expired';
+                            }
+
+                        } catch (error) {
+                            console.error('Error checking session status:', error);
+                        }
+                    }
+
+                    showWarning(minutesLeft) {
+
+                        this.warningShown = true;
+                      
+
+                        console.log(`⚠ La sesión va a expirar en ${minutesLeft} minutos (${timeLeft} segundos).`);
+
+                        Swal.fire({
+                            title: '¡Sesión por expirar!',
+                            html: `Tu sesión expirará en aproximadamente <b>${minutesLeft}</b> minutos por inactividad.<br><br>
+               ¿Deseas extender tu sesión?`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Extender Sesión',
+                            cancelButtonText: 'Cerrar Sesión',
+                            confirmButtonColor: '#1c94a4',
+                            cancelButtonColor: '#e74c3c',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                this.extendSession();
+                                this.warningShown = false;
+                            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                                window.location.href = '/logout';
+                            }
+                        });
+                    }
+
+                    resetWarning() {
+                        this.warningShown = false;
+                    }
+
+                    async extendSession() {
+                        try {
+                            const response = await fetch('/api/session/extend', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+
+                            const result = await response.json();
+
+                            if (result.success) {
+                                this.showToast('Sesión extendida exitosamente');
+                            } else {
+                                this.showToast('Error extendiendo sesión', 'error');
+                            }
+
+                        } catch (error) {
+                            console.error('Error extending session:', error);
+                            this.showToast('Error de conexión', 'error');
+                        }
+                    }
+
+                    showToast(message, type = 'success') {
+                        const toast = document.createElement('div');
+                        const backgroundColor = type === 'success' ? '#27ae60' : '#e74c3c';
+
+                        toast.style.cssText = `
+                 position: fixed;
+                 top: 20px;
+                 right: 20px;
+                 background: ${backgroundColor};
+                 color: white;
+                 padding: 12px 24px;
+                 border-radius: 4px;
+                 z-index: 10000;
+                 font-size: 14px;
+                 box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+             `;
+                        toast.textContent = message;
+                        document.body.appendChild(toast);
+
+                        setTimeout(() => {
+                            if (document.body.contains(toast)) {
+                                document.body.removeChild(toast);
+                            }
+                        }, 3000);
+                    }
+                }
+
+                // Inicializar cuando el documento esté listo
+                document.addEventListener('DOMContentLoaded', () => {
+                    new SessionManager();
+                });
+            </script>
         </div>
     </body>
 </html>

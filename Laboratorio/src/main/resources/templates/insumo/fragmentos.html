@@ -5,14 +5,38 @@
     </head>
 
     <body>
-        <!-- LISTA DE INSUMOS -->
+        <section th:fragment="alertas">
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+            <script th:if="${success}" th:inline="javascript">
+                Swal.fire({
+                title: 'Éxito',
+                        text: /*[[${success}]]*/,
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#1c94a4'
+                });
+            </script>
+
+            <script th:if="${mensaje}" th:inline="javascript">
+                Swal.fire({
+                title: /*[[${tipo == 'success' ? 'Éxito' : (tipo == 'warning' ? 'Atención' : 'Error')}]]*/,
+                        text: /*[[${mensaje}]]*/,
+                        icon: /*[[${tipo}]]*/,
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#1c94a4'
+                });
+            </script>
+        </section>
+
         <section th:fragment="main" id="main" class="main">
 
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
                         <li class="breadcrumb-item active">Insumos</li>
+                        <li class="breadcrumb-item active">Datos</li>
                     </ol>
                 </nav>
             </div>
@@ -24,8 +48,11 @@
                             <div class="card-body">
 
                                 <div class="datatable-controls mb-3 d-flex justify-content-between">
-                                    <a th:href="@{/insumo/agregar}" class="btn btn-primary">Agregar Insumo</a>
+                                    <a th:href="@{/insumo/agregar}" class="btn btn-primary">Agregar</a>
                                 </div>
+                                
+                                <div th:replace="~{insumo/fragmentos :: busquedaInsumo}"></div>
+
 
                                 <table class="table datatable align-middle text-center">
                                     <thead>
@@ -35,10 +62,10 @@
                                             <th>Cantidad por unidad</th>
                                             <th>Unidad de medida</th>
                                             <th>Estado</th>
-                                            <th>Acciones</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="tbodyInsumos">
                                         <tr th:each="i : ${insumos}">
                                             <td>[[${i.nombre}]]</td>
                                             <td>[[${i.tipo}]]</td>
@@ -49,7 +76,7 @@
                                             </td>
                                             <td>
                                                 <a th:href="@{/insumo/modificar/{id}(id=${i.idInsumo})}" 
-                                                   class="btn btn-outline-primary btn-sm" title="Editar">
+                                                   class="btn-edit" title="Actualizar">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
                                             </td>
@@ -64,14 +91,24 @@
             </section>
         </section>
 
+        <section th:fragment="busquedaInsumo">
+            <div class="d-flex mb-3">
+                <input type="text"
+                       id="busquedaInsumoInput"
+                       class="form-control me-2"
+                       placeholder="Buscar por nombre o tipo" />
+            </div>
+        </section>
+
+
         <!-- AGREGAR INSUMO -->
         <section th:fragment="agregar" id="main" class="main">
 
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
-                        <li class="breadcrumb-item"><a th:href="@{/insumo}">Insumos</a></li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Insumos</a></li>
                         <li class="breadcrumb-item active">Registrar</li>
                     </ol>
                 </nav>
@@ -84,7 +121,7 @@
                         <div class="card">
                             <div class="card-body">
 
-                                <div class="text-center mb-5" style="margin-top: 20px;">
+                                <div class="text-center mb-4" style="margin-top: 20px;">
                                     <img th:src="@{/assets/img/logo-1.png}" alt="Logo Laboratorio"
                                          class="logo-img" style="max-width: 150px;"
                                          onerror="this.style.display='none'" />
@@ -134,7 +171,7 @@
 
                                         <div class="col-12 text-center mt-3">
                                             <button type="submit" class="btn btn-save me-2">Guardar</button>
-                                            <a th:href="@{/insumo}" class="btn btn-cancel">Cancelar</a>
+                                            <a th:href="@{/insumo/insumos}"  class="btn btn-cancel">Cancelar</a>
                                         </div>
 
                                     </div>
@@ -153,9 +190,9 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
-                        <li class="breadcrumb-item"><a th:href="@{/insumo}">Insumos</a></li>
-                        <li class="breadcrumb-item active">Editar</li>
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
+                        <li class="breadcrumb-item"><a>Insumos</a></li>
+                        <li class="breadcrumb-item active">Actualizar</li>
                     </ol>
                 </nav>
             </div>
@@ -215,8 +252,8 @@
                                         </div>
 
                                         <div class="col-12 text-center mt-3">
-                                            <button type="submit" class="btn btn-save me-2">Guardar Cambios</button>
-                                            <a th:href="@{/insumo}" class="btn btn-cancel">Cancelar</a>
+                                            <button type="submit" class="btn btn-save me-2">Actualizar</button>
+                                            <a th:href="@{/insumo/insumos}"  class="btn btn-cancel">Cancelar</a>
                                         </div>
                                     </div>
                                 </form>

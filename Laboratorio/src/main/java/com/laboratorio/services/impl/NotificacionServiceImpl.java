@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.laboratorio.services.impl;
 
 import com.laboratorio.model.Inventario;
@@ -13,6 +9,8 @@ import jakarta.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,14 +70,16 @@ public class NotificacionServiceImpl implements NotificacionService {
         LocalDateTime dosSemanas = LocalDateTime.now().minusWeeks(2);
         return notificacionRepository.findByFechaCreacionAfterOrderByFechaCreacionDesc(dosSemanas);
     }
+
     @PostConstruct
     @Override
     public void verificarInventarioBajoStock() {
         List<Inventario> inventarios = inventarioRepository.findAll();
 
         for (Inventario inv : inventarios) {
-            if (!inv.isActivo()) continue;
-
+            if (!inv.getActivo()) {
+                continue;
+            }
             int stockReal = inv.getStockActual() - inv.getStockBloqueado();
             int umbral = inv.getStockMinimo() + 5;
 
@@ -92,9 +92,9 @@ public class NotificacionServiceImpl implements NotificacionService {
                 if (!existe) {
                     Notificacion n = new Notificacion();
                     n.setTitulo("Stock bajo en inventario");
-                    n.setMensaje("El insumo '" + inv.getInsumo().getNombre() +
-                                 "' tiene un stock real de " + stockReal + 
-                                 " unidades, cerca del mínimo (" + inv.getStockMinimo() + ").");
+                    n.setMensaje("El insumo '" + inv.getInsumo().getNombre()
+                            + "' tiene un stock real de " + stockReal
+                            + " unidades, cerca del mínimo (" + inv.getStockMinimo() + ").");
                     n.setInventario(inv);
                     n.setLeida(false);
                     n.setFechaCreacion(LocalDateTime.now());
@@ -103,5 +103,56 @@ public class NotificacionServiceImpl implements NotificacionService {
             }
         }
     }
+
+    private static final int MAX_INTENTOS_FALLIDOS = 3;
+    private final Map<String, Integer> intentosFallidos = new ConcurrentHashMap<>();
+
+    public void registrarIntentoFallido(String username, String ip) {
+        int intentos = intentosFallidos.getOrDefault(username, 0) + 1;
+        intentosFallidos.put(username, intentos);
+
+        if (intentos >= MAX_INTENTOS_FALLIDOS) {
+            String titulo = "Alerta de Seguridad - Intentos Fallidos";
+            String mensaje = String.format(
+                    "El usuario '%s' ha excedido el límite de intentos fallidos de inicio de sesión. "
+                    + "Se han detectado %d intentos fallidos desde la IP %s. "
+                    + "Se recomienda verificar la actividad sospechosa.",
+                    username, intentos, ip
+            );
+
+            Notificacion alerta = new Notificacion("SEGURIDAD_INTENTOS", titulo, mensaje, ip);
+            notificacionRepository.save(alerta);
+
+            System.out.println("ALERTA GENERADA: " + mensaje);
+        }
+    }
+
+    public void resetearIntentosFallidos(String username) {
+        intentosFallidos.remove(username);
+    }
+
+    public void registrarEliminacionMasiva(String entidad, int cantidad, String usuario, String ip) {
+        if (cantidad > 10) { 
+            String titulo = "Alerta - Eliminación Masiva Detectada";
+            String mensaje = String.format(
+                    "Se ha detectado una eliminación masiva de %d registros en la entidad '%s'. "
+                    + "Usuario responsable: %s. IP de origen: %s",
+                    cantidad, entidad, usuario, ip
+            );
+
+            Notificacion alerta = new Notificacion("SEGURIDAD_ELIMINACION", titulo, mensaje, ip);
+            notificacionRepository.save(alerta);
+        }
+    }
+
+
+    public List<Notificacion> obtenerAlertasSeguridad() {
+        return notificacionRepository.findByTipoStartingWithOrderByFechaCreacionDesc("SEGURIDAD");
+    }
+
+    public List<Notificacion> obtenerTodasLasNotificaciones() {
+        return notificacionRepository.findAllByOrderByFechaCreacionDesc();
+    }
+    
 
 }

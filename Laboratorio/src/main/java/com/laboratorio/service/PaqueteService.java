@@ -1,11 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
 package com.laboratorio.service;
 
 import com.laboratorio.model.Paquete;
-import com.laboratorio.model.RutaPermit;
 import java.util.List;
 
 public interface PaqueteService extends CrudService<Paquete> {
@@ -17,5 +12,7 @@ public interface PaqueteService extends CrudService<Paquete> {
     void quitarExamen(Long idPaquete, Long idExamen);
     
     Paquete getById(Long idPaquete);
+    
+    boolean existsByNombre(String nombre);
 
 }

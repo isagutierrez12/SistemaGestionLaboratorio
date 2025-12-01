@@ -5,16 +5,40 @@
 
     </head>
     <body>
-        <!-- aside -->
+
         <aside th:replace="~{layout/admin :: aside}"></aside>
         <header th:replace="~{layout/admin :: header}"></header>
-        <!-- Preloader -->
-        <main th:replace="~{examen/fragmentos :: vista-proforma}"></main>
+
+        <main id="main" class="main">
+
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
+                        <li class="breadcrumb-item">Proforma</li>
+                        <li class="breadcrumb-item active">Exportar</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="datatable-controls" style="margin-bottom: 15px;">
+                <a th:href="@{/examen/proforma}" class="btn-register" id="btnRegistro">
+                    Regresar
+                </a>
+            </div>
+
+
+            <div th:replace="~{examen/fragmentos :: vista-proforma}"></div>
+
+        </main>
+
+
         <div id="preloader"></div>
         <div th:replace="~{layout/admin :: jsfiles}"></div>
-  
+
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 
         <script>
             document.querySelector('.fa-file-export').addEventListener('click', () => {
@@ -29,6 +53,8 @@
                 html2pdf().set(opt).from(element).save();
             });
         </script>
+
+        <script th:src="@{/assets/js/proformaExport.js}"></script>
 
     </body>
 </html>

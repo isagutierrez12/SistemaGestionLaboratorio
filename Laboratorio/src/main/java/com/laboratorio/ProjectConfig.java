@@ -1,5 +1,7 @@
 package com.laboratorio;
 
+import com.laboratorio.config.CustomAuthenticationFailureHandler;
+import com.laboratorio.config.CustomAuthenticationSuccessHandler;
 import com.laboratorio.model.Ruta;
 import com.laboratorio.service.RutaPermitService;
 import com.laboratorio.service.RutaService;
@@ -15,6 +17,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -25,6 +30,13 @@ public class ProjectConfig implements WebMvcConfigurer {
 
     @Autowired
     private RutaService rutaService;
+    
+        
+    @Autowired
+    private CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+    
+    @Autowired
+    private CustomAuthenticationFailureHandler authenticationFailureHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,22 +45,30 @@ public class ProjectConfig implements WebMvcConfigurer {
         List<Ruta> rutas = rutaService.getAll();
 
         System.out.println("Permits: " + Arrays.toString(rutaPermit));
-        http.authorizeHttpRequests((request) -> {
-            request.requestMatchers(rutaPermit).permitAll();
-            for (Ruta ruta : rutas) {
-                request.requestMatchers(ruta.getRuta())
-                        .hasAuthority(ruta.getRoleName());
-            }
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/session/**")).
+                authorizeHttpRequests((request) -> {
+                    request.requestMatchers(rutaPermit).permitAll();
+                    for (Ruta ruta : rutas) {
+                        request.requestMatchers(ruta.getRuta())
+                                .hasAuthority(ruta.getRoleName());
+                    }
 
-        })
+                })
                 .formLogin((form) -> form
                 .loginPage("/login")
+                        .successHandler(authenticationSuccessHandler) 
+                .failureHandler(authenticationFailureHandler)
                 .defaultSuccessUrl("/paciente/pacientes", true)
                 .permitAll()
                 )
                 .logout((logout) -> logout
                 .logoutSuccessUrl("/")
                 .permitAll()
+                ).sessionManagement(session -> session
+                .invalidSessionUrl("/login?expired")
+                .maximumSessions(1)
+                .expiredUrl("/login?expired")
                 );
         return http.build();
     }
@@ -64,5 +84,18 @@ public class ProjectConfig implements WebMvcConfigurer {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", configuration);
+        return source;
     }
 }
