@@ -83,11 +83,13 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-
                         <!-- Encabezado -->
                         <div class="datatable-controls mb-3 d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0">Agenda de Citas</h4>
-                            <a th:href="@{/cita/agregar}" class="btn btn-primary">Nueva Cita</a>
+                            <div class="d-flex gap-2">
+                           <input type="text" id="buscadorPaciente" class="form-control" placeholder="Buscar por paciente..." style="width: 230px;"></input>
+                           </div>
+                           <h4 class="mb-0">Agenda de Citas</h4>
+                           <a th:href="@{/cita/agregar}" class="btn btn-primary">Nueva Cita</a>
                         </div>
 
                         <!-- Calendario -->
@@ -202,7 +204,17 @@
             window.location.href = '/cita/agregar?fecha=' + info.dateStr;
         }
         });
+        // FILTRO DE BÚSQUEDA POR NOMBRE
+        document.getElementById("buscadorPaciente").addEventListener("input", function () {
+            var texto = this.value.toLowerCase();
 
+            var eventosFiltrados = eventos.filter(function (ev) {
+                return ev.title.toLowerCase().includes(texto);
+            });
+
+            calendar.removeAllEvents();
+            calendar.addEventSource(eventosFiltrados);
+        });
         calendar.render();
     });
     </script>
@@ -420,7 +432,11 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="fechaCita" class="form-label">Fecha y hora</label>
-                                        <input type="datetime-local" id="fechaCita" th:field="*{fechaCita}" class="form-control" required="required"/>
+                                       <input type="datetime-local" id="fechaCita"
+                                        th:value="${#temporals.format(cita.fechaCita, 'yyyy-MM-dd''T''HH:mm')}"
+                                        name="fechaCita"
+                                        class="form-control"
+                                        required = "required"/>
                                     </div>
 
                                     <!-- Estado -->
