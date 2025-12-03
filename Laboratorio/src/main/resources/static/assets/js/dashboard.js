@@ -59,14 +59,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function clasePorAlerta(dto) {
+        const belowMin = dto.stockActual < dto.stockMinimo;
         if (dto.bajoStock && dto.proximoVencer) {
-            return "table-danger"; // más crítico → rojo
+            return "table-danger";
         }
-        if (dto.bajoStock) {
-            return "table-danger"; // bajo stock → rojo
+        if (belowMin) {
+            return "table-danger";
         }
-        if (dto.proximoVencer) {
-            return "table-warning"; // próximo a vencer → amarillo
+        if (dto.bajoStock || dto.proximoVencer) {
+            return "table-warning";
         }
         return "";
     }
