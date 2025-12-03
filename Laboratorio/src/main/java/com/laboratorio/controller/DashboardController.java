@@ -7,8 +7,10 @@ package com.laboratorio.controller;
 import com.laboratorio.model.Dashboard;
 import com.laboratorio.model.ExamenTop;
 import com.laboratorio.model.InventarioAlerta;
+import com.laboratorio.model.Reporte;
 import com.laboratorio.service.DashboardService;
 import com.laboratorio.service.InventarioAlertaService;
+import com.laboratorio.service.ReporteService;
 import java.time.*;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +24,13 @@ public class DashboardController {
 
     private final DashboardService dashboardService;
     private final InventarioAlertaService inventarioAlertaService;
+    private final ReporteService reporteService;
 
     @Autowired
-    public DashboardController(DashboardService dashboardService, InventarioAlertaService inventarioAlertaService) {
+    public DashboardController(DashboardService dashboardService, InventarioAlertaService inventarioAlertaService, ReporteService reporteService) {
         this.dashboardService = dashboardService;
         this.inventarioAlertaService = inventarioAlertaService;
+        this.reporteService = reporteService;
     }
 
     @GetMapping("/areas")
@@ -95,5 +99,28 @@ public class DashboardController {
     public List<InventarioAlerta> obtenerAlertasInventario(
             @RequestParam(defaultValue = "TODAS") String tipo) {
         return inventarioAlertaService.obtenerAlertas(tipo);
+    }
+    
+    @GetMapping("/reportes-examenes")
+    public List<Reporte> obtenerReporteExamenes(
+            @RequestParam(required = false) String desde,
+            @RequestParam(required = false) String hasta,
+            @RequestParam(required = false) String area,
+            @RequestParam(required = false) String estado) {
+
+        LocalDate fechaDesde = (desde != null && !desde.isBlank())
+                ? LocalDate.parse(desde)
+                : LocalDate.now().minusMonths(1);
+
+        LocalDate fechaHasta = (hasta != null && !hasta.isBlank())
+                ? LocalDate.parse(hasta)
+                : LocalDate.now();
+
+        return reporteService.generarReporte(
+                fechaDesde,
+                fechaHasta,
+                area,
+                estado
+        );
     }
 }

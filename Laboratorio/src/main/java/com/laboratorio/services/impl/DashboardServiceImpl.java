@@ -83,7 +83,7 @@ public class DashboardServiceImpl implements DashboardService {
             String area,
             int limite) {
 
-        String areaParam = (area == null || area.isBlank()) ? null : area;
+        String areaParam = (area == null || area.isBlank()) ? null : area.toLowerCase();
 
         List<ExamenTop> listaIndiv = detalleRepository.topExamenesIndividuales(inicio, fin, areaParam);
         List<ExamenTop> listaPaq = detalleRepository.topExamenesDesdePaquetes(inicio, fin, areaParam);

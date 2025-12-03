@@ -221,6 +221,81 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
         </th:block>
 
+        <th:block th:fragment="reportes">
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h5 class="card-title mb-1">Reporte de exámenes realizados</h5>
+                                    <small class="text-muted">
+                                        Usa el rango de fechas y el área del dashboard. Filtra por tipo y estado.
+                                    </small>
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-2">
+
+                                    <select id="filtroEstadoReporte"
+                                            class="form-select form-select-sm"
+                                            style="min-width: 150px;">
+                                        <option value="">Todos los estados</option>
+                                        <option value="PENDIENTE">Pendientes</option>
+                                        <option value="COMPLETADO">Completados</option>
+                                        <option value="CANCELADO">Cancelados</option>
+                                    </select>
+
+                                    <button id="btnGenerarReporte"
+                                            class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-funnel me-1"></i> Generar reporte
+                                    </button>
+
+                                    <button id="btnExportarReportePdf"
+                                            class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-filetype-pdf me-1"></i> PDF
+                                    </button>
+
+                                    <button id="btnExportarReporteExcel"
+                                            class="btn btn-outline-success btn-sm">
+                                        <i class="bi bi-file-earmark-excel me-1"></i> Excel
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover align-middle"
+                                       id="tablaReporteExamenes">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Paciente</th>
+                                            <th>Examen</th>
+                                            <th>Área</th>
+                                            <th>Estado</th>
+                                            <th>Monto</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted">
+                                                No se han generado resultados. Ajusta los filtros y presiona "Generar reporte".
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Resumen estadístico -->
+                            <div id="resumenReporte"
+                                 class="mt-2 small text-muted">   
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </th:block>
 
     </body>
 </html>

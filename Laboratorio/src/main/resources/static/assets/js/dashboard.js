@@ -15,6 +15,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const filtroPeriodo = document.getElementById("filtroPeriodo");
     const filtroArea = document.getElementById("filtroArea");
     const btnAplicar = document.getElementById("btnAplicarFiltros");
+    const filtroEstadoReporte = document.getElementById("filtroEstadoReporte");
+    const tablaReporteBody = document.querySelector("#tablaReporteExamenes tbody");
+    const resumenReporte = document.getElementById("resumenReporte");
+    const btnGenerarReporte = document.getElementById("btnGenerarReporte");
+    const btnExportarReportePdf = document.getElementById("btnExportarReportePdf");
+    const btnExportarReporteExcel = document.getElementById("btnExportarReporteExcel");
+
 
     const filtroTipoAlerta = document.getElementById("filtroTipoAlerta");
     const tablaAlertasBody = document.querySelector("#tablaAlertasInventario tbody");
@@ -58,6 +65,22 @@ document.addEventListener("DOMContentLoaded", () => {
         return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
     }
 
+    function buildReporteQueryParams() {
+        const params = new URLSearchParams();
+
+        if (filtroDesde.value)
+            params.append("desde", filtroDesde.value);
+        if (filtroHasta.value)
+            params.append("hasta", filtroHasta.value);
+        if (filtroArea.value)
+            params.append("area", filtroArea.value);
+        if (filtroEstadoReporte && filtroEstadoReporte.value) {
+            params.append("estado", filtroEstadoReporte.value);
+        }
+
+        return params;
+    }
+
     function clasePorAlerta(dto) {
         const belowMin = dto.stockActual < dto.stockMinimo;
         if (dto.bajoStock && dto.proximoVencer) {
@@ -81,20 +104,17 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const areas = await resp.json();
-            // Limpiar el select
             filtroArea.innerHTML = "";
 
-            // Opción "Todas las áreas"
             const optTodas = document.createElement("option");
             optTodas.value = "";
             optTodas.textContent = "Todas las áreas";
             filtroArea.appendChild(optTodas);
 
-            // Agregar las áreas que llegan del backend, sin repetidos
             areas.forEach((a) => {
                 const opt = document.createElement("option");
-                opt.value = a;                     // valor tal cual lo maneja el backend
-                opt.textContent = capitalizar(a);  // para mostrar bonito
+                opt.value = a;
+                opt.textContent = capitalizar(a);
                 filtroArea.appendChild(opt);
             });
         } catch (e) {
@@ -189,6 +209,72 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    async function cargarReporteExamenes() {
+        try {
+            const params = buildReporteQueryParams();
+
+            const resp = await fetch(`${API_BASE}/reportes-examenes?` + params.toString());
+            if (!resp.ok) {
+                console.error("Error al obtener reporte de exámenes");
+                return;
+            }
+
+            const data = await resp.json();
+
+            tablaReporteBody.innerHTML = "";
+            resumenReporte.textContent = "";
+
+            if (!data || data.length === 0) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                <td colspan="6" class="text-center text-muted">
+                    No se encontraron resultados para los filtros aplicados.
+                </td>
+            `;
+                tablaReporteBody.appendChild(tr);
+
+                resumenReporte.textContent = "Sin datos para mostrar.";
+                return;
+            }
+
+            let totalMonto = 0;
+            const porArea = {};
+
+            data.forEach(item => {
+                const montoNum = item.monto != null ? Number(item.monto) : null;
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td>${item.fecha || ""}</td>
+                    <td>${item.paciente || ""}</td>
+                    <td>${item.examen || ""}</td>
+                    <td>${item.area || ""}</td>
+                    <td>${item.estado || ""}</td>
+                    <td>${montoNum != null ? montoNum.toFixed(2) : ""}</td>
+                `;
+                tablaReporteBody.appendChild(tr);
+
+                if (montoNum != null && !Number.isNaN(montoNum)) {
+                    totalMonto += montoNum;
+                }
+                const area = item.area || "Sin área";
+                porArea[area] = (porArea[area] || 0) + 1;
+            });
+
+            //totales y subtotales por área
+            const totalReg = data.length;
+            const partesArea = Object.entries(porArea)
+                    .map(([area, cant]) => `${area}: ${cant}`)
+                    .join(" | ");
+
+            resumenReporte.textContent =
+                    `Total de registros: ${totalReg} | Monto total: ₡${totalMonto.toFixed(2)} ` +
+                    (partesArea ? `| Registros por área: ${partesArea}` : "");
+
+        } catch (e) {
+            console.error("Error en cargarReporteExamenes", e);
+        }
+    }
+
     async function cargarAlertasInventario() {
         try {
             const tipo = filtroTipoAlerta ? filtroTipoAlerta.value : "TODAS";
@@ -248,7 +334,8 @@ document.addEventListener("DOMContentLoaded", () => {
         await Promise.all([
             cargarResumen(),
             cargarTopExamenes(),
-            cargarAlertasInventario() 
+            cargarAlertasInventario(),
+            cargarReporteExamenes()
         ]);
     }
 
@@ -278,12 +365,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     filtroArea.addEventListener("change", refrescarDashboard);
-    
+
+    if (btnGenerarReporte) {
+        btnGenerarReporte.addEventListener("click", () => {
+            cargarReporteExamenes();
+        });
+    }
+
+    //DF
+    if (btnExportarReportePdf) {
+        btnExportarReportePdf.addEventListener("click", () => {
+            const params = buildReporteQueryParams();
+            window.location.href = `/dashboard/reportes/examenes/pdf?` + params.toString();
+        });
+    }
+
+    //Excel
+    if (btnExportarReporteExcel) {
+        btnExportarReporteExcel.addEventListener("click", () => {
+            const params = buildReporteQueryParams();
+            window.location.href = `/dashboard/reportes/examenes/excel?` + params.toString();
+        });
+    }
+
     if (filtroTipoAlerta) {
-    filtroTipoAlerta.addEventListener("change", () => {
-        cargarAlertasInventario();
-    });
-}
+        filtroTipoAlerta.addEventListener("change", () => {
+            cargarAlertasInventario();
+        });
+    }
 
     // Carga inicial
     async function init() {
