@@ -24,7 +24,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -164,19 +166,34 @@ public class CitaController {
             }
         }
 
-        // 3. Agregar paquetes (y sus exámenes) a la solicitud
-      if (paquetesSeleccionados != null && !paquetesSeleccionados.isEmpty()) {
-        for (Long idPaquete : paquetesSeleccionados) {
-            Paquete paquete = paqueteService.getById(idPaquete); 
+      // 3. Agregar paquetes (y sus exámenes) a la solicitud
+        if (paquetesSeleccionados != null && !paquetesSeleccionados.isEmpty()) {
+
+            for (Long idPaquete : paquetesSeleccionados) {
+
+            Paquete paquete = paqueteService.getById(idPaquete);
+
             if (paquete != null) {
-                // Agregar los exámenes del paquete a la solicitud
+
+                // ---------- GUARDAR EL PAQUETE COMO DETALLE -----------
+                SolicitudDetalle detallePaquete = new SolicitudDetalle();
+                detallePaquete.setPaquete(paquete);  // ← AQUÍ SÍ EXISTE "paquete"
+                detallePaquete.setExamen(null);
+                
+                solicitud.addDetalle(detallePaquete);
+                // SUMAR PRECIO DEL PAQUETE
+                precioTotal += paquete.getPrecio().doubleValue();
+                //---------- GUARDAR LOS EXÁMENES QUE INCLUYE EL PAQUETE -----------
                 for (DetallePaquete dp : paquete.getDetalles()) {
                     Examen examenPaquete = dp.getExamen();
-                    SolicitudDetalle detalle = new SolicitudDetalle();
-                    detalle.setExamen(examenPaquete);
-                    solicitud.addDetalle(detalle);
+
+                    SolicitudDetalle detalleExamen = new SolicitudDetalle();
+                    detalleExamen.setExamen(examenPaquete);
+                    detalleExamen.setPaquete(paquete); // opcional
+                    solicitud.addDetalle(detalleExamen);
+
                     precioTotal += examenPaquete.getPrecio().doubleValue();
-                }
+                    }
             }
         }
     }
@@ -219,6 +236,12 @@ public class CitaController {
             """);
 
             for (SolicitudDetalle detalle : solicitud.getDetalles()) {
+
+                // Solo procesar detalles que SÍ tienen examen
+                if (detalle.getExamen() == null) {
+                    continue;
+                }
+
                 Examen ex = detalle.getExamen();
                 
                 String condiciones ="";
@@ -243,6 +266,47 @@ public class CitaController {
         } else {
             examenesHtml.append("<p><i>No se registraron exámenes en esta cita.</i></p>");
         }
+                // Construir tabla HTML de paquetes
+        StringBuilder paquetesHtml = new StringBuilder();
+
+        List<Paquete> paquetesUnicos = new ArrayList<>();
+
+        for (SolicitudDetalle detalle : solicitud.getDetalles()) {
+            if (detalle.getPaquete() != null && !paquetesUnicos.contains(detalle.getPaquete())) {
+                paquetesUnicos.add(detalle.getPaquete());
+            }
+        }
+
+        if (!paquetesUnicos.isEmpty()) {
+            paquetesHtml.append("""
+                <br>
+                <h3>📦 Paquetes incluidos:</h3>
+                <table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 100%;">
+                    <thead style="background-color: #f2f2f2;">
+                        <tr>
+                            <th style="text-align:left;">Código</th>
+                            <th style="text-align:left;">Paquete</th>
+                            <th style="text-align:right;">Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            """);
+
+            for (Paquete paq : paquetesUnicos) {
+                paquetesHtml.append(String.format("""
+                    <tr>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td style="text-align:right;">₡%.2f</td>
+                    </tr>
+                """, paq.getCodigo(), paq.getNombre(), paq.getPrecio().doubleValue()));
+            }
+
+            paquetesHtml.append("""
+                    </tbody>
+                </table>
+            """);
+        }
 
         // Formatear fecha de cita
         String fechaFormateada = cita.getFechaCita()
@@ -263,7 +327,8 @@ public class CitaController {
                 <li><b>Precio total:</b> ₡%.2f</li>
             </ul>
 
-            <h3>🧪 Exámenes y paquetes incluidos:</h3>
+            <h3>🧪 Exámenes incluidos:</h3>
+            %s
             %s
 
             <br/>
@@ -280,7 +345,8 @@ public class CitaController {
                 cita.getEstado(),
                 (cita.getNotas() != null && !cita.getNotas().isEmpty()) ? cita.getNotas() : "Ninguna",
                 solicitud.getPrecioTotal(),
-                examenesHtml.toString()
+                examenesHtml.toString(),
+                paquetesHtml.toString()
         );
 
         //Enviar correo
@@ -305,23 +371,34 @@ public class CitaController {
                     .append("- Notas: ").append(cita.getNotas() != null ? cita.getNotas() : "Ninguna").append("\n")
                     .append("- Precio total: ₡").append(String.format("%.2f", solicitud.getPrecioTotal())).append("\n\n")
                     .append("🧪 Exámenes y paquetes incluidos:\n");
+            // Listar paquetes
+            Set<Long> paquetesAgregados = new HashSet<>();
 
-            // Listar exámenes
-            if (!solicitud.getDetalles().isEmpty()) {
-                 for (SolicitudDetalle detalle : solicitud.getDetalles()) {
-                    if (detalle.getExamen() != null) {
+            for (SolicitudDetalle detalle : solicitud.getDetalles()) {
 
-                        Examen ex = detalle.getExamen();
-                        mensajeWhatsapp.append("- ").append(ex.getNombre()).append("\n");
+                if (detalle.getPaquete() != null && !paquetesAgregados.contains(detalle.getPaquete().getIdPaquete())) {
 
-                        if (ex.getCondiciones() != null && !ex.getCondiciones().isBlank()) {
-                            mensajeWhatsapp.append("   Condiciones: ").append(ex.getCondiciones()).append("\n");
-                        }
+                    Paquete paq = detalle.getPaquete();
+
+                    mensajeWhatsapp.append("\n📦 Paquete: ")
+                                   .append(paq.getNombre())
+                                   .append(" (₡")
+                                   .append(String.format("%.2f", paq.getPrecio()))
+                                   .append(")\n");
+
+                    paquetesAgregados.add(paq.getIdPaquete());
+                }
+
+                // Listar exámenes
+                if (detalle.getExamen() != null) {
+                    Examen ex = detalle.getExamen();
+                    mensajeWhatsapp.append("- ").append(ex.getNombre()).append("\n");
+
+                    if (ex.getCondiciones() != null && !ex.getCondiciones().isBlank()) {
+                        mensajeWhatsapp.append("   Condiciones: ").append(ex.getCondiciones()).append("\n");
                     }
                 }
-                    } else {
-                        mensajeWhatsapp.append("No se registraron exámenes.\n");
-                    }
+            }
 
             mensajeWhatsapp.append("\nGracias por confiar en Laboratorio Clínico.");
 
