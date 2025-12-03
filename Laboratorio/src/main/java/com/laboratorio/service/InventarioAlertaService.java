@@ -40,7 +40,9 @@ public class InventarioAlertaService {
 
     private InventarioAlerta mapearAlerta(Inventario inv, LocalDate hoy, LocalDate limite) {
 
+        //Umbral de bajo stock = mínimo + 10%
         int umbralBajoStock = (int) Math.ceil(inv.getStockMinimo() + (inv.getStockMinimo() * 0.10));
+        boolean bajoMinimoReal = inv.getStockActual() < inv.getStockMinimo();
         boolean bajoStock = inv.getStockActual() <= umbralBajoStock;
 
         boolean proximoVencer = inv.getFechaVencimiento() != null
@@ -67,11 +69,15 @@ public class InventarioAlertaService {
         dto.setBajoStock(bajoStock);
         dto.setProximoVencer(proximoVencer);
 
-        if (bajoStock && proximoVencer) {
-            dto.setEtiquetaAlerta("Bajo stock y próximo a vencer");
+        if (bajoMinimoReal && proximoVencer) {
+            dto.setEtiquetaAlerta("Stock por debajo del mínimo y próximo a vencer");
+        } else if (bajoMinimoReal) {
+            dto.setEtiquetaAlerta("Stock por debajo del mínimo");
+        } else if (bajoStock && proximoVencer) {
+            dto.setEtiquetaAlerta("Stock cercano al mínimo y próximo a vencer");
         } else if (bajoStock) {
-            dto.setEtiquetaAlerta("Bajo stock");
-        } else {
+            dto.setEtiquetaAlerta("Stock cercano al mínimo");
+        } else if (proximoVencer) {
             dto.setEtiquetaAlerta("Próximo a vencer");
         }
 
