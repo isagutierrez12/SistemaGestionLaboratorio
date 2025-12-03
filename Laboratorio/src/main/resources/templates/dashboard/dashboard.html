@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head  th:replace="~{layout/admin :: head}">
+        <title>Laboratorio Clinico Calderon Piedra</title>
+        <meta charset="UTF-8" />
+
+    </head>
+    <body>
+        <!-- aside -->
+        <aside th:replace="~{layout/admin :: aside}"></aside>
+        <header th:replace="~{layout/admin :: header}"></header>
+        <!-- Preloader -->
+        <main id="main" class="main">
+            <section class="section dashboard">
+                <div th:replace="dashboard/fragmentos :: filtros"></div>
+                <div th:replace="dashboard/fragmentos :: kpis"></div>
+                <div th:replace="dashboard/fragmentos :: grafico-examenes"></div>
+                <div th:replace="dashboard/fragmentos :: alertas"></div>
+            </section>
+        </main>
+
+
+        <div id="preloader"></div>
+        <div th:replace="~{layout/admin :: jsfiles}"></div>
+        <script th:src="@{/assets/js/dashboard.js}"></script>
+    </body>
+</html>
