@@ -2002,4 +2002,22 @@ h6 {
   font-weight: bold;
   color: #0d6efd;
 }
+#notification-list {
+    width: 320px;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 
+
+#notification-list::-webkit-scrollbar {
+    width: 6px;
+}
+#notification-list::-webkit-scrollbar-thumb {
+    background-color: #0c6c74;
+    border-radius: 10px;
+}
+#notification-list::-webkit-scrollbar-track {
+    background: #e9ecef;
+
+}
