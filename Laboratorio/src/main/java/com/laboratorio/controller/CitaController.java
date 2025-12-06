@@ -352,7 +352,7 @@ public class CitaController {
         //Enviar correo
         emailServiceImpl.enviarCorreoCita(destinatario, asunto, contenido);
         redirectAttrs.addFlashAttribute("mensaje", "Cita registrada correctamente.");
-        redirectAttrs.addFlashAttribute("clase", "success");
+        redirectAttrs.addFlashAttribute("tipo", "success");
             
         // Enviar MSJ   
         try {
@@ -405,12 +405,11 @@ public class CitaController {
             whatsAppServiceImpl.enviarMensaje(numeroPaciente, mensajeWhatsapp.toString());
         } catch (Exception e) {
             e.printStackTrace();
-            // No interrumpir el flujo si falla WhatsApp
         }
     } catch (Exception e) {
         e.printStackTrace();
         redirectAttrs.addFlashAttribute("mensaje", "Error al registrar la cita.");
-        redirectAttrs.addFlashAttribute("clase", "danger");
+        redirectAttrs.addFlashAttribute("tipo", "danger");
     }
     
 
@@ -462,7 +461,7 @@ public class CitaController {
         Cita cita = citaService.getById(idCita);
         if (cita == null) {
             redirectAttrs.addFlashAttribute("mensaje", "La cita no existe.");
-            redirectAttrs.addFlashAttribute("clase", "danger");
+            redirectAttrs.addFlashAttribute("tipo", "danger");
             return "redirect:/cita/citas";
         }
 
@@ -662,7 +661,6 @@ public class CitaController {
                     .append(paciente.getPrimerApellido()).append(" ")
                     .append(paciente.getSegundoApellido()).append(",\n\n");
 
-            // Detalles de la cita
             mensajeWhatsapp.append("📅 *Detalles de la cita:*\n")
                     .append("- Fecha y hora: ").append(fechaFormateada).append("\n")
                     .append("- Estado: ").append(cita.getEstado()).append("\n")
@@ -675,7 +673,6 @@ public class CitaController {
 
             mensajeWhatsapp.append("🧪 *Exámenes incluidos:*\n");
 
-            // Listar exámenes igual que registrar
             if (!solicitud.getDetalles().isEmpty()) {
                 for (SolicitudDetalle detalle : solicitud.getDetalles()) {
                     if (detalle.getExamen() != null) {
@@ -694,33 +691,29 @@ public class CitaController {
 
             mensajeWhatsapp.append("\nGracias por confiar en Laboratorio Clínico.");
 
-            // Enviar mensaje
             whatsAppServiceImpl.enviarMensaje(numeroPaciente, mensajeWhatsapp.toString());
 
         } catch (Exception e) {
             e.printStackTrace(); 
-            // No detener flujo si WhatsApp falla
         }
 
         redirectAttrs.addFlashAttribute("mensaje", "Cita actualizada correctamente.");
-        redirectAttrs.addFlashAttribute("clase", "success");
+        redirectAttrs.addFlashAttribute("tipo", "success");
 
     } catch (Exception e) {
         e.printStackTrace();
         redirectAttrs.addFlashAttribute("mensaje", "Error al actualizar la cita.");
-        redirectAttrs.addFlashAttribute("clase", "danger");
+        redirectAttrs.addFlashAttribute("tipo", "danger");
     }
 
     return "redirect:/cita/citas";
     }
-    // Buscar cita por solicitud o estado
     @GetMapping("/buscar")
     public String buscarCitas(@RequestParam("query") String query, Model model) {
         List<Cita> citas;
         if (query == null || query.trim().isEmpty()) {
             citas = citaService.getAll();
         } else {
-            // Puedes luego implementar un método personalizado en el servicio/repo
             citas = citaService.getAll().stream()
                     .filter(c -> c.getEstado() != null && c.getEstado().toLowerCase().contains(query.toLowerCase()))
                     .toList();
