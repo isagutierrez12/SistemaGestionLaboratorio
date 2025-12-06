@@ -2,10 +2,14 @@ package com.laboratorio.services.impl;
 
 import com.laboratorio.model.Inventario;
 import com.laboratorio.model.Notificacion;
+import com.laboratorio.model.NotificacionUsuario;
+import com.laboratorio.model.Usuario;
 import com.laboratorio.repository.InventarioRepository;
 import com.laboratorio.repository.NotificacionRepository;
+import com.laboratorio.repository.NotificacionUsuarioRepository;
+import com.laboratorio.repository.UsuarioRepository;
 import com.laboratorio.service.NotificacionService;
-import jakarta.annotation.PostConstruct;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +31,13 @@ public class NotificacionServiceImpl implements NotificacionService {
     @Autowired
     private NotificacionRepository notificacionRepository;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private NotificacionUsuarioRepository notificacionUsuarioRepository;
+
+    @Transactional
     @Override
     public void notificacionVencimiento() {
         LocalDate hoy = LocalDate.now();
@@ -45,6 +56,16 @@ public class NotificacionServiceImpl implements NotificacionService {
                 n.setLeida(false);
                 n.setInventario(inv);
                 notificacionRepository.save(n);
+                List<Usuario> admins = usuarioRepository.findByRol("ADMIN");
+
+                for (Usuario usuario : admins) {
+                    NotificacionUsuario nu = new NotificacionUsuario();
+                    nu.setUsuario(usuario);
+                    nu.setNotificacion(n);
+                    nu.setLeida(false);
+                    nu.setFechaLectura(null);
+                    notificacionUsuarioRepository.save(nu);
+                }
                 System.out.println("Notificación creada: " + n.getMensaje());
             }
         }
@@ -59,19 +80,29 @@ public class NotificacionServiceImpl implements NotificacionService {
                 n.setLeida(false);
                 n.setInventario(inv);
                 notificacionRepository.save(n);
+                List<Usuario> admins = usuarioRepository.findByRol("ADMIN");
+
+                for (Usuario usuario : admins) {
+                    NotificacionUsuario nu = new NotificacionUsuario();
+                    nu.setUsuario(usuario);
+                    nu.setNotificacion(n);
+                    nu.setLeida(false);
+                    nu.setFechaLectura(null);
+                    notificacionUsuarioRepository.save(nu);
+                }
+
                 System.out.println("Notificación creada: " + n.getMensaje());
             }
         }
     }
 
-    @PostConstruct
     @Override
     public List<Notificacion> obtenerNotificacionesRecientes() {
         LocalDateTime dosSemanas = LocalDateTime.now().minusWeeks(2);
         return notificacionRepository.findByFechaCreacionAfterOrderByFechaCreacionDesc(dosSemanas);
     }
 
-    @PostConstruct
+    @Transactional
     @Override
     public void verificarInventarioBajoStock() {
         List<Inventario> inventarios = inventarioRepository.findAll();
@@ -99,6 +130,16 @@ public class NotificacionServiceImpl implements NotificacionService {
                     n.setLeida(false);
                     n.setFechaCreacion(LocalDateTime.now());
                     notificacionRepository.save(n);
+                    List<Usuario> admins = usuarioRepository.findByRol("ADMIN");
+
+                    for (Usuario usuario : admins) {
+                        NotificacionUsuario nu = new NotificacionUsuario();
+                        nu.setUsuario(usuario);
+                        nu.setNotificacion(n);
+                        nu.setLeida(false);
+                        nu.setFechaLectura(null);
+                        notificacionUsuarioRepository.save(nu);
+                    }
                 }
             }
         }
@@ -107,6 +148,7 @@ public class NotificacionServiceImpl implements NotificacionService {
     private static final int MAX_INTENTOS_FALLIDOS = 3;
     private final Map<String, Integer> intentosFallidos = new ConcurrentHashMap<>();
 
+    @Transactional
     public void registrarIntentoFallido(String username, String ip) {
         int intentos = intentosFallidos.getOrDefault(username, 0) + 1;
         intentosFallidos.put(username, intentos);
@@ -122,6 +164,16 @@ public class NotificacionServiceImpl implements NotificacionService {
 
             Notificacion alerta = new Notificacion("SEGURIDAD_INTENTOS", titulo, mensaje, ip);
             notificacionRepository.save(alerta);
+            List<Usuario> admins = usuarioRepository.findByRol("ADMIN");
+
+            for (Usuario usuario : admins) {
+                NotificacionUsuario nu = new NotificacionUsuario();
+                nu.setUsuario(usuario);
+                nu.setNotificacion(alerta);
+                nu.setLeida(false);
+                nu.setFechaLectura(null);
+                notificacionUsuarioRepository.save(nu);
+            }
 
             System.out.println("ALERTA GENERADA: " + mensaje);
         }
@@ -131,8 +183,9 @@ public class NotificacionServiceImpl implements NotificacionService {
         intentosFallidos.remove(username);
     }
 
+    @Transactional
     public void registrarEliminacionMasiva(String entidad, int cantidad, String usuario, String ip) {
-        if (cantidad > 10) { 
+        if (cantidad > 10) {
             String titulo = "Alerta - Eliminación Masiva Detectada";
             String mensaje = String.format(
                     "Se ha detectado una eliminación masiva de %d registros en la entidad '%s'. "
@@ -142,9 +195,18 @@ public class NotificacionServiceImpl implements NotificacionService {
 
             Notificacion alerta = new Notificacion("SEGURIDAD_ELIMINACION", titulo, mensaje, ip);
             notificacionRepository.save(alerta);
+            List<Usuario> admins = usuarioRepository.findByRol("ADMIN");
+
+            for (Usuario admin : admins) {
+                NotificacionUsuario nu = new NotificacionUsuario();
+                nu.setUsuario(admin);
+                nu.setNotificacion(alerta);
+                nu.setLeida(false);
+                nu.setFechaLectura(null);
+                notificacionUsuarioRepository.save(nu);
+            }
         }
     }
-
 
     public List<Notificacion> obtenerAlertasSeguridad() {
         return notificacionRepository.findByTipoStartingWithOrderByFechaCreacionDesc("SEGURIDAD");
@@ -153,6 +215,10 @@ public class NotificacionServiceImpl implements NotificacionService {
     public List<Notificacion> obtenerTodasLasNotificaciones() {
         return notificacionRepository.findAllByOrderByFechaCreacionDesc();
     }
-    
+
+    @Transactional
+    public void marcarTodasComoLeidas(Long idUsuario) {
+        notificacionUsuarioRepository.marcarTodasComoLeidas(idUsuario);
+    }
 
 }

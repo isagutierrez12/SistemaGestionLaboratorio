@@ -3,7 +3,8 @@
     <head th:fragment="head">
         <title>Laboratorio Clinico Calderon Piedra</title>
         <meta charset="UTF-8" />
-
+        <meta name="_csrf" th:content="${_csrf.token}" />
+        <meta name="_csrf_header" th:content="${_csrf.headerName}" />
         <!-- Bootstrap & Font Awesome (webjars) -->
         <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
         <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.css}" />
@@ -66,7 +67,7 @@
                     </li><!-- End Search Icon-->
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                        <a id="campanaNotificaciones" class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
                             <i class="bi bi-bell"></i>
                             <span id="badge-count" class="badge badge-number" style="background-color: #0c6c74; color: white;">0</span>
                         </a>
@@ -79,7 +80,6 @@
                             <!-- Aquí JS insertará las notificaciones -->
                         </ul>
                     </li>
-
 
                     <li class="nav-item dropdown pe-3">
 
@@ -313,7 +313,7 @@
                     showWarning(minutesLeft) {
 
                         this.warningShown = true;
-                      
+
 
                         console.log(`⚠ La sesión va a expirar en ${minutesLeft} minutos (${timeLeft} segundos).`);
 

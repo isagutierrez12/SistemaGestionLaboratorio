@@ -1960,3 +1960,46 @@ h6 {
   font-size: 13px;
   color: #0C6C74;
 }
+
+/* CONTENEDOR DE NOTIFICACIONES */
+#notification-list {
+  width: 440px;
+  max-height: 360px;
+  overflow-y: auto;
+   overflow-x: hidden;  
+  padding: 10px;
+}
+
+/* CADA NOTIFICACIÓN */
+.dropdown-item {
+  display: flex;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+    white-space: normal;      
+  word-break: break-word;
+}
+
+.dropdown-item :hover {
+  background-color: #f1f1f1;
+}
+
+/* TEXTO */
+.dropdown-item h4 {
+  font-size: 14px;
+  margin: 0;
+  font-weight: bold;
+}
+
+.dropdown-item p {
+  margin: 2px 0;
+  font-size: 13px;
+}
+
+/* FOOTER */
+.dropdown-footer a {
+  font-weight: bold;
+  color: #0d6efd;
+}
+
