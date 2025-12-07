@@ -1994,3 +1994,7 @@ h6 {
   background-color: #4594A4;
   color: white;
 }
+
+.profile .col-form-label {
+    width: 200px;
+}

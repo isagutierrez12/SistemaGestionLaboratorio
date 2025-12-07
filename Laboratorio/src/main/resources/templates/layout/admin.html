@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <head th:fragment="head">
         <title>Laboratorio Clinico Calderon Piedra</title>
         <meta charset="UTF-8" />
@@ -84,21 +84,27 @@
                     <li class="nav-item dropdown pe-3">
 
                         <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                            <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" />
-                            <span class="d-none d-md-block dropdown-toggle ps-2">K. Anderson</span>
-                        </a><!-- End Profile Iamge Icon -->
+                            <div class="rounded-circle bg-light d-flex justify-content-center align-items-center"
+                                 style="width: 40px; height: 40px;">
+                                <i class="bi bi-person" style="font-size: 22px; color: #2E6771;"></i>
+                            </div>
+                            <span class="d-none d-md-block dropdown-toggle ps-2"
+                                  th:text="${usuarioLogueado != null ? usuarioLogueado.nombreCompleto : #authentication.name}">
+                            </span>
+                        </a><!-- End Profile Image Icon -->
 
                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                             <li class="dropdown-header">
-                                <h6>Kevin Anderson</h6>
-                                <span>Médico</span>
+                                <h6 th:text="${usuarioLogueado != null ? usuarioLogueado.nombreCompleto : #authentication.name}"></h6>
+                                <span th:each="rol : ${usuarioLogueado.roles}"
+                                      th:text="${rol.nombre}"></span>
                             </li>
                             <li>
                                 <hr class="dropdown-divider" />
                             </li>
 
                             <li>
-                                <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                                <a class="dropdown-item d-flex align-items-center" th:href="@{/perfil}">
                                     <i class="bi bi-person"></i>
                                     <span>Mi perfil</span>
                                 </a>
@@ -107,12 +113,12 @@
                                 <hr class="dropdown-divider" />
                             </li>
 
-                            <li>
+                            <!--<li>
                                 <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
                                     <i class="bi bi-question-circle"></i>
                                     <span>Necesitas Ayuda?</span>
                                 </a>
-                            </li>
+                            </li>-->
                             <li>
                                 <hr class="dropdown-divider" />
                             </li>
@@ -313,7 +319,7 @@
                     showWarning(minutesLeft) {
 
                         this.warningShown = true;
-                      
+
 
                         console.log(`⚠ La sesión va a expirar en ${minutesLeft} minutos (${timeLeft} segundos).`);
 

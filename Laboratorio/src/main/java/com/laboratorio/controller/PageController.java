@@ -48,7 +48,27 @@ public class PageController {
 
         model.addAttribute("paquetes", paquetes);
         model.addAttribute("examenesPorPaquete", examenesPorPaquete);
+        model.addAttribute("pagina", "examenes");
 
         return "examenes";
     }
+
+    @GetMapping("/index")
+    public String inicio(Model model) {
+        model.addAttribute("pagina", "inicio");
+        return "index";
+    }
+
+    @GetMapping("/nosotros")
+    public String nosotros(Model model) {
+        model.addAttribute("pagina", "nosotros");
+        return "nosotros";
+    }
+
+    @GetMapping("/contacto")
+    public String contacto(Model model) {
+        model.addAttribute("pagina", "contacto");
+        return "contacto";
+    }
+
 }
