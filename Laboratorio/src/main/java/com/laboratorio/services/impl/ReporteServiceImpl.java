@@ -4,10 +4,12 @@
  */
 package com.laboratorio.services.impl;
 
+import com.laboratorio.model.Cita;
 import com.laboratorio.model.Paciente;
 import com.laboratorio.model.Reporte;
+import com.laboratorio.model.Solicitud;
 import com.laboratorio.model.SolicitudDetalle;
-import com.laboratorio.repository.SolicitudDetalleRepository;
+import com.laboratorio.repository.CitaRepository;
 import com.laboratorio.service.ReporteService;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,10 +25,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 @Service
 public class ReporteServiceImpl implements ReporteService {
 
-    private final SolicitudDetalleRepository detalleRepository;
+    private final CitaRepository citaRepository;
 
-    public ReporteServiceImpl(SolicitudDetalleRepository detalleRepository) {
-        this.detalleRepository = detalleRepository;
+    public ReporteServiceImpl(CitaRepository citaRepository) {
+        this.citaRepository = citaRepository;
     }
 
     @Override
@@ -34,7 +36,8 @@ public class ReporteServiceImpl implements ReporteService {
             LocalDate desde,
             LocalDate hasta,
             String area,
-            String estado) {
+            String estado,
+            String nombreExamen) {
 
         if (desde == null) {
             desde = LocalDate.now().minusMonths(1);
@@ -46,58 +49,84 @@ public class ReporteServiceImpl implements ReporteService {
         LocalDateTime desdeDateTime = desde.atStartOfDay();
         LocalDateTime hastaDateTime = hasta.atTime(23, 59, 59);
 
-        List<SolicitudDetalle> detalles = detalleRepository.findAllConRelaciones();
+        List<Cita> citas = citaRepository.findCitasConDetallesEnRango(desdeDateTime, hastaDateTime);
+
+        String areaFiltro = (area != null && !area.isBlank()) ? area.trim().toLowerCase() : null;
+        String estadoFiltro = (estado != null && !estado.isBlank()) ? estado.trim().toLowerCase() : null;
+        String examenFiltro = (nombreExamen != null && !nombreExamen.isBlank())
+                ? nombreExamen.trim().toLowerCase()
+                : null;
 
         List<Reporte> resultado = new ArrayList<>();
 
-        for (SolicitudDetalle d : detalles) {
+        for (Cita c : citas) {
 
-            LocalDateTime fechaSolicitud = d.getSolicitud().getFechaSolicitud();
-            if (fechaSolicitud == null) {
-                continue;
-            }
-            if (fechaSolicitud.isBefore(desdeDateTime) || fechaSolicitud.isAfter(hastaDateTime)) {
+            Solicitud sol = c.getSolicitud();
+            if (sol == null || sol.getDetalles() == null) {
                 continue;
             }
 
-            String areaNombre = (d.getExamen() != null) ? d.getExamen().getArea() : null;
+            String estadoReal = c.getEstado(); // puede ser null
 
-            if (area != null && !area.isBlank()) {
-                if (areaNombre == null || !areaNombre.equalsIgnoreCase(area)) {
+            if (estadoFiltro != null) {
+                if (estadoReal == null || !estadoReal.trim().toLowerCase().equals(estadoFiltro)) {
+                    continue;
+                }
+            } else {
+                if (estadoReal != null && estadoReal.trim().equalsIgnoreCase("CANCELADA")) {
                     continue;
                 }
             }
 
-            String estadoReal = d.getSolicitud().getEstado();
-            if (estado != null && !estado.isBlank()) {
-                if (estadoReal == null || !estadoReal.equalsIgnoreCase(estado)) {
-                    continue;
+            String nombrePaciente = "";
+            if (sol.getPaciente() != null) {
+                Paciente p = sol.getPaciente();
+                StringBuilder sb = new StringBuilder();
+                if (p.getNombre() != null) sb.append(p.getNombre());
+                if (p.getPrimerApellido() != null) sb.append(" ").append(p.getPrimerApellido());
+                if (p.getSegundoApellido() != null) sb.append(" ").append(p.getSegundoApellido());
+                nombrePaciente = sb.toString().trim();
+            }
+
+            for (SolicitudDetalle d : sol.getDetalles()) {
+
+                String areaExamen = null;
+                String nombreExamenActual = "";
+                if (d.getExamen() != null) {
+                    areaExamen = d.getExamen().getArea();
+                    nombreExamenActual = d.getExamen().getNombre();
+                } else if (d.getPaquete() != null) {
+                    nombreExamenActual = d.getPaquete().getNombre();
                 }
+
+                if (areaFiltro != null) {
+                    if (areaExamen == null
+                            || !areaExamen.trim().toLowerCase().equals(areaFiltro)) {
+                        continue;
+                    }
+                }
+
+                if (examenFiltro != null) {
+                    if (nombreExamenActual == null
+                            || !nombreExamenActual.toLowerCase().contains(examenFiltro)) {
+                        continue;
+                    }
+                }
+
+                double monto = sol.getPrecioTotal();
+
+                Reporte dto = new Reporte();
+                if (c.getFechaCita() != null) {
+                    dto.setFecha(c.getFechaCita().toLocalDate());
+                }
+                dto.setPaciente(nombrePaciente);
+                dto.setExamen(nombreExamenActual);
+                dto.setArea(areaExamen);
+                dto.setEstado(estadoReal);
+                dto.setMonto(monto);
+
+                resultado.add(dto);
             }
-
-            String paciente = "";
-            if (d.getSolicitud().getPaciente() != null) {
-                Paciente p = d.getSolicitud().getPaciente();
-                paciente = String.format("%s %s %s",
-                        nullSafe(p.getNombre()),
-                        nullSafe(p.getPrimerApellido()),
-                        nullSafe(p.getSegundoApellido())
-                ).trim();
-            }
-
-            String nombreExamen = (d.getExamen() != null) ? d.getExamen().getNombre() : "";
-
-            double monto = d.getSolicitud().getPrecioTotal();
-
-            Reporte dto = new Reporte();
-            dto.setFecha(fechaSolicitud.toLocalDate());
-            dto.setPaciente(paciente);
-            dto.setExamen(nombreExamen);
-            dto.setArea(areaNombre);
-            dto.setEstado(estadoReal);
-            dto.setMonto(monto);
-
-            resultado.add(dto);
         }
 
         return resultado;
@@ -111,11 +140,9 @@ public class ReporteServiceImpl implements ReporteService {
     public void exportarExcel(List<Reporte> datos, OutputStream os) throws IOException {
 
         XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("Reporte Exámenes");
+        XSSFSheet sheet = workbook.createSheet("ReporteExamenes");
 
-        String[] columnas = {
-            "Fecha", "Paciente", "Examen", "Área", "Estado", "Monto"
-        };
+        String[] columnas = {"Fecha", "Paciente", "Examen", "Área", "Estado", "Monto"};
 
         Row header = sheet.createRow(0);
         for (int i = 0; i < columnas.length; i++) {

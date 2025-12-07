@@ -94,33 +94,21 @@ public class DashboardController {
                 limite
         );
     }
-    
+
     @GetMapping("/inventario-alertas")
     public List<InventarioAlerta> obtenerAlertasInventario(
             @RequestParam(defaultValue = "TODAS") String tipo) {
         return inventarioAlertaService.obtenerAlertas(tipo);
     }
-    
+
     @GetMapping("/reportes-examenes")
-    public List<Reporte> obtenerReporteExamenes(
-            @RequestParam(required = false) String desde,
-            @RequestParam(required = false) String hasta,
+    public List<Reporte> obtenerReportes(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
             @RequestParam(required = false) String area,
-            @RequestParam(required = false) String estado) {
-
-        LocalDate fechaDesde = (desde != null && !desde.isBlank())
-                ? LocalDate.parse(desde)
-                : LocalDate.now().minusMonths(1);
-
-        LocalDate fechaHasta = (hasta != null && !hasta.isBlank())
-                ? LocalDate.parse(hasta)
-                : LocalDate.now();
-
-        return reporteService.generarReporte(
-                fechaDesde,
-                fechaHasta,
-                area,
-                estado
-        );
+            @RequestParam(required = false) String estado,
+            @RequestParam(name = "examen", required = false) String nombreExamen
+    ) {
+        return reporteService.generarReporte(desde, hasta, area, estado, nombreExamen);
     }
 }

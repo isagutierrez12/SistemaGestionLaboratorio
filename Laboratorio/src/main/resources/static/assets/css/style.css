@@ -1960,3 +1960,37 @@ h6 {
   font-size: 13px;
   color: #0C6C74;
 }
+
+.filtro-alto {
+    height: 38px;
+    padding: 6px 10px;
+    font-size: 0.9rem;  
+}
+
+/* colores de íconos del dashboard */
+#kpiIngresosCard .card-icon {
+    background: rgba(99, 218, 219, 0.25);
+    color: #2E6771; 
+}
+
+#kpiPacientesCard .card-icon {
+    background: rgba(104, 216, 239, 0.25);
+    color: #4594A4;
+}
+
+#kpiPromedioCard .card-icon {
+    background: rgba(81, 182, 196, 0.25);
+    color: #2E6771;
+}
+
+.btn-filtros {
+  background-color: #2E6771;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+}
+
+.btn-filtros:hover {
+  background-color: #4594A4;
+  color: white;
+}

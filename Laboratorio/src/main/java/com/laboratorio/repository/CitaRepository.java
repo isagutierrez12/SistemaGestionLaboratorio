@@ -37,4 +37,19 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
            """)
     Long contarPacientesAtendidosPorCita(@Param("inicio") LocalDateTime inicio,
                                          @Param("fin") LocalDateTime fin);
+    
+    @Query("""
+           SELECT DISTINCT c
+           FROM Cita c
+           JOIN FETCH c.solicitud s
+           LEFT JOIN FETCH s.paciente p
+           LEFT JOIN FETCH s.detalles d
+           LEFT JOIN FETCH d.examen e
+           LEFT JOIN FETCH d.paquete pa
+           WHERE c.fechaCita BETWEEN :inicio AND :fin
+           """)
+    List<Cita> findCitasConDetallesEnRango(
+            @Param("inicio") LocalDateTime inicio,
+            @Param("fin") LocalDateTime fin
+    );
 }

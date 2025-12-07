@@ -4,21 +4,20 @@
  */
 package com.laboratorio.service;
 
-import com.laboratorio.model.Reporte;
+import com.laboratorio.model.ExamenTop;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface ReporteService {
+public interface TopExamenReporteService {
 
-    List<Reporte> generarReporte(
+    List<ExamenTop> generarTop(
             LocalDate desde,
             LocalDate hasta,
             String area,
-            String estado,
-            String nombreExamen
+            int limite
     );
-    
-    void exportarExcel(List<Reporte> datos, OutputStream os) throws IOException;
+
+    void exportarExcel(List<ExamenTop> datos, OutputStream os) throws IOException;
 }
