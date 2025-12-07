@@ -4,8 +4,10 @@
  */
 package com.laboratorio.controller;
 
+import com.laboratorio.model.Cita;
 import com.laboratorio.model.Paciente;
 import com.laboratorio.repository.PacienteRepository;
+import com.laboratorio.service.CitaService;
 import com.laboratorio.service.PacienteService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,11 +32,14 @@ public class PacienteController {
 
     private final PacienteService pacienteService;
     private final PacienteRepository pacienteRepository;
+    private final CitaService citaService;
 
     @Autowired
-    public PacienteController(PacienteService pacienteService, PacienteRepository pacienteRepository) {
+    public PacienteController(PacienteService pacienteService, PacienteRepository pacienteRepository,
+            CitaService citaService) {
         this.pacienteService = pacienteService;
         this.pacienteRepository = pacienteRepository;
+        this.citaService = citaService;
     }
 
     @GetMapping("/pacientes")
@@ -166,7 +171,7 @@ public class PacienteController {
         if (existente == null) {
             return "redirect:/paciente/pacientes";
         }
-        
+
         if (result.hasErrors()) {
             model.addAttribute("errores", result.getAllErrors());
             model.addAttribute("paciente", paciente);
@@ -236,6 +241,53 @@ public class PacienteController {
         model.addAttribute("query", query);
         model.addAttribute("page", "inactive");
         return "paciente/inactivos";
+    }
+
+    @GetMapping("/historial/{id}")
+    public String verHistorialPaciente(@PathVariable("id") String id,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        try {
+            Paciente paciente = pacienteService.getPaciente(id);
+
+            if (paciente == null) {
+                redirectAttributes.addFlashAttribute("mensaje",
+                        "Error al cargar historial. Intente nuevamente o contacte al administrador");
+                redirectAttributes.addFlashAttribute("tipo", "error");
+                return "redirect:/paciente/pacientes";
+            }
+
+            List<Cita> citas = citaService.findHistorialPorPaciente(id);
+
+            if (citas == null || citas.isEmpty()) {
+                redirectAttributes.addFlashAttribute("mensaje",
+                        "Este paciente no tiene citas registradas hasta el momento.");
+                redirectAttributes.addFlashAttribute("tipo", "warning");
+                return "redirect:/paciente/pacientes";
+            }
+
+            String nombreCompleto = paciente.getNombre() + " " + paciente.getPrimerApellido()
+                    + (paciente.getSegundoApellido() != null && !paciente.getSegundoApellido().isBlank()
+                    ? " " + paciente.getSegundoApellido()
+                    : "");
+
+            model.addAttribute("paciente", paciente);
+            model.addAttribute("citas", citas);
+            model.addAttribute("tituloHistorial", "Historial: " + nombreCompleto);
+            model.addAttribute("pacienteInactivo", Boolean.FALSE.equals(paciente.getActivo()));
+            model.addAttribute("page", "historial");
+
+            return "paciente/historial";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("mensaje",
+                    "Error al cargar historial. Intente nuevamente o contacte al administrador");
+            redirectAttributes.addFlashAttribute("tipo", "error");
+            return "redirect:/paciente/pacientes";
+        }
+        
+        
     }
 
 }

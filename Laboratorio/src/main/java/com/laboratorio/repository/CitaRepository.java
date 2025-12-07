@@ -14,12 +14,13 @@ import org.springframework.data.repository.query.Param;
 
 @EnableJpaRepositories
 public interface CitaRepository extends JpaRepository<Cita, Long> {
-     @Query("SELECT c FROM Cita c WHERE c.usuario.idUsuario = :idUsuario")
+
+    @Query("SELECT c FROM Cita c WHERE c.usuario.idUsuario = :idUsuario")
     List<Cita> findByUsuario(Long idUsuario);
 
     @Query("SELECT c FROM Cita c WHERE c.estado = :estado")
     List<Cita> findByEstado(String estado);
-    
+
     @Query("""
            SELECT COALESCE(SUM(c.solicitud.precioTotal), 0)
            FROM Cita c
@@ -27,7 +28,7 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
              AND (c.estado IS NULL OR UPPER(c.estado) <> 'CANCELADA')
            """)
     Double calcularIngresosPorCita(@Param("inicio") LocalDateTime inicio,
-                                   @Param("fin") LocalDateTime fin);
+            @Param("fin") LocalDateTime fin);
 
     @Query("""
            SELECT COUNT(DISTINCT c.solicitud.paciente.idPaciente)
@@ -36,8 +37,8 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
              AND (c.estado IS NULL OR UPPER(c.estado) <> 'CANCELADA')
            """)
     Long contarPacientesAtendidosPorCita(@Param("inicio") LocalDateTime inicio,
-                                         @Param("fin") LocalDateTime fin);
-    
+            @Param("fin") LocalDateTime fin);
+
     @Query("""
            SELECT DISTINCT c
            FROM Cita c
@@ -52,4 +53,17 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
             @Param("inicio") LocalDateTime inicio,
             @Param("fin") LocalDateTime fin
     );
+
+    @Query("""
+       SELECT DISTINCT c
+       FROM Cita c
+       JOIN FETCH c.solicitud s
+       JOIN FETCH s.paciente p
+       LEFT JOIN FETCH s.detalles d
+       LEFT JOIN FETCH d.examen e
+       LEFT JOIN FETCH d.paquete paq
+       WHERE p.idPaciente = :idPaciente
+       ORDER BY c.fechaCita DESC
+       """)
+    List<Cita> findHistorialPorPaciente(@Param("idPaciente") String idPaciente);
 }
