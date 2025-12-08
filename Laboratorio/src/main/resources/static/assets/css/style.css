@@ -1961,6 +1961,7 @@ h6 {
   color: #0C6C74;
 }
 
+
 .filtro-alto {
     height: 38px;
     padding: 6px 10px;
@@ -1998,3 +1999,22 @@ h6 {
 .profile .col-form-label {
     width: 200px;
 }
+#notification-list {
+    width: 320px;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+
+#notification-list::-webkit-scrollbar {
+    width: 6px;
+}
+#notification-list::-webkit-scrollbar-thumb {
+    background-color: #0c6c74;
+    border-radius: 10px;
+}
+#notification-list::-webkit-scrollbar-track {
+    background: #e9ecef;
+}
+

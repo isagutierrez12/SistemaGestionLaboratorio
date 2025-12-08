@@ -79,6 +79,7 @@
                             <div class="info-row"><strong>ID de Entidad:</strong> [[${a.idEntidad}]]</div>
                             <div class="info-row"><strong>Fecha:</strong> [[${#dates.format(a.fechaHora, 'dd/MM/yyyy HH:mm:ss')}]]</div>
                             <div class="info-row description"><strong>Descripción:</strong> [[${a.descripcion}]]</div>
+                            <div class="info-row description"><strong>Datos Adicionales:</strong> [[${a.datosAdicionales}]]</div>
                         </div>
                     </div>
                 </div>
@@ -136,6 +137,7 @@
                                                 <div class="info-row description">
                                                     <strong>Descripción:</strong> [[${a.descripcion}]]
                                                 </div>
+                                               
                                                 <div class="info-row" th:if="${a.tiempoActivo != null}">
                                                     <strong>Tiempo activo:</strong> [[${a.tiempoActivo}]] minutos
                                                 </div>
