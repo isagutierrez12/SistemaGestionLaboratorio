@@ -1,0 +1,220 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{layout/layout :: head-admin}">
+        <title>Laboratorio Clinico Calderon Piedra</title>
+        <meta charset="UTF-8" />
+    </head>
+    <body>
+
+        <section th:fragment="alertas">
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+            <script th:if="${success}" th:inline="javascript">
+                Swal.fire({
+                    title: 'Éxito',
+                    text: /*[[${success}]]*/,
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#1c94a4'
+                });
+            </script>
+
+            <script th:if="${mensaje}" th:inline="javascript">
+                Swal.fire({
+                    title: /*[[${tipo == 'success' ? 'Éxito' : (tipo == 'warning' ? 'Atención' : 'Error')}]]*/,
+                    text: /*[[${mensaje}]]*/,
+                    icon: /*[[${tipo}]]*/,
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#1c94a4'
+                });
+            </script>
+        </section>
+
+        <!-- Página de perfil -->
+        <section th:fragment="main" id="main" class="main" th:if="${page == 'list'}">
+
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
+                        <li class="breadcrumb-item">Mi Perfil</li>
+                    </ol>
+                </nav>
+            </div><!-- End Page Title -->
+
+            <section class="section profile">
+                <div class="row">
+
+                    <!-- Columna izquierda -->
+                    <div class="col-xl-4">
+                        <div class="card">
+                            <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+
+                                <!-- Ícono circular del usuario -->
+                                <div class="rounded-circle bg-light d-flex justify-content-center align-items-center mb-3"
+                                     style="width: 120px; height: 120px;">
+                                    <i class="bi bi-person-circle" style="font-size: 70px; color:#2E6771;"></i>
+                                </div>
+
+                                <h2 th:text="${usuarioLogueado != null ? usuarioLogueado.nombreCompleto : #authentication.name}"></h2>
+
+                                <h3>
+                                    <span th:each="rol : ${usuarioLogueado.roles}"
+                                          th:text="${rol.nombre}"
+                                          class="badge bg-secondary me-1"></span>
+                                </h3>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna derecha -->
+                    <div class="col-xl-8">
+
+                        <div class="card">
+                            <div class="card-body pt-3">
+
+                                <!-- Tabs -->
+                                <ul class="nav nav-tabs nav-tabs-bordered">
+
+                                    <li class="nav-item">
+                                        <button class="nav-link active" data-bs-toggle="tab"
+                                                data-bs-target="#profile-overview">General</button>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <button class="nav-link" data-bs-toggle="tab"
+                                                data-bs-target="#profile-edit">Editar Perfil</button>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <button class="nav-link" data-bs-toggle="tab"
+                                                data-bs-target="#profile-change-password">Cambiar Contraseña</button>
+                                    </li>
+
+                                </ul>
+
+                                <div class="tab-content pt-2">
+
+                                    <!-- Tab 1: General -->
+                                    <div class="tab-pane fade show active profile-overview" id="profile-overview">
+
+                                        <h5 class="card-title">Detalles del Perfil</h5>
+
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-4 label">Nombre Completo</div>
+                                            <div class="col-lg-9 col-md-8"
+                                                 th:text="${usuarioLogueado.nombreCompleto}"></div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-4 label">Usuario</div>
+                                            <div class="col-lg-9 col-md-8"
+                                                 th:text="${usuarioLogueado.username}"></div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-4 label">Cédula</div>
+                                            <div class="col-lg-9 col-md-8"
+                                                 th:text="${usuarioLogueado.cedula}"></div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-4 label">Correo</div>
+                                            <div class="col-lg-9 col-md-8">
+                                                <span th:text="${usuarioLogueado.username}"></span>@gmail.com
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Tab 2: Editar perfil -->
+                                    <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+
+                                        <form th:action="@{/perfil/guardar}" method="post">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                                            <div class="row mb-3">
+                                                <label class="col-md-4 col-lg-3 col-form-label">Nombre</label>
+                                                <div class="col-md-8 col-lg-9">
+                                                    <input type="text" class="form-control"
+                                                           th:value="${usuarioLogueado.nombre}"
+                                                           name="nombre">
+                                                </div>
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <label class="col-md-4 col-lg-3 col-form-label">Primer Apellido</label>
+                                                <div class="col-md-8 col-lg-9">
+                                                    <input type="text" class="form-control"
+                                                           th:value="${usuarioLogueado.primerApellido}"
+                                                           name="primerApellido">
+                                                </div>
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <label class="col-md-4 col-lg-3 col-form-label">Segundo Apellido</label>
+                                                <div class="col-md-8 col-lg-9">
+                                                    <input type="text" class="form-control"
+                                                           th:value="${usuarioLogueado.segundoApellido}"
+                                                           name="segundoApellido">
+                                                </div>
+                                            </div>
+
+                                            <div class="text-center">
+                                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                            </div>
+
+                                        </form>
+
+                                    </div>
+
+                                    <!-- Tab 3: Cambiar contraseña -->
+                                    <div class="tab-pane fade profile-edit pt-3" id="profile-change-password">
+
+                                        <form th:action="@{/perfil/cambiar-password}" method="post">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                                            <div class="row mb-3">
+                                                <label class="col-md-4 col-lg-3 col-form-label">Contraseña Actual</label>
+                                                <div class="col-md-8 col-lg-9">
+                                                    <input type="password" class="form-control" name="actual">
+                                                </div>
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <label class="col-md-4 col-lg-3 col-form-label">Nueva Contraseña</label>
+                                                <div class="col-md-8 col-lg-9">
+                                                    <input type="password" class="form-control" name="nueva">
+                                                </div>
+                                            </div>
+
+                                            <div class="row mb-3">
+                                                <label class="col-md-4 col-lg-3 col-form-label">Reingrese Nueva</label>
+                                                <div class="col-md-8 col-lg-9">
+                                                    <input type="password" class="form-control" name="confirmacion">
+                                                </div>
+                                            </div>
+
+                                            <div class="text-center">
+                                                <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+                                            </div>
+
+                                        </form>
+
+                                    </div>
+
+                                </div><!-- End Tab Content -->
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+        </section>
+
+        <div th:replace="~{layout/layout :: jsfiles-admin}"></div>
+
+    </body>
+</html>

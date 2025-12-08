@@ -16,7 +16,8 @@ public interface ReporteService {
             LocalDate desde,
             LocalDate hasta,
             String area,
-            String estado
+            String estado,
+            String nombreExamen
     );
     
     void exportarExcel(List<Reporte> datos, OutputStream os) throws IOException;
