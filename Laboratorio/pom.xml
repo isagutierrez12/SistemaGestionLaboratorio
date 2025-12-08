@@ -19,7 +19,7 @@
     <description>Laboratorio Clinico Calderon Piedra</description>
 
     <properties>
-        <java.version>22</java.version> <!-- recomendado para estabilidad -->
+        <java.version>17</java.version> <!-- recomendado para estabilidad -->
     </properties>
 
     <dependencies>

@@ -84,7 +84,7 @@ public class UsuarioController {
     public String modicarUsuario(Usuario usuario, Model model) {
         usuario = usuarioService.getUsuario(usuario);
 
-        String rol = usuario.getRoles().getFirst().getNombre();
+        String rol = usuario.getRoles().get(0).getNombre();
         String rolSeleccionado;
         switch (rol) {
             case "ADMIN":
