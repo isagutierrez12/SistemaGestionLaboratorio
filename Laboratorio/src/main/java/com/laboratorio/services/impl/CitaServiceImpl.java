@@ -11,18 +11,17 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CitaServiceImpl implements CitaService{
+public class CitaServiceImpl implements CitaService {
 
-    
     private CitaRepository citaRepository;
-    
+
     public CitaServiceImpl(CitaRepository citaRepository) {
         this.citaRepository = citaRepository;
     }
-    
+
     @Override
     public List<Cita> getAll() {
-         return citaRepository.findAll();
+        return citaRepository.findAll();
     }
 
     @Override
@@ -39,9 +38,15 @@ public class CitaServiceImpl implements CitaService{
     public void delete(Cita entity) {
         citaRepository.delete(entity);
     }
+
     @Override
     public Cita getById(Long id) {
-    return citaRepository.findById(id).orElse(null);
+        return citaRepository.findById(id).orElse(null);
     }
-    
+
+    @Override
+    public List<Cita> findHistorialPorPaciente(String idPaciente) {
+        return citaRepository.findHistorialPorPaciente(idPaciente);
+    }
+
 }

@@ -66,4 +66,8 @@ public class Usuario implements Serializable {
     @OneToMany
     @JoinColumn(name = "id_usuario", updatable = false)
     private List<Rol> roles;
+
+    public String getNombreCompleto() {
+        return nombre + " " + primerApellido;
+    }
 }

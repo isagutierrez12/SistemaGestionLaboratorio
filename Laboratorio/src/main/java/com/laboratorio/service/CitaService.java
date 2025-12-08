@@ -6,6 +6,7 @@ package com.laboratorio.service;
 
 import com.laboratorio.model.Cita;
 import com.laboratorio.model.RutaPermit;
+import java.util.List;
 
 /**
  *
@@ -13,4 +14,6 @@ import com.laboratorio.model.RutaPermit;
  */
 public interface CitaService  extends CrudService<Cita>{
     Cita getById(Long idCita);
+    
+    List<Cita> findHistorialPorPaciente(String idPaciente);
 }

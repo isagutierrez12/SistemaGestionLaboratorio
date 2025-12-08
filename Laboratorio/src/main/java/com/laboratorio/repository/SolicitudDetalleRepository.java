@@ -10,6 +10,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
+import com.laboratorio.model.ExamenTop;
+import java.time.LocalDateTime;
+import org.springframework.data.domain.Pageable;
 
 /**
  *
@@ -28,5 +31,77 @@ public interface SolicitudDetalleRepository extends JpaRepository<SolicitudDetal
       AND sd.id_examen IS NOT NULL
 """, nativeQuery = true)
     List<Long> findExamenesByCita(Long idCita);
+
+    @Query("""
+       SELECT COUNT(d)
+       FROM Cita c
+       JOIN c.solicitud s
+       JOIN s.detalles d
+       WHERE c.fechaCita BETWEEN :inicio AND :fin
+         AND d.examen IS NOT NULL
+         AND (c.estado IS NULL OR UPPER(c.estado) <> 'CANCELADA')
+       """)
+    Long contarExamenesIndividualesEnPeriodo(@Param("inicio") LocalDateTime inicio,
+            @Param("fin") LocalDateTime fin);
+
+    @Query("""
+       SELECT COUNT(dp)
+       FROM Cita c
+       JOIN c.solicitud s
+       JOIN s.detalles d
+       JOIN d.paquete p
+       JOIN p.detalles dp
+       WHERE c.fechaCita BETWEEN :inicio AND :fin
+         AND (c.estado IS NULL OR UPPER(c.estado) <> 'CANCELADA')
+       """)
+    Long contarExamenesEnPaquetesEnPeriodo(@Param("inicio") LocalDateTime inicio,
+            @Param("fin") LocalDateTime fin);
+
+    @Query("""
+           SELECT new com.laboratorio.model.ExamenTop(
+                    e.nombre,
+                    COUNT(d)
+                  )
+           FROM Cita c
+           JOIN c.solicitud s
+           JOIN s.detalles d
+           JOIN d.examen e
+           WHERE c.fechaCita BETWEEN :inicio AND :fin
+             AND d.examen IS NOT NULL
+             AND (c.estado IS NULL OR UPPER(c.estado) <> 'CANCELADA')
+             AND (:area IS NULL OR LOWER(e.area) = :area)
+           GROUP BY e.nombre
+           """)
+    List<ExamenTop> topExamenesIndividuales(@Param("inicio") LocalDateTime inicio,
+                                            @Param("fin") LocalDateTime fin,
+                                            @Param("area") String area);
+
+    @Query("""
+           SELECT new com.laboratorio.model.ExamenTop(
+                    dp.examen.nombre,
+                    COUNT(dp)
+                  )
+           FROM Cita c
+           JOIN c.solicitud s
+           JOIN s.detalles d
+           JOIN d.paquete p
+           JOIN p.detalles dp
+           WHERE c.fechaCita BETWEEN :inicio AND :fin
+             AND (c.estado IS NULL OR UPPER(c.estado) <> 'CANCELADA')
+             AND (:area IS NULL OR LOWER(dp.examen.area) = :area)
+           GROUP BY dp.examen.nombre
+           """)
+    List<ExamenTop> topExamenesDesdePaquetes(@Param("inicio") LocalDateTime inicio,
+                                             @Param("fin") LocalDateTime fin,
+                                             @Param("area") String area);
+    
+    @Query("""
+           SELECT d
+           FROM SolicitudDetalle d
+               JOIN FETCH d.solicitud s
+               LEFT JOIN FETCH s.paciente p
+               JOIN FETCH d.examen e
+           """)
+    List<SolicitudDetalle> findAllConRelaciones();
 
 }

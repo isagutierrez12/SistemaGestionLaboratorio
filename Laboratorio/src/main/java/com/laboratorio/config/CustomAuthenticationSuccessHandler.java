@@ -4,6 +4,8 @@
  */
 package com.laboratorio.config;
 
+import com.laboratorio.model.Usuario;
+import com.laboratorio.repository.UsuarioRepository;
 import com.laboratorio.service.NotificacionService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,20 +17,26 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-    
+
     @Autowired
     private NotificacionService notificacionService;
+    
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, 
-                                      HttpServletResponse response, 
-                                      Authentication authentication) throws IOException {
-        
+    public void onAuthenticationSuccess(HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication) throws IOException {
+
         String username = authentication.getName();
         String ip = request.getRemoteAddr();
-        
+
         notificacionService.resetearIntentosFallidos(username);
-        
+
+        Usuario usuario = usuarioRepository.findByUsername(username);
+        request.getSession().setAttribute("usuarioLogueado", usuario);
+
         System.out.println("Login exitoso para: " + username + " desde IP: " + ip);
 
         response.sendRedirect("/paciente/pacientes");

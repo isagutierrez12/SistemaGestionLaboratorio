@@ -34,7 +34,7 @@ public class Paquete {
     @Column(name = "id_paquete", nullable = false, updatable = false)
     private Long idPaquete;
 
-    @Column(name = "codigo", insertable = false, updatable = false)
+    @Column(name = "codigo", nullable = false, unique = true)
     private String codigo;
 
     @NotBlank(message = "El nombre es obligatorio.")

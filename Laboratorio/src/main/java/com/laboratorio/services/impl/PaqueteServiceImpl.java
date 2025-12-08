@@ -43,8 +43,15 @@ public class PaqueteServiceImpl implements PaqueteService {
     @Transactional
     public void save(Paquete p) {
 
-        if (paqueteRepository.existsByCodigo(p.getCodigo())
-                && (p.getIdPaquete() == null)) {
+        boolean esNuevo = (p.getIdPaquete() == null);
+
+        if (esNuevo) {
+            Integer maxCorrelativo = paqueteRepository.findMaxCorrelativo();
+            int siguiente = (maxCorrelativo == null ? 1 : maxCorrelativo + 1);
+            p.setCodigo("PK-" + siguiente);
+        }
+
+        if (esNuevo && paqueteRepository.existsByCodigo(p.getCodigo())) {
             throw new IllegalArgumentException("El código ya existe.");
         }
 
@@ -107,4 +114,8 @@ public class PaqueteServiceImpl implements PaqueteService {
         return paqueteRepository.existsByNombre(nombre);
     }
 
+    @Override
+    public List<Paquete> getActivosConExamenes() {
+        return paqueteRepository.findActivosConExamenes();
+    }
 }

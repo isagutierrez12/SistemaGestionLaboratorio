@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head  th:replace="~{layout/layout :: head}">
+        <title>Laboratorio Clinico Calderon Piedra</title>
+        <meta charset="UTF-8" />
+
+    </head>
+    <body>
+        <!--  Filtros -->
+        <th:block th:fragment="filtros">
+
+            <div class="row mb-4">
+
+                <!-- Fecha desde -->
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Desde</label>
+                    <input type="date" id="filtroDesde" class="form-control" />
+                </div>
+
+                <!-- Fecha hasta -->
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Hasta</label>
+                    <input type="date" id="filtroHasta" class="form-control" />
+                </div>
+
+                <!-- Periodo rápido -->
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Período rápido</label>
+                    <select id="filtroPeriodo" class="form-select">
+                        <option value="">Personalizado</option>
+                        <option value="DIA">Hoy</option>
+                        <option value="SEMANA">Esta semana</option>
+                        <option value="MES">Este mes</option>
+                        <option value="TRIMESTRE">Este trimestre</option>
+                        <option value="ANIO">Este año</option>
+                    </select>
+                </div>
+
+                <!-- Botón aplicar -->
+                <div class="col-md-3 d-flex align-items-end">
+                    <button id="btnAplicarFiltros"
+                            class="btn btn-filtros w-100">
+                        Aplicar filtros
+                    </button>
+                </div>
+
+            </div>
+
+        </th:block>
+
+
+
+        <!-- FRAGMENTO: TARJETAS / KPIs -->
+        <th:block th:fragment="kpis">
+
+            <div class="row">
+
+                <!-- KPI: Ingresos -->
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card revenue-card" id="kpiIngresosCard">
+
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                Ingresos <span id="kpiPeriodoIngresos">| Hoy</span>
+                            </h5>
+
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-currency-dollar"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6 id="kpiIngresos">₡0</h6>
+                                    <span class="text-muted small pt-2 ps-1">Ingresos del laboratorio</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- KPI: Pacientes atendidos -->
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card customers-card" id="kpiPacientesCard">
+
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                Pacientes atendidos <span id="kpiPeriodoPacientes">| Hoy</span>
+                            </h5>
+
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6 id="kpiPacientes">0</h6>
+                                    <span class="text-muted small pt-2 ps-1">Pacientes con solicitudes registradas</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- KPI: Promedio de exámenes -->
+                <div class="col-xxl-4 col-xl-12">
+                    <div class="card info-card sales-card" id="#kpiPromedioCard">
+
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                Promedio de exámenes <span id="kpiPeriodoPromedio">| Hoy</span>
+                            </h5>
+
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-file-earmark-medical"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6 id="kpiPromedioExamenes">0</h6>
+                                    <span class="text-muted small pt-2 ps-1">Exámenes por paciente</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </th:block>
+
+
+        <!-- Grafico -->
+        <th:block th:fragment="grafico-examenes">
+
+            <div class="row">
+                <div class="col-12">
+
+                    <div class="card">
+
+                        <div class="card-body">
+
+                            <!-- Header del gráfico -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title mb-0">Exámenes más solicitados</h5>
+
+                                <!-- Filtro de área -->
+                                <div class="d-flex gap-2">
+                                    <select id="filtroArea" class="form-select filtro-alto" style="width: 200px;">
+                                        <option value="">Todas las áreas</option>
+                                    </select>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button id="btnExportarTopPdf"
+                                            class="btn btn-save">Exportar PDF</button>
+
+                                    <button id="btnExportarTopExcel"
+                                            class="btn btn-save">Exportar Excel</button>
+                                </div>
+                            </div>
+
+                            <!-- Contenedor del gráfico -->
+                            <div id="topExamsChart" style="height:350px;"></div>
+
+                            <form id="formTopPdf"
+                                  th:action="@{/dashboard/top-examenes/pdf-imagen}"
+                                  method="post"
+                                  style="display:none;">
+
+                                <input type="hidden" name="chartImage" id="chartImageInput"/>
+
+                                <!-- Token CSRF -->
+                                <input type="hidden"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}"/>
+                            </form>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </th:block>
+
+        <th:block th:fragment="alertas">
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title mb-0">Insumos en alerta</h5>
+
+                                <!-- Filtro por tipo de alerta -->
+                                <select id="filtroTipoAlerta"
+                                        class="form-select filtro-alto"
+                                        style="max-width: 230px;">
+                                    <option value="TODAS">Todas las alertas</option>
+                                    <option value="BAJO_STOCK">Solo bajo stock</option>
+                                    <option value="VENCIMIENTO">Solo próximos a vencer</option>
+                                </select>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover align-middle"
+                                       id="tablaAlertasInventario">
+                                    <thead>
+                                        <tr>
+                                            <th>Código barras</th>
+                                            <th>Insumo</th>
+                                            <th>Tipo</th>
+                                            <th>Stock actual</th>
+                                            <th>Stock mínimo</th>
+                                            <th>Fecha venc.</th>
+                                            <th>Días para vencer</th>
+                                            <th>Alerta</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="8"
+                                                class="text-center text-muted">
+                                                No hay insumos en alerta.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </th:block>
+
+        <th:block th:fragment="reportes">
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            
+                                <div class="mb-3">
+                                    <h5 class="card-title mb-1">Reporte de exámenes realizados</h5>
+                                    <small class="text-muted">
+                                        Usa el rango de fechas y el área del dashboard. Filtra por estado y por nombre de examen.
+                                    </small>
+                                </div>
+
+                                <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                                    <!-- filtro por nombre de examen -->
+                                    <input id="filtroNombreExamenReporte"
+                                           type="text"
+                                           class="form-control filtro-alto"
+                                           placeholder="Nombre de examen" style="width: 200px;"/>
+                               
+                                    <!-- filtro por area -->
+                                    <select id="filtroAreaReporte"
+                                            class="form-select filtro-alto"
+                                            style="width: 200px;">
+                                        <option value="">Todas las áreas</option>
+                                    </select>
+
+                                    <!-- estados de la cita -->
+                                    <select id="filtroEstadoReporte"
+                                            class="form-select filtro-alto"
+                                            style="width: 200px;">
+                                        <option value="">Todos los estados</option>
+                                        <option value="CONFIRMADA">Confirmadas</option>
+                                        <option value="PENDIENTE">Pendientes</option>
+                                        <option value="AGENDADA">Agendadas</option>
+                                        <option value="CANCELADA">Canceladas</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="d-flex flex-wrap gap-3 mb-3">
+                                    <button id="btnGenerarReporte"
+                                            class="btn btn-save">Generar reporte</button>
+
+                                    <button id="btnExportarReportePdf"
+                                            class="btn btn-save">Exportar PDF</button>
+
+                                    <button id="btnExportarReporteExcel"
+                                            class="btn btn-save">Exportar Excel</button>
+                                </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover align-middle"
+                                       id="tablaReporteExamenes">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Paciente</th>
+                                            <th>Examen</th>
+                                            <th>Área</th>
+                                            <th>Estado</th>
+                                            <th>Monto</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted">
+                                                No se han generado resultados. Ajusta los filtros y presiona "Generar reporte".
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div id="resumenReporte"
+                                 class="mt-2 small text-muted"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+
+    </body>
+</html>
