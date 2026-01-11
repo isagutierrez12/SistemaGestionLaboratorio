@@ -50,8 +50,7 @@ public class ProjectConfig implements WebMvcConfigurer {
                 authorizeHttpRequests((request) -> {
                     request.requestMatchers(rutaPermit).permitAll();
                     for (Ruta ruta : rutas) {
-                        request.requestMatchers(ruta.getRuta())
-                                .hasAuthority(ruta.getRoleName());
+                         request.requestMatchers(ruta.getRuta()).hasAnyRole(ruta.getRoleName());
                     }
 
                 })
