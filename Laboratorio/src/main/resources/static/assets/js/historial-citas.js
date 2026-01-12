@@ -9,12 +9,17 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!idCita) return;
 
       fetch(`/cita/detalle/${idCita}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Error en la respuesta del servidor");
-          }
-          return response.json();
-        })
+  .then(async (response) => {
+    const text = await response.text();
+    console.log("STATUS:", response.status);
+    console.log("RESPUESTA CRUDA:", text);
+
+    if (!response.ok) {
+      throw new Error("Error en la respuesta del servidor");
+    }
+
+    return JSON.parse(text);
+  })
         .then((data) => {
           // Si el backend devolvió un string
           if (typeof data === "string") {

@@ -69,7 +69,7 @@
 
                         <ul id="notification-list" class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                             <li class="dropdown-header">
-                                <span id="notification-title">Cargando notificaciones...</span>
+                               
                             </li>
                             <li><hr class="dropdown-divider" /></li>
                             <!-- Aquí JS insertará las notificaciones -->
@@ -220,7 +220,7 @@
                     </ul>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
                     <a class="nav-link collapsed" data-bs-target="#audit-nav" data-bs-toggle="collapse" href="#">
                         <i class="bi bi-layout-text-window-reverse"></i><span>Auditoría</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>

@@ -53,7 +53,8 @@ public class ProjectConfig implements WebMvcConfigurer {
                 authorizeHttpRequests((request) -> {
                     request.requestMatchers(rutaPermit).permitAll();
                     for (Ruta ruta : rutas) {
-                        request.requestMatchers(ruta.getRuta()).hasRole(ruta.getRoleName());
+                        String[] roles = ruta.getRoleName().split(",");
+                        request.requestMatchers(ruta.getRuta()).hasAnyRole(roles);
                     }
 
                 })
@@ -61,7 +62,7 @@ public class ProjectConfig implements WebMvcConfigurer {
                 .loginPage("/login")
                         .successHandler(authenticationSuccessHandler) 
                 .failureHandler(authenticationFailureHandler)
-                .defaultSuccessUrl("/paciente/pacientes", true)
+                .defaultSuccessUrl("/dashboard", true)
                 .permitAll()
                 )
                 .logout((logout) -> logout

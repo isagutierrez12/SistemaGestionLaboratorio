@@ -49,7 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     list.querySelectorAll(".notification-item, hr, .dropdown-footer").forEach(e => e.remove());
 
                     if (notificaciones.length === 0) {
-                        title.textContent = "No hay notificaciones";
                         badge.style.display = "none";
                         return;
                     }
@@ -97,10 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     actualizarBadgeYTitle(totalNoLeidas);
 
-                    const footer = document.createElement("li");
-                    footer.classList.add("dropdown-footer");
-                    footer.innerHTML = `<a href="/notificaciones/todas">Mostrar todas las notificaciones</a>`;
-                    list.appendChild(footer);
+                    
                 })
                 .catch(error => {
                     console.error("Error al cargar notificaciones:", error);
@@ -157,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 .then(response => {
                     if (response.ok) {
                         badge.style.display = "none";
-                        title.textContent = "No hay notificaciones nuevas";
+                      
 
                         document.querySelectorAll('.dropdown-item').forEach(item => {
                             item.style.opacity = "0.5";
@@ -184,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
             title.textContent = `Tienes ${totalNoLeidas} notificación(es) nueva(s)`;
         } else {
             badge.style.display = "none";
-            title.textContent = "No hay notificaciones nuevas";
+          
         }
     }
 

@@ -35,7 +35,7 @@ public class UsuarioController {
     public String listadoUsuarios(Model model) {
         var lista = usuarioService.getUsuarios();
         model.addAttribute("usuarios", lista);
-        return "/usuario/usuarios";
+        return "usuario/usuarios";
     }
 
     @GetMapping("/agregar")
