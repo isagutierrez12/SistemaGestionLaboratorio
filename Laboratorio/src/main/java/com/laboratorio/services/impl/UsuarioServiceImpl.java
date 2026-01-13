@@ -74,7 +74,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             }
 
         } else {
-            
+
             Usuario existente = usuarioRepository.findById(usuario.getIdUsuario())
                     .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
@@ -212,6 +212,12 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public List<Usuario> buscarUsuariosPorQuery(String query) {
         return usuarioRepository.buscarUsuariosPorQuery(query);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Usuario buscarPorUsername(String username) {
+        return usuarioRepository.findByUsername(username);
     }
 
 }

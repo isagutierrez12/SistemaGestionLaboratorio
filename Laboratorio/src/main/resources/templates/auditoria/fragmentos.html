@@ -55,8 +55,8 @@
                     </div>
                     <div class="d-flex gap-2 mt-3">
                         <button id="btnRestaurar" class="btn btn-save">Restaurar</button>
-                        <button class="btn btn-save" onclick="exportarPDF()">Exportar PDF</button>
-                        <button class="btn btn-save" onclick="exportarExcel()">Exportar Excel</button>
+                        <button class="btn btn-export-pdf" onclick="exportarPDF()">Exportar PDF</button>
+                        <button class="btn btn-export-excel" onclick="exportarExcel()">Exportar Excel</button>
                     </div>
                 </div>
             </div>
@@ -137,7 +137,7 @@
                                                 <div class="info-row description">
                                                     <strong>Descripción:</strong> [[${a.descripcion}]]
                                                 </div>
-                                               
+
                                                 <div class="info-row" th:if="${a.tiempoActivo != null}">
                                                     <strong>Tiempo activo:</strong> [[${a.tiempoActivo}]] minutos
                                                 </div>
@@ -168,8 +168,8 @@
                     </div>
                     <div class="d-flex gap-2 mt-3">
                         <button id="btnRestaurarCrit" class="btn btn-save">Restaurar</button>
-                        <button class="btn btn-save" onclick="exportarPDF()">Exportar PDF</button>
-                        <button class="btn btn-save" onclick="exportarExcel()">Exportar Excel</button>
+                        <button class="btn btn-export-pdf" onclick="exportarPDF()">Exportar PDF</button>
+                        <button class="btn btn-export-excel" onclick="exportarExcel()">Exportar Excel</button>
                     </div>
                 </div>
             </div>

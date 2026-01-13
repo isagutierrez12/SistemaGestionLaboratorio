@@ -30,7 +30,7 @@ public class AuditoriaController {
 
     @GetMapping("/auditorias")
     public String listarAuditorias(Model model) {
-        List<Auditoria> auditorias = auditoriaService.listarTodas();
+        List<Auditoria> auditorias = auditoriaService.listarAuditorias();
         model.addAttribute("auditorias", auditorias);
         model.addAttribute("page", "list");
         return "auditoria/auditorias";

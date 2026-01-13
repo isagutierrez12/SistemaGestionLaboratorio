@@ -1451,6 +1451,28 @@ h6 {
   color: white;
 }
 
+.btn-export-pdf {
+    background-color: #0C6C74;
+    color: #fff;
+    border: none;
+}
+
+.btn-export-pdf:hover {
+    color: #fff;
+    background-color: #09545a;
+}
+
+.btn-export-excel {
+    background-color: #04bbc4;
+    color: #fff;
+    border: none;
+}
+
+.btn-export-excel:hover {
+    color: #fff;
+    background-color: #03a6ae;
+}
+
 .btn-cancel {
   background-color: #0c6c74;
   color: white;
@@ -1462,7 +1484,6 @@ h6 {
   background-color: #1c94a4;
   color: white;
 }
-
 
 @media (min-width: 992px) {
   .error-404 img {
