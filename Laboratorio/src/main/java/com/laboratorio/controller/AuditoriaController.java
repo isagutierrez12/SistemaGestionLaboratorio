@@ -28,6 +28,7 @@ public class AuditoriaController {
         this.auditoriaService = auditoriaService;
     }
 
+    /*
     @GetMapping("/auditorias")
     public String listarAuditorias(
             @RequestParam(defaultValue = "1") int pageNumber,
@@ -53,6 +54,14 @@ public class AuditoriaController {
         model.addAttribute("currentPage", pageNumber);
         model.addAttribute("totalPages", totalPages);
 
+        return "auditoria/auditorias";
+    }
+*/
+      @GetMapping("/auditorias")
+    public String listarAuditorias(Model model) {
+        List<Auditoria> auditorias = auditoriaService.listarTodas();
+        model.addAttribute("auditorias", auditorias);
+        model.addAttribute("page", "list");
         return "auditoria/auditorias";
     }
 

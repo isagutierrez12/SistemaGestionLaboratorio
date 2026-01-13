@@ -2061,3 +2061,20 @@ h6 {
     background: #e9ecef;
 
 }
+
+.pagination .page-link {
+    color: #333 !important;
+    background-color: #fff !important;
+    border-color: #ccc !important;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #1c94a4 !important;
+    border-color: #1c94a4 !important;
+    color: #ffffff !important;
+}
+
+.pagination .page-link:hover {
+    background-color: #f2f2f2 !important;
+    color: #000 !important;
+}
