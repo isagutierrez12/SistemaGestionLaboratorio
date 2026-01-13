@@ -34,6 +34,7 @@
                         </div> <!-- End test -->
                     </div> <!-- End catalog -->
 
+                    
                 </div>
             </div>
         </section>
@@ -84,6 +85,40 @@
                     </div>
                 </div>
             </div>
+            <div class="d-flex justify-content-center mt-4"
+     th:if="${totalPages > 1}">
+    <nav>
+        <ul class="pagination">
+
+            <li class="page-item"
+                th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/auditorias(pageNumber=${currentPage - 1})}">
+                    Anterior
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(1, totalPages)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/auditoria/auditorias(pageNumber=${i})}"
+                   th:text="${i}">
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/auditorias(pageNumber=${currentPage + 1})}">
+                    Siguiente
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+</div>
+
         </section>
 
         <!-- Fragmento filtrosFecha -->
