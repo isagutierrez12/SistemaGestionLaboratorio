@@ -52,11 +52,11 @@
                                     <a th:href="@{/inventario/agregar}" class="btn btn-primary">Agregar</a>
 
                                     <div class="d-flex gap-2">
-                                        <button class="btn btn-save" onclick="exportarPDFInventario()">Exportar PDF</button>
-                                        <button class="btn btn-save" onclick="exportarExcelInventario()">Exportar Excel</button>
+                                        <button class="btn btn-export-pdf" onclick="exportarPDFInventario()">Exportar PDF</button>
+                                        <button class="btn btn-export-excel" onclick="exportarExcelInventario()">Exportar Excel</button>
                                     </div>
                                 </div>
-
+                                
                                 <div th:replace="~{inventario/fragmentos :: busquedaInventario}"></div>
 
                                 <table id="tablaInventario" class="table ">

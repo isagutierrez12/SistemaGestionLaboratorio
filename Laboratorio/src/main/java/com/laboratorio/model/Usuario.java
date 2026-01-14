@@ -60,7 +60,11 @@ public class Usuario implements Serializable {
     private Date fechaCreacion;
 
     @NotBlank(message = "La cédula es obligatoria")
-    @Pattern(regexp = "\\d{1,9}", message = "La cédula debe tener máximo 9 dígitos numéricos")
+    @Pattern(
+            regexp = "^(?!([0-9])\\1{8,11})\\d{9,12}$",
+            message = "La cédula debe tener entre 9 y 12 dígitos y no puede tener todos los números iguales"
+    )
+    @Column(length = 12, nullable = false)
     private String cedula;
 
     @OneToMany
