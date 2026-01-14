@@ -4,7 +4,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const kpiIngresos = document.getElementById("kpiIngresos");
     const kpiPacientes = document.getElementById("kpiPacientes");
     const kpiPromedio = document.getElementById("kpiPromedioExamenes");
+    const kpiIngresosConfirmados = document.getElementById("kpiIngresosConfirmados");
     const lblIng = document.getElementById("kpiPeriodoIngresos");
+    const lblIngConf = document.getElementById("kpiPeriodoIngresosConfirmados");
     const lblPac = document.getElementById("kpiPeriodoPacientes");
     const lblProm = document.getElementById("kpiPeriodoPromedio");
     const filtroDesde = document.getElementById("filtroDesde");
@@ -48,20 +50,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getPeriodoLabel() {
-        switch (filtroPeriodo.value) {
-            case "DIA":
-                return "| Hoy";
-            case "SEMANA":
-                return "| Esta semana";
-            case "MES":
-                return "| Este mes";
-            case "TRIMESTRE":
-                return "| Este trimestre";
-            case "ANIO":
-                return "| Este año";
-            default:
-                return "| Personalizado";
+        const periodo = (filtroPeriodo?.value || "").toUpperCase();
+
+        // si eligieron un periodo rápido
+        if (periodo === "DIA")
+            return "| Hoy";
+        if (periodo === "SEMANA")
+            return "| Esta semana";
+        if (periodo === "MES")
+            return "| Este mes";
+        if (periodo === "TRIMESTRE")
+            return "| Este trimestre";
+        if (periodo === "ANIO")
+            return "| Este año";
+
+        // personalizado: usar fechas
+        const d = filtroDesde?.value;
+        const h = filtroHasta?.value;
+        if (d && h) {
+            if (d === h)
+                return `| ${d}`;
+            return `| ${d} a ${h}`;
         }
+
+        return "| Personalizado";
     }
 
     function capitalizar(texto) {
@@ -216,10 +228,17 @@ document.addEventListener("DOMContentLoaded", () => {
             if (typeof filtroAreaReporte !== "undefined" && filtroAreaReporte) {
                 filtroAreaReporte.innerHTML = "";
 
+                // Todas las áreas
                 const optAll = document.createElement("option");
                 optAll.value = "";
                 optAll.textContent = "Todas las áreas";
                 filtroAreaReporte.appendChild(optAll);
+
+                // Paquetes
+                const optPaquetes = document.createElement("option");
+                optPaquetes.value = "Paquetes";
+                optPaquetes.textContent = "Paquetes";
+                filtroAreaReporte.appendChild(optPaquetes);
 
                 areas.forEach(a => {
                     const opt = document.createElement("option");
@@ -253,13 +272,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         const data = await resp.json();
         const ingresos = Number(data.ingresosTotales ?? 0);
+        const ingresosConfirmados = Number(data.ingresosConfirmados ?? 0);
         const pacientes = Number(data.pacientesAtendidos ?? 0);
         const promedio = Number(data.promedioExamenesPorPaciente ?? 0);
         kpiIngresos.textContent = formatoCRC(ingresos);
+        kpiIngresosConfirmados.textContent = formatoCRC(ingresosConfirmados);
         kpiPacientes.textContent = pacientes.toString();
         kpiPromedio.textContent = promedio.toFixed(2);
         const label = getPeriodoLabel();
         lblIng.textContent = " " + label;
+        lblIngConf.textContent = " " + label;
         lblPac.textContent = " " + label;
         lblProm.textContent = " " + label;
     }
@@ -281,7 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         name: "Cantidad de solicitudes",
                         data: cantidades
                     }],
-                colors: ["#51B6C4"],
+                colors: ["#1D4ED8"],
                 chart: {
                     type: 'bar',
                     height: 350,
@@ -322,6 +344,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const data = await resp.json();
+
+            data.sort((a, b) => {
+                const fa = a.fecha ? new Date(a.fecha) : new Date(0);
+                const fb = b.fecha ? new Date(b.fecha) : new Date(0);
+                return fb - fa;
+            });
+
             tablaReporteBody.innerHTML = "";
             resumenReporte.textContent = "";
             if (!data || data.length === 0) {

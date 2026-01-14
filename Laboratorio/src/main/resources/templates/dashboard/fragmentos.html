@@ -57,15 +57,14 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <!-- FRAGMENTO: TARJETAS / KPIs -->
         <th:block th:fragment="kpis">
 
-            <div class="row">
+            <div class="row g-3">
 
-                <!-- KPI: Ingresos -->
-                <div class="col-xxl-4 col-md-6">
+                <!-- KPI: Ingresos (estimados) -->
+                <div class="col-12 col-lg-6">
                     <div class="card info-card revenue-card" id="kpiIngresosCard">
-
                         <div class="card-body">
                             <h5 class="card-title">
-                                Ingresos <span id="kpiPeriodoIngresos">| Hoy</span>
+                                Ingresos (estimados) <span id="kpiPeriodoIngresos">| Hoy</span>
                             </h5>
 
                             <div class="d-flex align-items-center">
@@ -74,16 +73,36 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                 </div>
                                 <div class="ps-3">
                                     <h6 id="kpiIngresos">₡0</h6>
-                                    <span class="text-muted small pt-2 ps-1">Ingresos del laboratorio</span>
+                                    <span class="text-muted small pt-2 ps-1">Total por solicitudes</span>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
+                <!-- KPI: Ingresos confirmados -->
+                <div class="col-12 col-lg-6">
+                    <div class="card info-card revenue-card" id="kpiIngresosConfirmadosCard">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                Ingresos confirmados <span id="kpiPeriodoIngresosConfirmados">| Hoy</span>
+                            </h5>
+
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-cash-coin"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6 id="kpiIngresosConfirmados">₡0</h6>
+                                    <span class="text-muted small pt-2 ps-1">Pagos registrados</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- KPI: Pacientes atendidos -->
-                <div class="col-xxl-4 col-md-6">
+                <div class="col-12 col-lg-6">
                     <div class="card info-card customers-card" id="kpiPacientesCard">
 
                         <div class="card-body">
@@ -106,7 +125,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 </div>
 
                 <!-- KPI: Promedio de exámenes -->
-                <div class="col-xxl-4 col-xl-12">
+                <div class="col-12 col-lg-6">
                     <div class="card info-card sales-card" id="kpiPromedioCard">
 
                         <div class="card-body">
@@ -246,50 +265,50 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            
-                                <div class="mb-3">
-                                    <h5 class="card-title mb-1">Reporte de exámenes realizados</h5>
-                                    <small class="text-muted">
-                                        Usa el rango de fechas y el área del dashboard. Filtra por estado y por nombre de examen.
-                                    </small>
-                                </div>
 
-                                <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
-                                    <!-- filtro por nombre de examen -->
-                                    <input id="filtroNombreExamenReporte"
-                                           type="text"
-                                           class="form-control filtro-alto"
-                                           placeholder="Nombre de examen" style="width: 200px;"/>
-                               
-                                    <!-- filtro por area -->
-                                    <select id="filtroAreaReporte"
-                                            class="form-select filtro-alto"
-                                            style="width: 200px;">
-                                        <option value="">Todas las áreas</option>
-                                    </select>
+                            <div class="mb-3">
+                                <h5 class="card-title mb-1">Reporte de exámenes realizados</h5>
+                                <small class="text-muted">
+                                    Usa el rango de fechas y el área del dashboard. Filtra por estado y por nombre de examen.
+                                </small>
+                            </div>
 
-                                    <!-- estados de la cita -->
-                                    <select id="filtroEstadoReporte"
-                                            class="form-select filtro-alto"
-                                            style="width: 200px;">
-                                        <option value="">Todos los estados</option>
-                                        <option value="CONFIRMADA">Confirmadas</option>
-                                        <option value="PENDIENTE">Pendientes</option>
-                                        <option value="AGENDADA">Agendadas</option>
-                                        <option value="CANCELADA">Canceladas</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="d-flex flex-wrap gap-3 mb-3">
-                                    <button id="btnGenerarReporte"
-                                            class="btn btn-save">Generar reporte</button>
+                            <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                                <!-- filtro por nombre de examen -->
+                                <input id="filtroNombreExamenReporte"
+                                       type="text"
+                                       class="form-control filtro-alto"
+                                       placeholder="Nombre de examen" style="width: 200px;"/>
 
-                                    <button id="btnExportarReportePdf"
-                                            class="btn btn-save">Exportar PDF</button>
+                                <!-- filtro por area -->
+                                <select id="filtroAreaReporte"
+                                        class="form-select filtro-alto"
+                                        style="width: 200px;">
+                                    <option value="">Todas las áreas</option>
+                                </select>
 
-                                    <button id="btnExportarReporteExcel"
-                                            class="btn btn-save">Exportar Excel</button>
-                                </div>
+                                <!-- estados de la cita -->
+                                <select id="filtroEstadoReporte"
+                                        class="form-select filtro-alto"
+                                        style="width: 200px;">
+                                    <option value="">Todos los estados</option>
+                                    <option value="CONFIRMADA">Confirmadas</option>
+                                    <option value="PENDIENTE">Pendientes</option>
+                                    <option value="AGENDADA">Agendadas</option>
+                                    <option value="CANCELADA">Canceladas</option>
+                                </select>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-3 mb-3">
+                                <button id="btnGenerarReporte"
+                                        class="btn btn-save">Generar reporte</button>
+
+                                <button id="btnExportarReportePdf"
+                                        class="btn btn-save">Exportar PDF</button>
+
+                                <button id="btnExportarReporteExcel"
+                                        class="btn btn-save">Exportar Excel</button>
+                            </div>
 
                             <div class="table-responsive">
                                 <table class="table table-sm table-hover align-middle"

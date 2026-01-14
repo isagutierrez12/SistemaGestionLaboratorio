@@ -67,7 +67,7 @@
             <div class="catalog" id="contenedorAuditorias">
                 <div class="test" th:each="a : ${auditorias}">
                     <!-- Header -->
-                    <div class="test-header">
+                    <div class="test-header cita-header">
                         <span class="code">#[[${a.id}]]</span>
                         <h3>[[${a.modulo}]]</h3>
                         <span th:text="${a.accion}" style="color: black; font-weight: normal  !important; " class="badge bg-white my-2 ms-2 text-semibold"></span>
@@ -117,7 +117,7 @@
                                 <div class="catalog" id="contenedorCriticos">
                                     <div class="test" th:each="a : ${auditorias}">
                                         <!-- Header -->
-                                        <div class="test-header">
+                                        <div class="test-header cita-header">
                                             <span class="code">#[[${a.id}]]</span>
                                             <h3 style="padding-bottom: 0.5rem !important;">[[${a.tipoEvento}]]</h3>
                                         </div>

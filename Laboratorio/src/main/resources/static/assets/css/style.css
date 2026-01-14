@@ -1969,9 +1969,18 @@ h6 {
 }
 
 /* colores de íconos del dashboard */
+.kpi-card{
+  height: 100%;
+}
+
 #kpiIngresosCard {
   background: #64D1EE;
   color: #ffffff;
+}
+
+#kpiIngresosConfirmadosCard{
+  background: #34B7C5;
+  color: #fff;
 }
 
 #kpiPacientesCard {
@@ -1986,6 +1995,7 @@ h6 {
 
 /* Iconos */
 #kpiIngresosCard .card-icon,
+#kpiIngresosConfirmadosCard .card-icon,
 #kpiPacientesCard .card-icon,
 #kpiPromedioCard .card-icon {
   background: rgba(255, 255, 255, 0.18);
@@ -1994,12 +2004,15 @@ h6 {
 
 /* Títulos y textos */
 #kpiIngresosCard h5,
+#kpiIngresosConfirmadosCard h5,
 #kpiPacientesCard h5,
 #kpiPromedioCard h5,
 #kpiIngresosCard h6,
+#kpiIngresosConfirmadosCard h6,
 #kpiPacientesCard h6,
 #kpiPromedioCard h6,
 #kpiIngresosCard span,
+#kpiIngresosConfirmadosCard span,
 #kpiPacientesCard span,
 #kpiPromedioCard span {
   color: #ffffff !important;
@@ -2007,6 +2020,7 @@ h6 {
 
 /* Texto secundario */
 #kpiIngresosCard .text-muted,
+#kpiIngresosConfirmadosCard .text-muted,
 #kpiPacientesCard .text-muted,
 #kpiPromedioCard .text-muted {
   color: rgba(255, 255, 255, 0.85) !important;
@@ -2082,4 +2096,54 @@ h6 {
 .swal2-cancel {
   background-color: #6c757d !important;
   color: #ffffff !important;
+}
+
+
+#tablaReporteExamenes thead th{
+  background-color: #0C6C74;
+  color: #ffffff;
+  text-align: center;
+  border-bottom: 2px solid #0a5a61;
+  font-weight: 600;
+}
+
+/* ===== Texto centrado en toda la tabla ===== */
+#tablaReporteExamenes td,
+#tablaReporteExamenes th{
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* ===== Zebra suave ===== */
+#tablaReporteExamenes tbody tr:nth-child(odd){
+  background-color: rgba(12, 108, 116, 0.06);
+}
+
+#tablaReporteExamenes tbody tr:nth-child(even){
+  background-color: #ffffff;
+}
+
+/* ===== Hover ===== */
+#tablaReporteExamenes tbody tr:hover{
+  background-color: rgba(4, 187, 196, 0.18);
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* ===== Fila vacía (mensaje) ===== */
+#tablaReporteExamenes tbody tr td.text-muted{
+  background-color: transparent !important;
+}
+
+#tablaAlertasInventario td,
+#tablaAlertasInventario th{
+  text-align: center;
+  vertical-align: middle;
+}
+
+#tablaAlertasInventario thead th{
+  background-color: #0C6C74;
+  color: #ffffff;
+  text-align: center;
+  border-bottom: 2px solid #0a5a61;
+  font-weight: 600;
 }

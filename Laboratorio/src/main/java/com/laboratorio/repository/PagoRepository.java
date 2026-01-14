@@ -17,4 +17,12 @@ import org.springframework.data.repository.query.Param;
 public interface PagoRepository extends JpaRepository<Pago, Long> {
     Optional<Pago> findByCita_IdCita(Long idCita);
     boolean existsByCita_IdCita(Long idCita);
+    
+    @Query("""
+        select coalesce(sum(p.monto), 0)
+        from Pago p
+        where p.fechaPago between :desde and :hasta
+    """)
+    Double sumMontoEnRango(@Param("desde") LocalDateTime desde,
+                           @Param("hasta") LocalDateTime hasta);
 }
