@@ -81,3 +81,102 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const FILAS_POR_PAGINA = 10; 
+
+    const tabla = document.querySelector("table");
+    const tbody = tabla?.querySelector("tbody");
+
+    if (!tbody) return;
+
+    let filas = Array.from(tbody.querySelectorAll("tr"));
+
+    if (filas.length <= FILAS_POR_PAGINA) return;
+
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "d-flex justify-content-center mt-4";
+
+    const nav = document.createElement("nav");
+    const ul = document.createElement("ul");
+    ul.className = "pagination pagination-sm";
+
+    nav.appendChild(ul);
+    wrapper.appendChild(nav);
+
+    tabla.parentElement.appendChild(wrapper);
+
+    let paginaActual = 1;
+
+    function mostrarPagina(pagina) {
+        paginaActual = pagina;
+
+        const inicio = (pagina - 1) * FILAS_POR_PAGINA;
+        const fin = inicio + FILAS_POR_PAGINA;
+
+        filas.forEach((fila, index) => {
+            fila.style.display =
+                index >= inicio && index < fin ? "" : "none";
+        });
+
+        renderizarPaginacion();
+    }
+
+    function renderizarPaginacion() {
+        ul.innerHTML = "";
+
+        const totalPaginas = Math.ceil(filas.length / FILAS_POR_PAGINA);
+
+        ul.appendChild(crearBoton("Anterior", paginaActual - 1, paginaActual === 1));
+
+        for (let i = 1; i <= totalPaginas; i++) {
+            const li = crearBoton(i, i, false);
+            if (i === paginaActual) li.classList.add("active");
+            ul.appendChild(li);
+        }
+
+        ul.appendChild(
+            crearBoton("Siguiente", paginaActual + 1, paginaActual === totalPaginas)
+        );
+    }
+
+    function crearBoton(texto, pagina, deshabilitado) {
+        const li = document.createElement("li");
+        li.className = "page-item";
+        if (deshabilitado) li.classList.add("disabled");
+
+        const a = document.createElement("a");
+        a.href = "#";
+        a.className = "page-link";
+        a.textContent = texto;
+
+        a.style.color = "#333";
+        a.style.backgroundColor = "#fff";
+        a.style.borderColor = "#ccc";
+
+        a.addEventListener("mouseenter", () => {
+            if (!li.classList.contains("active")) {
+                a.style.backgroundColor = "#f2f2f2";
+            }
+        });
+
+        a.addEventListener("mouseleave", () => {
+            if (!li.classList.contains("active")) {
+                a.style.backgroundColor = "#fff";
+            }
+        });
+
+        a.addEventListener("click", e => {
+            e.preventDefault();
+            if (!deshabilitado) mostrarPagina(pagina);
+        });
+
+        li.appendChild(a);
+        return li;
+    }
+
+    mostrarPagina(1);
+});
+

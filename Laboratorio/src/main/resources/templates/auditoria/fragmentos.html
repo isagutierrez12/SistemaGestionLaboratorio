@@ -34,7 +34,7 @@
                         </div> <!-- End test -->
                     </div> <!-- End catalog -->
 
-                    
+
                 </div>
             </div>
         </section>
@@ -63,43 +63,43 @@
             </div>
         </section>
 
-      <!-- Fragmento catalogoAuditoria -->
-<section th:fragment="catalogoAuditoria">
+        <!-- Fragmento catalogoAuditoria -->
+        <section th:fragment="catalogoAuditoria">
 
-    <div class="catalog" id="contenedorAuditorias">
-        <div class="test" th:each="a : ${auditorias}">
-            <!-- Header -->
-            <div class="test-header">
-                <span class="code">#[[${a.id}]]</span>
-                <h3>[[${a.modulo}]]</h3>
-                <span class="badge bg-white my-2 ms-2 text-semibold">
-                    [[${a.accion}]]
-                </span>
-            </div>
-
-            <!-- Body -->
-            <div class="test-body">
-                <div class="test-info">
-                    <div class="info-row"><strong>Usuario:</strong> [[${a.usuario}]]</div>
-                    <div class="info-row"><strong>ID de Entidad:</strong> [[${a.idEntidad}]]</div>
-                    <div class="info-row"><strong>Fecha:</strong>
-                        [[${#dates.format(a.fechaHora, 'dd/MM/yyyy HH:mm:ss')}]]
+            <div class="catalog" id="contenedorAuditorias">
+                <div class="test" th:each="a : ${auditorias}">
+                    <!-- Header -->
+                    <div class="test-header">
+                        <span class="code">#[[${a.id}]]</span>
+                        <h3>[[${a.modulo}]]</h3>
+                        <span class="badge bg-white my-2 ms-2 text-semibold">
+                            [[${a.accion}]]
+                        </span>
                     </div>
-                    <div class="info-row description"><strong>Descripción:</strong> [[${a.descripcion}]]</div>
-                    <div class="info-row description"><strong>Datos Adicionales:</strong> [[${a.datosAdicionales}]]</div>
+
+                    <!-- Body -->
+                    <div class="test-body">
+                        <div class="test-info">
+                            <div class="info-row"><strong>Usuario:</strong> [[${a.usuario}]]</div>
+                            <div class="info-row"><strong>ID de Entidad:</strong> [[${a.idEntidad}]]</div>
+                            <div class="info-row"><strong>Fecha:</strong>
+                                [[${#dates.format(a.fechaHora, 'dd/MM/yyyy HH:mm:ss')}]]
+                            </div>
+                            <div class="info-row description"><strong>Descripción:</strong> [[${a.descripcion}]]</div>
+                            <div class="info-row description"><strong>Datos Adicionales:</strong> [[${a.datosAdicionales}]]</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- PAGINACIÓN JS -->
-    <div class="d-flex justify-content-center mt-4 text-black">
-        <nav>
-            <ul class="pagination  pagination-sm"></ul>
-        </nav>
-    </div>
+            <!-- PAGINACIÓN JS -->
+            <div class="d-flex justify-content-center mt-4 text-black">
+                <nav>
+                    <ul class="pagination  pagination-sm"></ul>
+                </nav>
+            </div>
 
-</section>
+        </section>
 
         </section>
 
@@ -154,7 +154,7 @@
                                                 <div class="info-row description">
                                                     <strong>Descripción:</strong> [[${a.descripcion}]]
                                                 </div>
-                                               
+
                                                 <div class="info-row" th:if="${a.tiempoActivo != null}">
                                                     <strong>Tiempo activo:</strong> [[${a.tiempoActivo}]] minutos
                                                 </div>
@@ -163,7 +163,11 @@
 
                                     </div> <!-- End test -->
                                 </div> <!-- End catalog -->
-
+                                <div class="d-flex justify-content-center mt-4 text-black">
+                                    <nav>
+                                        <ul class="pagination pagination-sm"></ul>
+                                    </nav>
+                                </div>
                             </div>
                         </div>
                     </div>
