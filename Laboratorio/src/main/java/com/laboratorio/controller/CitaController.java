@@ -10,6 +10,7 @@ import com.laboratorio.model.DetalleCitaResponse;
 import com.laboratorio.model.DetallePaquete;
 import com.laboratorio.model.Examen;
 import com.laboratorio.model.Paciente;
+import com.laboratorio.model.Pago;
 import com.laboratorio.model.Paquete;
 import com.laboratorio.model.Solicitud;
 import com.laboratorio.model.SolicitudDetalle;
@@ -17,6 +18,7 @@ import com.laboratorio.service.CitaService;
 import com.laboratorio.service.ExamenService;
 import com.laboratorio.service.InventarioService;
 import com.laboratorio.service.PacienteService;
+import com.laboratorio.service.PagoService;
 import com.laboratorio.service.PaqueteService;
 import com.laboratorio.service.SolicitudService;
 import com.laboratorio.service.UsuarioService;
@@ -64,6 +66,7 @@ public class CitaController {
     private EmailServiceImpl emailServiceImpl;
     private final InventarioService inventarioService;
     private WhatsAppServiceImpl whatsAppServiceImpl;
+    private final PagoService pagoService;
 
     @Autowired
     public CitaController(
@@ -75,7 +78,8 @@ public class CitaController {
             PaqueteService paqueteService,
             EmailServiceImpl emailServiceImpl,
             InventarioService inventarioService,
-            WhatsAppServiceImpl whatsAppServiceImpl
+            WhatsAppServiceImpl whatsAppServiceImpl,
+            PagoService pagoService
     ) {
         this.citaService = citaService;
         this.solicitudService = solicitudService;
@@ -86,6 +90,7 @@ public class CitaController {
         this.emailServiceImpl = emailServiceImpl;
         this.inventarioService = inventarioService;
         this.whatsAppServiceImpl = whatsAppServiceImpl;
+        this.pagoService = pagoService;
     }
 
     // Listado de citas
@@ -453,6 +458,8 @@ public class CitaController {
             @RequestParam(value = "notas", required = false) String notas,
             @RequestParam(value = "examenesSeleccionados", required = false) List<Long> examenesSeleccionados,
             @RequestParam(value = "paquetesSeleccionados", required = false) List<Long> paquetesSeleccionados,
+            @RequestParam(value = "pagoMonto", required = false) Double pagoMonto,
+            @RequestParam(value = "pagoTipo", required = false) String pagoTipo,
             @AuthenticationPrincipal UserDetails userDetails,
             RedirectAttributes redirectAttrs) {
 
@@ -467,6 +474,7 @@ public class CitaController {
 
             // 2. Obtener la solicitud asociada
             Solicitud solicitud = cita.getSolicitud();
+            String estadoAnterior = (cita.getEstado() == null) ? "" : cita.getEstado().toUpperCase();
 
             // 3. Limpiar detalles anteriores
             solicitud.getDetalles().clear();
@@ -507,6 +515,25 @@ public class CitaController {
             cita.setEstado(estado);
             cita.setNotas(notas);
             cita.setUsuario(usuarioService.getUsuarioPorUsername(userDetails.getUsername()));
+
+            String estadoNuevo = (estado == null) ? "" : estado.toUpperCase();
+
+            boolean pasaATerminada = !"TERMINADA".equals(estadoAnterior) && "TERMINADA".equals(estadoNuevo);
+
+            if (pasaATerminada) {
+                if (pagoMonto == null || pagoMonto <= 0 || pagoTipo == null || pagoTipo.isBlank()) {
+                    redirectAttrs.addFlashAttribute("mensaje", "Para marcar la cita como terminada debes registrar el pago.");
+                    redirectAttrs.addFlashAttribute("clase", "danger");
+                    return "redirect:/cita/modificar/" + idCita;
+                }
+
+                Pago pago = new Pago();
+                pago.setCita(cita);
+                pago.setFechaPago(LocalDateTime.now());
+                pago.setMonto(pagoMonto);
+                pago.setTipoPago(pagoTipo);
+                pagoService.save(pago);
+            }
 
             // 8. Guardar cambios
             solicitudService.save(solicitud);

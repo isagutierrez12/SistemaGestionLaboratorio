@@ -1,78 +1,70 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const botonesDetalle = document.querySelectorAll(".btn-detalle-cita");
+  const cards = document.querySelectorAll(".cita-card");
+  if (!cards || cards.length === 0) return;
 
-  if (!botonesDetalle || botonesDetalle.length === 0) return;
+  cards.forEach((card) => {
+    const idCita = card.getAttribute("data-id");
+    if (!idCita) return;
 
-  botonesDetalle.forEach((btn) => {
-    btn.addEventListener("click", function () {
-      const idCita = this.getAttribute("data-id");
-      if (!idCita) return;
+    const ulPaquetes = card.querySelector(".paquetes-container");
+    const ulExamenes = card.querySelector(".examenes-container");
 
-      fetch(`/cita/detalle/${idCita}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Error en la respuesta del servidor");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          // Si el backend devolvió un string
-          if (typeof data === "string") {
-            Swal.fire({
-              title: "Error",
-              text: data,
-              icon: "error",
-              confirmButtonText: "Aceptar",
-              confirmButtonColor: "#1c94a4",
-            });
-            return;
-          }
+    fetch(`/cita/detalle/${idCita}`)
+      .then((response) => {
+        if (!response.ok) throw new Error("Error en la respuesta del servidor");
+        return response.json();
+      })
+      .then((data) => {
+        // Si el backend devolvió un string de error
+        if (typeof data === "string") {
+          ulPaquetes.innerHTML = `<li class="list-group-item text-danger small">${data}</li>`;
+          ulExamenes.innerHTML = `<li class="list-group-item text-danger small">${data}</li>`;
+          return;
+        }
 
-          const examenes = data.examenes || [];
-          const paquetes = data.paquetes || [];
+        const examenes = data.examenes || [];
+        const paquetes = data.paquetes || [];
 
-          let html = `<div style="text-align:left;">`;
+        // Paquetes
+        if (paquetes.length > 0) {
+          ulPaquetes.innerHTML = paquetes
+            .map(
+              (p) =>
+                `<li class="list-group-item">
+                   <span class="fw-semibold">${p.codigo}</span> - ${p.nombre}
+                 </li>`
+            )
+            .join("");
+        } else {
+          ulPaquetes.innerHTML =
+            `<li class="list-group-item text-muted small"><i>No se registraron paquetes.</i></li>`;
+        }
 
-          if (paquetes.length > 0) {
-            html += "<h5>Paquetes</h5><ul>";
-            paquetes.forEach((p) => {
-              html += `<li><b>${p.codigo}</b> - ${p.nombre}</li>`;
-            });
-            html += "</ul><hr/>";
-          }
-
-          if (examenes.length > 0) {
-            html += "<h5>Exámenes</h5><ul>";
-            examenes.forEach((e) => {
-              html += `<li><b>${e.codigo}</b> - ${e.nombre}`;
-              if (e.extra) {
-                html += `<br/><small><i>Condiciones: ${e.extra}</i></small>`;
-              }
-              html += "</li>";
-            });
-            html += "</ul>";
-          } else {
-            html += "<p><i>No se registraron exámenes en esta cita.</i></p>";
-          }
-
-          Swal.fire({
-            title: "Detalle de la cita",
-            html: html,
-            confirmButtonText: "Cerrar",
-            confirmButtonColor: "#1c94a4",
-            width: "600px",
-          });
-        })
-        .catch((error) => {
-          console.error("Error al obtener detalle de la cita:", error);
-          Swal.fire({
-            title: "Error",
-            text: "Error al cargar los detalles de la cita.",
-            icon: "error",
-            confirmButtonText: "Aceptar",
-            confirmButtonColor: "#1c94a4",
-          });
-        });
-    });
+        // Exámenes
+        if (examenes.length > 0) {
+          ulExamenes.innerHTML = examenes
+            .map((e) => {
+              const extra = e.extra
+                ? `<div class="small text-muted"><i>Condiciones: ${e.extra}</i></div>`
+                : "";
+              return `<li class="list-group-item">
+                        <span class="fw-semibold">${e.codigo}</span> - ${e.nombre}
+                        ${extra}
+                      </li>`;
+            })
+            .join("");
+        } else {
+          ulExamenes.innerHTML =
+            `<li class="list-group-item text-muted small"><i>No se registraron exámenes.</i></li>`;
+        }
+      })
+      .catch((error) => {
+        console.error("Error al obtener detalle de la cita:", error);
+        ulPaquetes.innerHTML =
+          `<li class="list-group-item text-danger small">Error al cargar paquetes.</li>`;
+        ulExamenes.innerHTML =
+          `<li class="list-group-item text-danger small">Error al cargar exámenes.</li>`;
+      });
   });
 });
+

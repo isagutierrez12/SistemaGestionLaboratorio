@@ -2018,3 +2018,22 @@ h6 {
     background: #e9ecef;
 }
 
+.cita-header {
+  background: linear-gradient(
+    135deg,
+    #2E6771 0%,
+    #4594A4 35%,
+    #51B6C4 60%,
+    #63DADB 85%,
+    #68D8EF 100%
+  );
+}
+
+.cita-header h3,
+.cita-header .code {
+  color: #ffffff;
+}
+
+.cita-header .badge {
+  border-radius: 12px;
+}

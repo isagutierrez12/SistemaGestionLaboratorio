@@ -512,46 +512,64 @@
                                     Paciente Inactivo
                                 </div>
 
-                                <!-- Tabla de citas -->
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th style="text-align:center;">Fecha</th>
-                                            <th style="text-align:center;">Estado</th>
-                                            <th style="text-align:center;">Notas</th>
-                                            <th style="text-align:center;">Precio total</th>
-                                            <th style="text-align:center;"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="c : ${citas}">
-                                            <td style="vertical-align: middle; text-align: center;">
-                                                [[${#temporals.format(c.fechaCita, 'dd/MM/yyyy HH:mm')}]]
-                                            </td>
-                                            <td style="vertical-align: middle; text-align: center;">
-                                                [[${c.estado}]]
-                                            </td>
-                                            <td style="vertical-align: middle; text-align: center;">
-                                                [[${c.notas}]]
-                                            </td>
-                                            <td style="vertical-align: middle; text-align: center;">
-                                                ₡ [[${c.solicitud.precioTotal}]]
-                                            </td>
-                                            <td style="vertical-align: middle; text-align: center;">
-                                                <button type="button"
-                                                        class="btn btn-history btn-detalle-cita"
-                                                        th:attr="data-id=${c.idCita}">
-                                                    Ver detalle
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <!-- Lista de citas -->
+                                <div class="catalog" id="contenedorCitas">
 
-                            </div> 
+                                    <div class="test cita-card" th:each="c : ${citas}" th:attr="data-id=${c.idCita}">
+
+                                        <!-- Header -->
+                                        <div class="test-header cita-header text-white">
+                                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 w-100">
+
+                                                <div>
+                                                    <h3 class="mb-1">
+                                                        [[${#temporals.format(c.fechaCita, 'dd/MM/yyyy HH:mm')}]]
+                                                    </h3>
+                                                    <div class="small opacity-75">
+                                                        Estado: <span class="fw-semibold">[[${c.estado}]]</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Body -->
+                                        <div class="test-body">
+                                            <div class="test-info">
+
+                                                <div class="info-row description mb-3">
+                                                    <strong>Notas:</strong> [[${c.notas}]]
+                                                </div>
+
+                                                <div class="row g-3">
+                                                    <!-- Paquetes -->
+                                                    <div class="col-md-6">
+                                                        <h6 class="mb-2">Paquetes</h6>
+                                                        <ul class="list-group list-group-flush paquetes-container">
+                                                            <li class="list-group-item text-muted small">Cargando paquetes...</li>
+                                                        </ul>
+                                                    </div>
+
+                                                    <!-- Exámenes -->
+                                                    <div class="col-md-6">
+                                                        <h6 class="mb-2">Exámenes</h6>
+                                                        <ul class="list-group list-group-flush examenes-container">
+                                                            <li class="list-group-item text-muted small">Cargando exámenes...</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
                         </div> 
+                    </div> 
 
-                    </div>
+                </div>
                 </div>
             </section>
 
