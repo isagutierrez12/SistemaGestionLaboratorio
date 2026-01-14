@@ -23,6 +23,7 @@ import com.laboratorio.service.UsuarioService;
 import com.laboratorio.services.impl.EmailServiceImpl;
 import com.laboratorio.services.impl.WhatsAppServiceImpl;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -783,5 +784,13 @@ public class CitaController {
                     .body("Error al obtener detalle");
         }
     }
+    @GetMapping("/horas-ocupadas")
+    @ResponseBody
+    public List<String> horasOcupadas(@RequestParam String fecha) {
+
+    LocalDate fechaLocal = LocalDate.parse(fecha);
+    return citaService.obtenerHorasOcupadas(fechaLocal);
+    }
+
 
 }

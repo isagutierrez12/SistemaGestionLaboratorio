@@ -5,6 +5,7 @@
 package com.laboratorio.repository;
 
 import com.laboratorio.model.Cita;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -66,4 +67,11 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
        ORDER BY c.fechaCita DESC
        """)
     List<Cita> findHistorialPorPaciente(@Param("idPaciente") String idPaciente);
+    
+    @Query("""
+       SELECT FUNCTION('to_char', c.fechaCita, 'HH24:MI')
+       FROM Cita c
+       WHERE DATE(c.fechaCita) = :fecha
+    """)
+    List<String> horasOcupadasPorFecha(@Param("fecha") LocalDate fecha);
 }
