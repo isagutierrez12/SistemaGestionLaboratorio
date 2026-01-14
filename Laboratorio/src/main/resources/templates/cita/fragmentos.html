@@ -426,10 +426,10 @@
 
                                 <h4 class="text-center mb-4" style="color:#1c94a4;font-weight:bold;">Editar Cita</h4>
 
-                                <form th:action="@{/cita/actualizar}" th:object="${cita}" method="post">
+                                <form id="formEditarCita" th:action="@{/cita/actualizar}" th:object="${cita}" method="post">
                                     <input type="hidden" th:field="*{idCita}" />
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                    <input type="hidden" id="estadoOriginal" th:value="${cita.estado}" />
+                                    <input type="hidden" id="estadoOriginal" name="estadoOriginal" th:value="${cita.estado}"/>
                                     <input type="hidden" id="totalCita" th:value="${cita.solicitud.precioTotal}" />
                                     <input type="hidden" name="pagoMonto" id="pagoMonto" />
                                     <input type="hidden" name="pagoTipo" id="pagoTipo" />
@@ -450,9 +450,9 @@
                                         <div class="col-md-6 mb-3">
                                             <label for="estado" class="form-label">Estado</label>
                                             <select id="estado" th:field="*{estado}" class="form-select" required="required">
-                                                <option value="PENDIENTE" th:selected="${cita.estado == 'AGENDADA'}">Agendada</option>
-                                                <option value="CONFIRMADA" th:selected="${cita.estado == 'TERMINADA'}">Terminada</option>
-                                                <option value="CANCELADA" th:selected="${cita.estado == 'CANCELADA'}">Cancelada</option>
+                                                <option value="AGENDADA">Agendada</option>
+                                                <option value="CONFIRMADA">Confirmada</option>
+                                                <option value="CANCELADA">Cancelada</option>
                                             </select>
                                         </div>
 
@@ -471,6 +471,7 @@
                                                 <input class="form-check-input" type="checkbox" 
                                                        name="examenesSeleccionados" 
                                                        th:value="${examen.idExamen}"
+                                                       th:attr="data-precio=${examen.precio}"
                                                        th:checked="${cita.solicitud.detalles.?[examen != null].![examen.idExamen].contains(examen.idExamen)}"></input>
                                                 <label class="form-check-label" th:text="${examen.nombre}">Examen</label>
                                             </div>
@@ -483,6 +484,7 @@
                                                 <input class="form-check-input" type="checkbox" 
                                                        name="paquetesSeleccionados" 
                                                        th:value="${paquete.idPaquete}"
+                                                       th:attr="data-precio=${paquete.precio}"
                                                        th:checked="${cita.solicitud.detalles.?[paquete != null].![paquete.idPaquete].contains(paquete.idPaquete)}"></input>
                                                 <label class="form-check-label" th:text="${paquete.nombre}">Paquete</label>
                                             </div>

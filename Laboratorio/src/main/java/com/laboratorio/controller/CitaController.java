@@ -458,8 +458,8 @@ public class CitaController {
             @RequestParam(value = "notas", required = false) String notas,
             @RequestParam(value = "examenesSeleccionados", required = false) List<Long> examenesSeleccionados,
             @RequestParam(value = "paquetesSeleccionados", required = false) List<Long> paquetesSeleccionados,
-            @RequestParam(value = "pagoMonto", required = false) Double pagoMonto,
-            @RequestParam(value = "pagoTipo", required = false) String pagoTipo,
+            @RequestParam(required = false) Double pagoMonto,
+            @RequestParam(required = false) String pagoTipo,
             @AuthenticationPrincipal UserDetails userDetails,
             RedirectAttributes redirectAttrs) {
 
@@ -518,11 +518,12 @@ public class CitaController {
 
             String estadoNuevo = (estado == null) ? "" : estado.toUpperCase();
 
-            boolean pasaATerminada = !"TERMINADA".equals(estadoAnterior) && "TERMINADA".equals(estadoNuevo);
+            boolean pasaAConfirmada = !"CONFIRMADA".equals(estadoAnterior) && "CONFIRMADA".equals(estadoNuevo);
 
-            if (pasaATerminada) {
+            if (pasaAConfirmada) {
                 if (pagoMonto == null || pagoMonto <= 0 || pagoTipo == null || pagoTipo.isBlank()) {
-                    redirectAttrs.addFlashAttribute("mensaje", "Para marcar la cita como terminada debes registrar el pago.");
+                    redirectAttrs.addFlashAttribute("mensaje",
+                            "Para marcar la cita como confirmada debes registrar el pago.");
                     redirectAttrs.addFlashAttribute("clase", "danger");
                     return "redirect:/cita/modificar/" + idCita;
                 }
