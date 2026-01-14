@@ -462,7 +462,6 @@ public class CitaController {
             @RequestParam(required = false) String pagoTipo,
             @AuthenticationPrincipal UserDetails userDetails,
             RedirectAttributes redirectAttrs) {
-
         try {
             // 1. Obtener la cita existente
             Cita cita = citaService.getById(idCita);
@@ -496,12 +495,27 @@ public class CitaController {
                 for (Long idPaquete : paquetesSeleccionados) {
                     Paquete paquete = paqueteService.getById(idPaquete);
                     if (paquete != null) {
+
+                        // 5.1 Guardar el paquete como detalle (igual que en guardarCita)
+                        SolicitudDetalle detallePaquete = new SolicitudDetalle();
+                        detallePaquete.setPaquete(paquete);
+                        detallePaquete.setExamen(null);
+                        solicitud.addDetalle(detallePaquete);
+
+                        // 5.2 Sumar SOLO el precio del paquete (sin duplicar por exámenes)
+                        precioTotal += paquete.getPrecio().doubleValue();
+
+                        // 5.3 Guardar los exámenes del paquete como detalles (para reporte/lista)
                         for (DetallePaquete dp : paquete.getDetalles()) {
                             Examen examenPaquete = dp.getExamen();
-                            SolicitudDetalle detalle = new SolicitudDetalle();
-                            detalle.setExamen(examenPaquete);
-                            solicitud.addDetalle(detalle);
-                            precioTotal += examenPaquete.getPrecio().doubleValue();
+                            if (examenPaquete == null) {
+                                continue;
+                            }
+
+                            SolicitudDetalle detalleExamen = new SolicitudDetalle();
+                            detalleExamen.setExamen(examenPaquete);
+                            detalleExamen.setPaquete(paquete);
+                            solicitud.addDetalle(detalleExamen);
                         }
                     }
                 }
@@ -516,11 +530,12 @@ public class CitaController {
             cita.setNotas(notas);
             cita.setUsuario(usuarioService.getUsuarioPorUsername(userDetails.getUsername()));
 
+            //7.1 Confirmacion de estado para insertar pago en caso de CONFIRMADA
             String estadoNuevo = (estado == null) ? "" : estado.toUpperCase();
 
-            boolean pasaAConfirmada = !"CONFIRMADA".equals(estadoAnterior) && "CONFIRMADA".equals(estadoNuevo);
+            boolean esConfirmada = "CONFIRMADA".equals(estadoNuevo);
 
-            if (pasaAConfirmada) {
+            if (esConfirmada) {
                 if (pagoMonto == null || pagoMonto <= 0 || pagoTipo == null || pagoTipo.isBlank()) {
                     redirectAttrs.addFlashAttribute("mensaje",
                             "Para marcar la cita como confirmada debes registrar el pago.");
@@ -528,12 +543,7 @@ public class CitaController {
                     return "redirect:/cita/modificar/" + idCita;
                 }
 
-                Pago pago = new Pago();
-                pago.setCita(cita);
-                pago.setFechaPago(LocalDateTime.now());
-                pago.setMonto(pagoMonto);
-                pago.setTipoPago(pagoTipo);
-                pagoService.save(pago);
+                pagoService.saveOrUpdateByCita(idCita, pagoMonto, pagoTipo);
             }
 
             // 8. Guardar cambios
@@ -810,6 +820,12 @@ public class CitaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al obtener detalle");
         }
+    }
+
+    @GetMapping("/pago/existe")
+    @ResponseBody
+    public boolean existePago(@RequestParam Long idCita) {
+        return pagoService.existsByCita(idCita);
     }
 
 }

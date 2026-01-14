@@ -9,4 +9,6 @@ import com.laboratorio.model.Pago;
 public interface PagoService{
     void save(Pago pago);
     boolean existsByCita(Long idCita);
+    
+    Pago saveOrUpdateByCita(Long idCita, Double monto, String tipoPago);
 }
