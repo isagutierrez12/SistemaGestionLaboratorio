@@ -36,8 +36,15 @@ public interface UsuarioRepository extends JpaRepository< Usuario, Long> {
     List<Usuario> findByActivoFalse();
 
     List<Usuario> findByNombre(String nombre);
-    
+
     boolean existsByCedula(String cedula);
 
+    @Query(value = """
+    SELECT u.*
+    FROM usuario u
+    JOIN rol ur ON u.id_usuario = ur.id_usuario
+    JOIN rol r ON r.id_rol = ur.id_rol
+""", nativeQuery = true)
+    List<Usuario> findByRol(String rol);
 
 }

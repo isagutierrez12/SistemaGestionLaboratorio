@@ -21,7 +21,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.templatemode.TemplateMode;
 
 @Configuration
 public class ProjectConfig implements WebMvcConfigurer {
@@ -59,13 +62,16 @@ public class ProjectConfig implements WebMvcConfigurer {
                     for (Ruta ruta : rutas) {
                         request.requestMatchers(ruta.getRuta())
                                 .hasAnyRole(ruta.getRoleName());
+                        String[] roles = ruta.getRoleName().split(",");
+                        request.requestMatchers(ruta.getRuta()).hasAnyRole(roles);
+
                     }
                 })
                 .formLogin(form -> form
                 .loginPage("/login")
                 .successHandler(authenticationSuccessHandler)
                 .failureHandler(authenticationFailureHandler)
-                .defaultSuccessUrl("/paciente/pacientes", true)
+                .defaultSuccessUrl("/dashboard", true)
                 .permitAll()
                 )
                 .logout(logout -> logout
@@ -106,4 +112,21 @@ public class ProjectConfig implements WebMvcConfigurer {
         source.registerCorsConfiguration("/api/**", configuration);
         return source;
     }
+    // for deployment 
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry){
+        registry.addViewController("/").setViewName("index");
+    }
+    
+    @Bean
+    public SpringResourceTemplateResolver templateResolver_0(){
+        SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+        resolver.setPrefix("classpath:/temnplates");
+        resolver.setSuffix(".html");
+        resolver.setTemplateMode(TemplateMode.HTML);
+        resolver.setOrder(0);
+        resolver.setCheckExistence(true);
+        return resolver;
+    }
+    
 }
