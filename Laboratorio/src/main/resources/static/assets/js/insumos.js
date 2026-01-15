@@ -60,3 +60,87 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const ITEMS_POR_PAGINA = 25;
+
+    const tbody = document.getElementById("tbodyInsumos");
+    if (!tbody) return;
+
+    const filas = Array.from(tbody.querySelectorAll("tr"));
+
+    if (filas.length <= ITEMS_POR_PAGINA) return;
+
+    const paginacionWrapper = document.createElement("div");
+    paginacionWrapper.className = "d-flex justify-content-center mt-4";
+
+    const nav = document.createElement("nav");
+    const ul = document.createElement("ul");
+    ul.className = "pagination pagination-sm";
+
+    nav.appendChild(ul);
+    paginacionWrapper.appendChild(nav);
+
+    tbody.closest(".card-body").appendChild(paginacionWrapper);
+
+    let paginaActual = 1;
+
+    function mostrarPagina(pagina) {
+        paginaActual = pagina;
+
+        const inicio = (pagina - 1) * ITEMS_POR_PAGINA;
+        const fin = inicio + ITEMS_POR_PAGINA;
+
+        filas.forEach((fila, index) => {
+            fila.style.display =
+                index >= inicio && index < fin ? "" : "none";
+        });
+
+        renderizarPaginacion();
+    }
+
+    function renderizarPaginacion() {
+        ul.innerHTML = "";
+
+        const totalPaginas = Math.ceil(filas.length / ITEMS_POR_PAGINA);
+
+        ul.appendChild(crearBoton("Anterior", paginaActual - 1, paginaActual === 1));
+
+        for (let i = 1; i <= totalPaginas; i++) {
+            const li = crearBoton(i, i, false);
+            if (i === paginaActual) li.classList.add("active");
+            ul.appendChild(li);
+        }
+
+        ul.appendChild(
+            crearBoton("Siguiente", paginaActual + 1, paginaActual === totalPaginas)
+        );
+    }
+
+    function crearBoton(texto, pagina, deshabilitado) {
+        const li = document.createElement("li");
+        li.className = "page-item";
+        if (deshabilitado) li.classList.add("disabled");
+
+        const a = document.createElement("a");
+        a.href = "#";
+        a.textContent = texto;
+        a.className = "page-link";
+
+        a.style.color = "#000";
+        a.style.backgroundColor = "#fff";
+        a.style.borderColor = "#ccc";
+
+        a.addEventListener("click", e => {
+            e.preventDefault();
+            if (!deshabilitado) mostrarPagina(pagina);
+        });
+
+        li.appendChild(a);
+        return li;
+    }
+
+    mostrarPagina(1);
+});
+
