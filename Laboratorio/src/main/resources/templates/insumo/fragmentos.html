@@ -34,9 +34,9 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a>Inicio</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard}">Inicio</a></li>
                         <li class="breadcrumb-item active">Insumos</li>
-                        <li class="breadcrumb-item active">Datos</li>
+                    
                     </ol>
                 </nav>
             </div>
@@ -54,7 +54,7 @@
                                 <div th:replace="~{insumo/fragmentos :: busquedaInsumo}"></div>
 
 
-                                <table class="table datatable align-middle text-center">
+                                <table class="table datatable align-middle ">
                                     <thead>
                                         <tr>
                                             <th>Nombre</th>
@@ -89,6 +89,11 @@
                     </div>
                 </div>
             </section>
+              <div class="d-flex justify-content-center mt-4 text-black">
+                <nav>
+                    <ul class="pagination pagination-sm"></ul>
+                </nav>
+            </div>
         </section>
 
         <section th:fragment="busquedaInsumo">
@@ -121,7 +126,7 @@
                         <div class="card">
                             <div class="card-body">
 
-                                <div class="text-center mb-4" style="margin-top: 20px;">
+                                <div class=" mb-4" style="margin-top: 20px;">
                                     <img th:src="@{/assets/img/logo-1.png}" alt="Logo Laboratorio"
                                          class="logo-img" style="max-width: 150px;"
                                          onerror="this.style.display='none'" />
@@ -138,12 +143,12 @@
 
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Nombre</label>
-                                            <input type="text" th:field="*{nombre}" class="form-control text-center" required />
+                                            <input type="text" th:field="*{nombre}" class="form-control " required />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Tipo</label>
-                                            <select th:field="*{tipo}" class="form-select text-center" required>
+                                            <select th:field="*{tipo}" class="form-select " required>
                                                 <option value="">Seleccione...</option>
                                                 <option value="CAJA">CAJA</option>
                                                 <option value="BOTELLA">BOTELLA</option>
@@ -153,23 +158,23 @@
 
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Cantidad por unidad</label>
-                                            <input type="number" th:field="*{cantidadPorUnidad}" class="form-control text-center" min="0" />
+                                            <input type="number" th:field="*{cantidadPorUnidad}" class="form-control " min="0" />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Unidad de medida</label>
-                                            <input type="text" th:field="*{unidadMedida}" class="form-control text-center" />
+                                            <input type="text" th:field="*{unidadMedida}" class="form-control " />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Estado</label>
-                                            <select th:field="*{activo}" class="form-select text-center" required>
+                                            <select th:field="*{activo}" class="form-select " required>
                                                 <option value="true">Activo</option>
                                                 <option value="false">Inactivo</option>
                                             </select>
                                         </div>
 
-                                        <div class="col-12 text-center mt-3">
+                                        <div class="col-12  mt-3">
                                             <button type="submit" class="btn btn-save me-2">Guardar</button>
                                             <a th:href="@{/insumo/insumos}"  class="btn btn-cancel">Cancelar</a>
                                         </div>
@@ -182,6 +187,11 @@
                     </div>
                 </div>
             </section>
+             <div class="d-flex justify-content-center mt-4 text-black">
+                <nav>
+                    <ul class="pagination pagination-sm"></ul>
+                </nav>
+            </div>
         </section>
 
         <!-- MODIFICAR INSUMO -->
@@ -204,13 +214,13 @@
                         <div class="card">
                             <div class="card-body">
 
-                                <div class="text-center mb-5" style="margin-top: 20px;">
+                                <div class=" mb-5" style="margin-top: 20px;">
                                     <img th:src="@{/assets/img/logo-1.png}" alt="Logo Laboratorio"
                                          class="logo-img" style="max-width: 150px;"
                                          onerror="this.style.display='none'" />
                                 </div>
 
-                                <h4 class="text-center mb-4" style="color: #1c94a4; font-weight: bold;">
+                                <h4 class=" mb-4" style="color: #1c94a4; font-weight: bold;">
                                     Editar Insumo
                                 </h4>
 
@@ -221,12 +231,12 @@
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Nombre</label>
-                                            <input type="text" th:field="*{nombre}" class="form-control text-center" required />
+                                            <input type="text" th:field="*{nombre}" class="form-control " required />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Tipo</label>
-                                            <select th:field="*{tipo}" class="form-select text-center" required>
+                                            <select th:field="*{tipo}" class="form-select " required>
                                                 <option value="CAJA">CAJA</option>
                                                 <option value="BOTELLA">BOTELLA</option>
                                                 <option value="TUBO_AGUJA">TUBO/AGUJA/OTROS</option>
@@ -235,23 +245,23 @@
 
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Cantidad por unidad</label>
-                                            <input type="number" th:field="*{cantidadPorUnidad}" class="form-control text-center" min="0" />
+                                            <input type="number" th:field="*{cantidadPorUnidad}" class="form-control " min="0" />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Unidad de medida</label>
-                                            <input type="text" th:field="*{unidadMedida}" class="form-control text-center" />
+                                            <input type="text" th:field="*{unidadMedida}" class="form-control " />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Estado</label>
-                                            <select th:field="*{activo}" class="form-select text-center">
+                                            <select th:field="*{activo}" class="form-select ">
                                                 <option value="true">Activo</option>
                                                 <option value="false">Inactivo</option>
                                             </select>
                                         </div>
 
-                                        <div class="col-12 text-center mt-3">
+                                        <div class="col-12  mt-3">
                                             <button type="submit" class="btn btn-save me-2">Actualizar</button>
                                             <a th:href="@{/insumo/insumos}"  class="btn btn-cancel">Cancelar</a>
                                         </div>

@@ -34,9 +34,9 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a>Inicio</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard}">Inicio</a></li>
                         <li class="breadcrumb-item">Inventario</li>
-                        <li class="breadcrumb-item active">Datos</li>
+
                     </ol>
                 </nav>
             </div>
@@ -52,40 +52,40 @@
                                     <a th:href="@{/inventario/agregar}" class="btn btn-primary">Agregar</a>
 
                                     <div class="d-flex gap-2">
-                                        <button class="btn btn-save" onclick="exportarPDFInventario()">Exportar PDF</button>
-                                        <button class="btn btn-save" onclick="exportarExcelInventario()">Exportar Excel</button>
+                                        <button class="btn btn-export-pdf" onclick="exportarPDFInventario()">Exportar PDF</button>
+                                        <button class="btn btn-export-excel" onclick="exportarExcelInventario()">Exportar Excel</button>
                                     </div>
                                 </div>
-
+                                
                                 <div th:replace="~{inventario/fragmentos :: busquedaInventario}"></div>
 
                                 <table id="tablaInventario" class="table ">
                                     <thead>
                                         <tr>
-                                            <th style="text-align:center;">Código de Barras</th>
-                                            <th style="text-align:center;">Nombre Insumo</th>
-                                            <th style="text-align:center;">Tipo</th>
-                                            <th style="text-align:center;">Stock Actual</th>
-                                            <th style="text-align:center;">Stock Bloqueado</th>
-                                            <th style="text-align:center;">Stock Mínimo</th>
-                                            <th style="text-align:center;">Fecha Vencimiento</th>
-                                            <th style="text-align:center;">Fecha Apertura</th>
-                                            <th style="text-align:center;">Estado</th>
-                                            <th style="text-align:center;"></th>
+                                            <th >Código de Barras</th>
+                                            <th >Nombre Insumo</th>
+                                            <th >Tipo</th>
+                                            <th >Stock Actual</th>
+                                            <th >Stock Bloqueado</th>
+                                            <th >Stock Mínimo</th>
+                                            <th >Fecha Vencimiento</th>
+                                            <th >Fecha Apertura</th>
+                                            <th >Estado</th>
+                                            <th ></th>
                                         </tr>
                                     </thead>
 
                                     <tbody id="tbodyInventario">
                                         <tr th:each="inv : ${inventarios}">
-                                            <td style="vertical-align: middle; text-align: center;">[[${inv.codigoBarras}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${inv.insumo.nombre}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${inv.insumo.tipo}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${inv.stockActual}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${inv.stockBloqueado}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${inv.stockMinimo}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${inv.fechaVencimiento}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${inv.fechaApertura}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">
+                                            <td style="vertical-align: middle; ">[[${inv.codigoBarras}]]</td>
+                                            <td style="vertical-align: middle; ">[[${inv.insumo.nombre}]]</td>
+                                            <td style="vertical-align: middle; ">[[${inv.insumo.tipo}]]</td>
+                                            <td style="vertical-align: middle; ">[[${inv.stockActual}]]</td>
+                                            <td style="vertical-align: middle; ">[[${inv.stockBloqueado}]]</td>
+                                            <td style="vertical-align: middle; ">[[${inv.stockMinimo}]]</td>
+                                            <td style="vertical-align: middle; ">[[${inv.fechaVencimiento}]]</td>
+                                            <td style="vertical-align: middle; ">[[${inv.fechaApertura}]]</td>
+                                            <td style="vertical-align: middle; ">
                                                 <span th:text="${inv.activo} ? 'Activo' : 'Inactivo'"></span>
                                             </td>
                                             <td class="actions-cell d-flex align-items-center justify-content-center"
@@ -103,7 +103,11 @@
                     </div>
                 </div>
             </section>
-
+            <div class="d-flex justify-content-center mt-4 text-black">
+                <nav>
+                    <ul class="pagination pagination-sm"></ul>
+                </nav>
+            </div>
         </section>
 
         <section th:fragment="busquedaInventario">

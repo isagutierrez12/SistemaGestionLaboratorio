@@ -34,9 +34,9 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a>Inicio</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard}">Inicio</a></li>
                         <li class="breadcrumb-item">Pacientes</li>
-                        <li class="breadcrumb-item active">Datos</li>
+                     
                     </ol>
                 </nav>
             </div><!-- End Page Title -->
@@ -60,34 +60,34 @@
 
                                     <thead>
                                         <tr>      
-                                            <th style="text-align:center;">Nombre</th>  
-                                            <th style="text-align:center;">Primer Apellido</th>            
-                                            <th style="text-align:center;">Segundo Apellido</th>
-                                            <th style="text-align:center;">Cédula</th>
-                                            <th style="text-align:center;">Fecha de Nacimiento</th>
-                                            <th style="text-align:center;">Teléfono</th>
-                                            <th style="text-align:center;">Email</th>   
-                                            <th style="text-align:center;">Contacto Emergencia</th>
-                                            <th style="text-align:center;">Padecimientos</th>  
-                                            <th style="text-align:center;">Alergias</th>       
-                                            <th style="text-align:center;"></th>
+                                            <th style=";">Nombre</th>  
+                                            <th style=";">Primer Apellido</th>            
+                                            <th style=";">Segundo Apellido</th>
+                                            <th style=";">Cédula</th>
+                                            <th style=";">Fecha de Nacimiento</th>
+                                            <th style=";">Teléfono</th>
+                                            <th style=";">Email</th>   
+                                            <th style=";">Contacto Emergencia</th>
+                                            <th style=";">Padecimientos</th>  
+                                            <th style=";">Alergias</th>       
+                                            <th style=";"></th>
 
                                         </tr>
                                     </thead>
                                     <tbody id="tbodyPacientes">
                                         <tr th:each="p : ${pacientes}">
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.nombre}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.primerApellido}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.segundoApellido}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.cedula}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.fechaNacimiento}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.telefono}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.nombre}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.primerApellido}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.segundoApellido}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.cedula}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.fechaNacimiento}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.telefono}]]</td>
                                             <td style="vertical-align: middle;">[[${p.email}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.contactoEmergencia}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.contactoEmergencia}]]</td>
                                             <td style="vertical-align: middle;">[[${p.padecimiento}]]</td>
                                             <td style="vertical-align: middle;">[[${p.alergia}]]</td>
                                             <td class="actions-cell" 
-                                                style="vertical-align: middle; text-align: center; display: flex; justify-content: center; gap: 20px;">
+                                                style="vertical-align: middle; ; display: flex; justify-content: center; gap: 20px;">
                                                 <a th:href="@{/paciente/editar/{id}(id=${p.idPaciente})}" class="btn-edit" title="Actualizar">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
@@ -105,6 +105,11 @@
                 </div> 
             </section>
 
+             <div class="d-flex justify-content-center mt-4 text-black">
+                <nav>
+                    <ul class="pagination pagination-sm"></ul>
+                </nav>
+            </div>
         </section>
 
 
@@ -435,34 +440,34 @@
                                 <table class="table datatable">
                                     <thead>
                                         <tr>      
-                                            <th style="text-align:center;">Nombre</th>  
-                                            <th style="text-align:center;">Primer Apellido</th>            
-                                            <th style="text-align:center;">Segundo Apellido</th>
-                                            <th style="text-align:center;">Cédula</th>
-                                            <th style="text-align:center;">Fecha de Nacimiento</th>
-                                            <th style="text-align:center;">Teléfono</th>
-                                            <th style="text-align:center;">Email</th>
-                                            <th style="text-align:center;">Contacto Emergencia</th>
-                                            <th style="text-align:center;">Padecimientos</th>  
-                                            <th style="text-align:center;">Alergias</th>      
-                                            <th style="text-align:center;">Acciones</th>
+                                            <th style=";">Nombre</th>  
+                                            <th style=";">Primer Apellido</th>            
+                                            <th style=";">Segundo Apellido</th>
+                                            <th style=";">Cédula</th>
+                                            <th style=";">Fecha de Nacimiento</th>
+                                            <th style=";">Teléfono</th>
+                                            <th style=";">Email</th>
+                                            <th style=";">Contacto Emergencia</th>
+                                            <th style=";">Padecimientos</th>  
+                                            <th style=";">Alergias</th>      
+                                            <th style=";">Acciones</th>
 
                                         </tr>
                                     </thead>
                                     <tbody id="tbodyPacientes">
                                         <tr th:each="p : ${pacientes}">
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.nombre}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.primerApellido}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.segundoApellido}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.cedula}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.fechaNacimiento}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.telefono}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.email}]]</td>
-                                            <td style="vertical-align: middle; text-align: center;">[[${p.contactoEmergencia}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.nombre}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.primerApellido}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.segundoApellido}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.cedula}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.fechaNacimiento}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.telefono}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.email}]]</td>
+                                            <td style="vertical-align: middle; ;">[[${p.contactoEmergencia}]]</td>
                                             <td style="vertical-align: middle;">[[${p.padecimiento}]]</td>
                                             <td style="vertical-align: middle;">[[${p.alergia}]]</td>
                                             <td class="actions-cell" 
-                                                style="vertical-align: middle; text-align: center; display: flex; justify-content: center; gap: 20px;">
+                                                style="vertical-align: middle; ; display: flex; justify-content: center; gap: 20px;">
                                                 <a th:href="@{/paciente/editar/{id}(id=${p.idPaciente})}" class="btn-edit" title="Editar">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
@@ -516,28 +521,28 @@
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th style="text-align:center;">Fecha</th>
-                                            <th style="text-align:center;">Estado</th>
-                                            <th style="text-align:center;">Notas</th>
-                                            <th style="text-align:center;">Precio total</th>
-                                            <th style="text-align:center;"></th>
+                                            <th style=";">Fecha</th>
+                                            <th style=";">Estado</th>
+                                            <th style=";">Notas</th>
+                                            <th style=";">Precio total</th>
+                                            <th style=";"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr th:each="c : ${citas}">
-                                            <td style="vertical-align: middle; text-align: center;">
+                                            <td style="vertical-align: middle; ;">
                                                 [[${#temporals.format(c.fechaCita, 'dd/MM/yyyy HH:mm')}]]
                                             </td>
-                                            <td style="vertical-align: middle; text-align: center;">
+                                            <td style="vertical-align: middle; ;">
                                                 [[${c.estado}]]
                                             </td>
-                                            <td style="vertical-align: middle; text-align: center;">
+                                            <td style="vertical-align: middle; ;">
                                                 [[${c.notas}]]
                                             </td>
-                                            <td style="vertical-align: middle; text-align: center;">
+                                            <td style="vertical-align: middle; ;">
                                                 ₡ [[${c.solicitud.precioTotal}]]
                                             </td>
-                                            <td style="vertical-align: middle; text-align: center;">
+                                            <td style="vertical-align: middle; ;">
                                                 <button type="button"
                                                         class="btn btn-history btn-detalle-cita"
                                                         th:attr="data-id=${c.idCita}">
@@ -555,6 +560,11 @@
                 </div>
             </section>
 
+             <div class="d-flex justify-content-center mt-4 text-black">
+                <nav>
+                    <ul class="pagination pagination-sm"></ul>
+                </nav>
+            </div>
         </main>
 
 

@@ -3,7 +3,8 @@
     <head th:fragment="head">
         <title>Laboratorio Clinico Calderon Piedra</title>
         <meta charset="UTF-8" />
-
+        <meta name="_csrf" th:content="${_csrf.token}" />
+        <meta name="_csrf_header" th:content="${_csrf.headerName}" />
         <!-- Bootstrap & Font Awesome (webjars) -->
         <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
         <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.css}" />
@@ -49,12 +50,7 @@
                 <i class="bi bi-list toggle-sidebar-btn"></i>
             </div><!-- End Logo -->
 
-            <div class="search-bar">
-                <form class="search-form d-flex align-items-center" method="POST" action="#">
-                    <input type="text" name="query" placeholder="Search" title="Enter search keyword" />
-                    <button type="submit" title="Search"><i class="bi bi-search"></i></button>
-                </form>
-            </div><!-- End Search Bar -->
+          
 
             <nav class="header-nav ms-auto">
                 <ul class="d-flex align-items-center">
@@ -66,20 +62,19 @@
                     </li><!-- End Search Icon-->
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                        <a id="campanaNotificaciones" class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
                             <i class="bi bi-bell"></i>
                             <span id="badge-count" class="badge badge-number" style="background-color: #0c6c74; color: white;">0</span>
                         </a>
 
                         <ul id="notification-list" class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                             <li class="dropdown-header">
-                                <span id="notification-title">Cargando notificaciones...</span>
+                               
                             </li>
                             <li><hr class="dropdown-divider" /></li>
                             <!-- Aquí JS insertará las notificaciones -->
                         </ul>
                     </li>
-
 
                     <li class="nav-item dropdown pe-3">
 
@@ -225,7 +220,7 @@
                     </ul>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
                     <a class="nav-link collapsed" data-bs-target="#audit-nav" data-bs-toggle="collapse" href="#">
                         <i class="bi bi-layout-text-window-reverse"></i><span>Auditoría</span><i class="bi bi-chevron-down ms-auto"></i>
                     </a>
