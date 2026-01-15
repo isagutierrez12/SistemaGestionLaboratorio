@@ -57,15 +57,13 @@ public class ProjectConfig implements WebMvcConfigurer {
                         usuarioActivoFilter,
                         org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class
                 )
-                .authorizeHttpRequests(request -> {
+              . authorizeHttpRequests((request) -> {
                     request.requestMatchers(rutaPermit).permitAll();
                     for (Ruta ruta : rutas) {
-                        request.requestMatchers(ruta.getRuta())
-                                .hasAnyRole(ruta.getRoleName());
                         String[] roles = ruta.getRoleName().split(",");
                         request.requestMatchers(ruta.getRuta()).hasAnyRole(roles);
-
                     }
+
                 })
                 .formLogin(form -> form
                 .loginPage("/login")
