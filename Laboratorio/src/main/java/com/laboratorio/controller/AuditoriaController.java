@@ -28,9 +28,38 @@ public class AuditoriaController {
         this.auditoriaService = auditoriaService;
     }
 
+    /*
     @GetMapping("/auditorias")
+    public String listarAuditorias(
+            @RequestParam(defaultValue = "1") int pageNumber,
+            Model model
+    ) {
+        System.out.println("ENTRÓ AL CONTROLADOR /auditorias page=" + pageNumber);
+
+        int pageSize = 6;
+
+        List<Auditoria> todas = auditoriaService.listarTodas();
+
+        int totalItems = todas.size();
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+
+        int fromIndex = (pageNumber - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalItems);
+
+        List<Auditoria> auditoriasPagina = todas.subList(fromIndex, toIndex);
+
+        model.addAttribute("auditorias", auditoriasPagina);
+        model.addAttribute("page", "list");
+
+        model.addAttribute("currentPage", pageNumber);
+        model.addAttribute("totalPages", totalPages);
+
+        return "auditoria/auditorias";
+    }
+*/
+      @GetMapping("/auditorias")
     public String listarAuditorias(Model model) {
-        List<Auditoria> auditorias = auditoriaService.listarTodas();
+        List<Auditoria> auditorias = auditoriaService.listarAuditorias();
         model.addAttribute("auditorias", auditorias);
         model.addAttribute("page", "list");
         return "auditoria/auditorias";
@@ -94,7 +123,7 @@ public class AuditoriaController {
         LocalDateTime fin = fechaFin != null ? fechaFin.atTime(23, 59, 59) : null;
 
         List<Auditoria> lista = auditoriaService.filtrar(usuario, modulo, accion, inicio, fin);
- 
+
         AuditoriaPDFExporter exporter = new AuditoriaPDFExporter(lista);
         exporter.export(response);
     }

@@ -8,6 +8,7 @@ import com.laboratorio.model.Dashboard;
 import com.laboratorio.model.ExamenTop;
 import com.laboratorio.repository.CitaRepository;
 import com.laboratorio.repository.ExamenRepository;
+import com.laboratorio.repository.PagoRepository;
 import com.laboratorio.repository.SolicitudDetalleRepository;
 import com.laboratorio.repository.SolicitudRepository;
 import com.laboratorio.service.DashboardService;
@@ -26,13 +27,15 @@ public class DashboardServiceImpl implements DashboardService {
     private final CitaRepository citaRepository;
     private final SolicitudDetalleRepository detalleRepository;
     private final ExamenRepository examenRepository;
+    private final PagoRepository pagoRepository;
 
     @Autowired
     public DashboardServiceImpl(CitaRepository citaRepository,
-            SolicitudDetalleRepository detalleRepository, ExamenRepository examenRepository) {
+            SolicitudDetalleRepository detalleRepository, ExamenRepository examenRepository, PagoRepository pagoRepository) {
         this.citaRepository = citaRepository;
         this.detalleRepository = detalleRepository;
         this.examenRepository = examenRepository;
+        this.pagoRepository = pagoRepository;
     }
 
     @Override
@@ -49,6 +52,8 @@ public class DashboardServiceImpl implements DashboardService {
         Long totalIndiv = detalleRepository.contarExamenesIndividualesEnPeriodo(inicio, fin);
         Long totalPaq = detalleRepository.contarExamenesEnPaquetesEnPeriodo(inicio, fin);
 
+        Double ingresosConfirmadosRaw = pagoRepository.sumMontoEnRango(inicio, fin);
+
         if (ingresosRaw == null) {
             ingresosRaw = 0.0;
         }
@@ -62,6 +67,10 @@ public class DashboardServiceImpl implements DashboardService {
             totalPaq = 0L;
         }
 
+        if (ingresosConfirmadosRaw == null) {
+            ingresosConfirmadosRaw = 0.0;
+        }
+
         Long totalExamenes = totalIndiv + totalPaq;
 
         double promedio = 0.0;
@@ -73,6 +82,7 @@ public class DashboardServiceImpl implements DashboardService {
         dto.setIngresosTotales(BigDecimal.valueOf(ingresosRaw));
         dto.setPacientesAtendidos(pacientes);
         dto.setPromedioExamenesPorPaciente(promedio);
+        dto.setIngresosConfirmados(ingresosConfirmadosRaw);
 
         return dto;
     }

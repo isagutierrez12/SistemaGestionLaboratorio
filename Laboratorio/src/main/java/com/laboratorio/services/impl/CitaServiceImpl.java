@@ -7,6 +7,7 @@ package com.laboratorio.services.impl;
 import com.laboratorio.model.Cita;
 import com.laboratorio.repository.CitaRepository;
 import com.laboratorio.service.CitaService;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -48,5 +49,8 @@ public class CitaServiceImpl implements CitaService {
     public List<Cita> findHistorialPorPaciente(String idPaciente) {
         return citaRepository.findHistorialPorPaciente(idPaciente);
     }
-
+    @Override
+    public List<String> obtenerHorasOcupadas(LocalDate fecha) {
+        return citaRepository.horasOcupadasPorFecha(fecha);
+    }
 }

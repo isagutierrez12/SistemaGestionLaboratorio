@@ -2,38 +2,63 @@ package com.laboratorio.exporter;
 
 import com.laboratorio.model.Inventario;
 import com.lowagie.text.*;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.*;
 import jakarta.servlet.http.HttpServletResponse;
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import com.lowagie.text.Font;
-
 
 public class InventarioPDFExporter {
 
     private final List<Inventario> lista;
 
+    private static final Color COLOR_PRINCIPAL = new Color(4, 187, 196);
+    private static final Color COLOR_OSCURO = new Color(12, 108, 116);
+    private static final Color COLOR_SECUNDARIO = new Color(28, 148, 164);
+    private static final Color COLOR_BLANCO = Color.WHITE;
+
     public InventarioPDFExporter(List<Inventario> lista) {
         this.lista = lista;
     }
 
-    private void escribirCabecera(PdfPTable table) {
-        PdfPCell celda = new PdfPCell();
-        celda.setBackgroundColor(Color.LIGHT_GRAY);
-        celda.setPadding(5);
+    private void agregarLogo(Document document) {
+        try {
+            com.lowagie.text.Image logo = com.lowagie.text.Image.getInstance(
+                    getClass().getClassLoader()
+                            .getResource("static/assets/img/logo-1.png")
+            );
+            logo.scaleToFit(120, 120);
+            logo.setAlignment(Image.ALIGN_CENTER);
+            document.add(logo);
+        } catch (Exception e) {
+        }
+    }
 
-        com.lowagie.text.Font font = new com.lowagie.text.Font(
-                com.lowagie.text.Font.HELVETICA,
-                12,
-                com.lowagie.text.Font.BOLD
-        );
+    private Paragraph fechaEmision() {
+        Font fontFecha = new Font(Font.HELVETICA, 9, Font.NORMAL, Color.DARK_GRAY);
+
+        String fecha = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+
+        Paragraph p = new Paragraph("Fecha de emisión: " + fecha, fontFecha);
+        p.setAlignment(Element.ALIGN_RIGHT);
+        p.setSpacingAfter(10);
+        return p;
+    }
+
+    private void escribirCabecera(PdfPTable table) {
+        Font font = new Font(Font.HELVETICA, 11, Font.BOLD, COLOR_BLANCO);
+
+        PdfPCell celda = new PdfPCell();
+        celda.setBackgroundColor(COLOR_OSCURO);
+        celda.setPadding(7);
+        celda.setHorizontalAlignment(Element.ALIGN_CENTER);
 
         String[] headers = {
-                "Código Barras", "Insumo", "Tipo",
-                "Stock Actual", "Stock Mínimo", "Fecha Vencimiento"
+            "Código Barras", "Insumo", "Tipo",
+            "Stock Actual", "Stock Mínimo", "Fecha Vencimiento"
         };
 
         for (String h : headers) {
@@ -43,30 +68,44 @@ public class InventarioPDFExporter {
     }
 
     private void escribirDatos(PdfPTable table) {
-        com.lowagie.text.Font font = new com.lowagie.text.Font(
-                com.lowagie.text.Font.HELVETICA,
-                10
-        );
+        Font font = new Font(Font.HELVETICA, 10);
+        boolean alternarColor = false;
 
         for (Inventario inv : lista) {
+            Color fondo = alternarColor
+                    ? new Color(230, 247, 248)
+                    : Color.WHITE;
 
-            table.addCell(new Phrase(inv.getCodigoBarras(), font));
-            table.addCell(new Phrase(inv.getInsumo().getNombre(), font));
-            table.addCell(new Phrase(inv.getInsumo().getTipo(), font));
-            table.addCell(new Phrase(String.valueOf(inv.getStockActual()), font));
-            table.addCell(new Phrase(String.valueOf(inv.getStockMinimo()), font));
-            table.addCell(new Phrase(
+            table.addCell(celdaDato(inv.getCodigoBarras(), font, fondo));
+            table.addCell(celdaDato(inv.getInsumo().getNombre(), font, fondo));
+            table.addCell(celdaDato(inv.getInsumo().getTipo(), font, fondo));
+            table.addCell(celdaDato(String.valueOf(inv.getStockActual()), font, fondo));
+            table.addCell(celdaDato(String.valueOf(inv.getStockMinimo()), font, fondo));
+            table.addCell(celdaDato(
                     inv.getFechaVencimiento() != null
-                            ? inv.getFechaVencimiento().toString()
-                            : "",
-                    font
+                    ? inv.getFechaVencimiento().toString()
+                    : "",
+                    font,
+                    fondo
             ));
+
+            alternarColor = !alternarColor;
         }
+    }
+
+    private PdfPCell celdaDato(String texto, Font font, Color fondo) {
+        PdfPCell c = new PdfPCell(new Phrase(texto, font));
+        c.setBackgroundColor(fondo);
+        c.setPadding(6);
+        return c;
     }
 
     public void export(HttpServletResponse response) throws IOException {
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=Inventario.pdf");
+        response.setHeader(
+                "Content-Disposition",
+                "attachment; filename=Inventario.pdf"
+        );
 
         Document document = new Document(PageSize.A4.rotate());
 
@@ -74,16 +113,18 @@ public class InventarioPDFExporter {
             PdfWriter.getInstance(document, response.getOutputStream());
             document.open();
 
-            com.lowagie.text.Font fontTitulo = new com.lowagie.text.Font(
-                    com.lowagie.text.Font.HELVETICA,
-                    18,
-                    com.lowagie.text.Font.BOLD
-            );
+            agregarLogo(document);
 
-            Paragraph titulo = new Paragraph("Reporte de Inventario", fontTitulo);
+            Font fontTitulo = new Font(Font.HELVETICA, 18, Font.BOLD, COLOR_SECUNDARIO);
+            Paragraph titulo = new Paragraph(
+                    "Reporte de Inventario\nLaboratorio Clínico Calderón Piedra",
+                    fontTitulo
+            );
             titulo.setAlignment(Element.ALIGN_CENTER);
-            titulo.setSpacingAfter(20);
+            titulo.setSpacingAfter(10);
             document.add(titulo);
+
+            document.add(fechaEmision());
 
             PdfPTable table = new PdfPTable(6);
             table.setWidthPercentage(100f);
@@ -95,7 +136,7 @@ public class InventarioPDFExporter {
             document.add(table);
 
         } catch (DocumentException e) {
-            throw new IOException("Error al generar PDF", e);
+            throw new IOException("Error al generar PDF de inventario", e);
         } finally {
             document.close();
         }

@@ -82,46 +82,61 @@ public class ReporteServiceImpl implements ReporteService {
             if (sol.getPaciente() != null) {
                 Paciente p = sol.getPaciente();
                 StringBuilder sb = new StringBuilder();
-                if (p.getNombre() != null) sb.append(p.getNombre());
-                if (p.getPrimerApellido() != null) sb.append(" ").append(p.getPrimerApellido());
-                if (p.getSegundoApellido() != null) sb.append(" ").append(p.getSegundoApellido());
+                if (p.getNombre() != null) {
+                    sb.append(p.getNombre());
+                }
+                if (p.getPrimerApellido() != null) {
+                    sb.append(" ").append(p.getPrimerApellido());
+                }
+                if (p.getSegundoApellido() != null) {
+                    sb.append(" ").append(p.getSegundoApellido());
+                }
                 nombrePaciente = sb.toString().trim();
             }
 
             for (SolicitudDetalle d : sol.getDetalles()) {
 
-                String areaExamen = null;
-                String nombreExamenActual = "";
+                String areaItem = null;
+                String nombreItem = null;
+                double monto = 0.0;
+
                 if (d.getExamen() != null) {
-                    areaExamen = d.getExamen().getArea();
-                    nombreExamenActual = d.getExamen().getNombre();
+                    areaItem = d.getExamen().getArea();
+                    nombreItem = d.getExamen().getNombre();
+                    if (d.getExamen().getPrecio() != null) {
+                        monto = d.getExamen().getPrecio().doubleValue();
+                    }
                 } else if (d.getPaquete() != null) {
-                    nombreExamenActual = d.getPaquete().getNombre();
+                    areaItem = "Paquetes";
+                    nombreItem = d.getPaquete().getNombre();
+                    if (d.getPaquete().getPrecio() != null) {
+                        monto = d.getPaquete().getPrecio().doubleValue();
+                    }
+                } else {
+                    continue;
                 }
 
+                // --- filtros ---
                 if (areaFiltro != null) {
-                    if (areaExamen == null
-                            || !areaExamen.trim().toLowerCase().equals(areaFiltro)) {
+                    // si seleccionan "Paquetes" debe matchear exactamente
+                    if (areaItem == null || !areaItem.trim().equalsIgnoreCase(areaFiltro)) {
                         continue;
                     }
                 }
 
                 if (examenFiltro != null) {
-                    if (nombreExamenActual == null
-                            || !nombreExamenActual.toLowerCase().contains(examenFiltro)) {
+                    if (nombreItem == null || !nombreItem.toLowerCase().contains(examenFiltro)) {
                         continue;
                     }
                 }
-
-                double monto = sol.getPrecioTotal();
 
                 Reporte dto = new Reporte();
                 if (c.getFechaCita() != null) {
                     dto.setFecha(c.getFechaCita().toLocalDate());
                 }
                 dto.setPaciente(nombrePaciente);
-                dto.setExamen(nombreExamenActual);
-                dto.setArea(areaExamen);
+                dto.setExamen(nombreItem);
+                dto.setArea(areaItem);
                 dto.setEstado(estadoReal);
                 dto.setMonto(monto);
 

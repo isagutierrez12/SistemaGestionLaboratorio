@@ -34,6 +34,7 @@
                         </div> <!-- End test -->
                     </div> <!-- End catalog -->
 
+
                 </div>
             </div>
         </section>
@@ -55,8 +56,8 @@
                     </div>
                     <div class="d-flex gap-2 mt-3">
                         <button id="btnRestaurar" class="btn btn-save">Restaurar</button>
-                        <button class="btn btn-save" onclick="exportarPDF()">Exportar PDF</button>
-                        <button class="btn btn-save" onclick="exportarExcel()">Exportar Excel</button>
+                        <button class="btn btn-export-pdf" onclick="exportarPDF()">Exportar PDF</button>
+                        <button class="btn btn-export-excel" onclick="exportarExcel()">Exportar Excel</button>
                     </div>
                 </div>
             </div>
@@ -64,26 +65,42 @@
 
         <!-- Fragmento catalogoAuditoria -->
         <section th:fragment="catalogoAuditoria">
+
             <div class="catalog" id="contenedorAuditorias">
                 <div class="test" th:each="a : ${auditorias}">
                     <!-- Header -->
-                    <div class="test-header">
+                    <div class="test-header cita-header">
                         <span class="code">#[[${a.id}]]</span>
                         <h3>[[${a.modulo}]]</h3>
-                        <span th:text="${a.accion}" style="color: black; font-weight: normal  !important; " class="badge bg-white my-2 ms-2 text-semibold"></span>
+                        <span class="badge bg-white my-2 ms-2 text-semibold">
+                            [[${a.accion}]]
+                        </span>
                     </div>
+
                     <!-- Body -->
                     <div class="test-body">
                         <div class="test-info">
                             <div class="info-row"><strong>Usuario:</strong> [[${a.usuario}]]</div>
                             <div class="info-row"><strong>ID de Entidad:</strong> [[${a.idEntidad}]]</div>
-                            <div class="info-row"><strong>Fecha:</strong> [[${#dates.format(a.fechaHora, 'dd/MM/yyyy HH:mm:ss')}]]</div>
+                            <div class="info-row"><strong>Fecha:</strong>
+                                [[${#dates.format(a.fechaHora, 'dd/MM/yyyy HH:mm:ss')}]]
+                            </div>
                             <div class="info-row description"><strong>Descripción:</strong> [[${a.descripcion}]]</div>
                             <div class="info-row description"><strong>Datos Adicionales:</strong> [[${a.datosAdicionales}]]</div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- PAGINACIÓN JS -->
+            <div class="d-flex justify-content-center mt-4 text-black">
+                <nav>
+                    <ul class="pagination  pagination-sm"></ul>
+                </nav>
+            </div>
+
+        </section>
+
         </section>
 
         <!-- Fragmento filtrosFecha -->
@@ -117,7 +134,7 @@
                                 <div class="catalog" id="contenedorCriticos">
                                     <div class="test" th:each="a : ${auditorias}">
                                         <!-- Header -->
-                                        <div class="test-header">
+                                        <div class="test-header cita-header">
                                             <span class="code">#[[${a.id}]]</span>
                                             <h3 style="padding-bottom: 0.5rem !important;">[[${a.tipoEvento}]]</h3>
                                         </div>
@@ -137,7 +154,7 @@
                                                 <div class="info-row description">
                                                     <strong>Descripción:</strong> [[${a.descripcion}]]
                                                 </div>
-                                               
+
                                                 <div class="info-row" th:if="${a.tiempoActivo != null}">
                                                     <strong>Tiempo activo:</strong> [[${a.tiempoActivo}]] minutos
                                                 </div>
@@ -146,7 +163,11 @@
 
                                     </div> <!-- End test -->
                                 </div> <!-- End catalog -->
-
+                                <div class="d-flex justify-content-center mt-4 text-black">
+                                    <nav>
+                                        <ul class="pagination pagination-sm"></ul>
+                                    </nav>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -168,8 +189,8 @@
                     </div>
                     <div class="d-flex gap-2 mt-3">
                         <button id="btnRestaurarCrit" class="btn btn-save">Restaurar</button>
-                        <button class="btn btn-save" onclick="exportarPDF()">Exportar PDF</button>
-                        <button class="btn btn-save" onclick="exportarExcel()">Exportar Excel</button>
+                        <button class="btn btn-export-pdf" onclick="exportarPDF()">Exportar PDF</button>
+                        <button class="btn btn-export-excel" onclick="exportarExcel()">Exportar Excel</button>
                     </div>
                 </div>
             </div>

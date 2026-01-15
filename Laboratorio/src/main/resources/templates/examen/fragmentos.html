@@ -36,9 +36,8 @@
             <div class="pagetitle">
                 <nav>
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a>Inicio</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard}">Inicio</a></li>
                         <li class="breadcrumb-item">Exámenes</li>
-                        <li class="breadcrumb-item active">Datos</li>
                     </ol>
                 </nav>
             </div>
@@ -61,7 +60,7 @@
                                         <div class="catalog">
                                             <div class="test" th:each="e : ${examenes}">
                                                 <!-- Header -->
-                                                <div class="test-header">
+                                                <div class="test-header cita-header">
                                                     <span class="code">[[${e.codigo}]]</span>
                                                     <h3>[[${e.nombre}]]</h3>
                                                 </div>
@@ -389,7 +388,7 @@
                                 </div>
 
                                 <form th:action="@{/examen/mostrar}" method="post" id="formExamenes">
-                                    <table class="table datatable align-middle text-center">
+                                    <table class="table datatable align-middle ">
                                         <thead>
                                             <tr>
                                                 <th></th>
