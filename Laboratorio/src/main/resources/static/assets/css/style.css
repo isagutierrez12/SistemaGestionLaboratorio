@@ -2017,4 +2017,24 @@ h6 {
 #notification-list::-webkit-scrollbar-track {
     background: #e9ecef;
 }
+.hora-btn {
+  border: 2px solid #1c94a4;
+  background-color: #ffffff;
+  color: #1c94a4;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.hora-btn:hover {
+  background-color: #e6f6f8;
+}
+
+.hora-btn.selected {
+  background-color: #1c94a4 !important;
+  color: #ffffff !important;
+  border-color: #1c94a4 !important;
+}
 
