@@ -10,6 +10,7 @@ import com.laboratorio.model.DetalleCitaResponse;
 import com.laboratorio.model.DetallePaquete;
 import com.laboratorio.model.Examen;
 import com.laboratorio.model.Paciente;
+import com.laboratorio.model.Pago;
 import com.laboratorio.model.Paquete;
 import com.laboratorio.model.Solicitud;
 import com.laboratorio.model.SolicitudDetalle;
@@ -17,6 +18,7 @@ import com.laboratorio.service.CitaService;
 import com.laboratorio.service.ExamenService;
 import com.laboratorio.service.InventarioService;
 import com.laboratorio.service.PacienteService;
+import com.laboratorio.service.PagoService;
 import com.laboratorio.service.PaqueteService;
 import com.laboratorio.service.SolicitudService;
 import com.laboratorio.service.UsuarioService;
@@ -65,6 +67,7 @@ public class CitaController {
     private EmailServiceImpl emailServiceImpl;
     private final InventarioService inventarioService;
     private WhatsAppServiceImpl whatsAppServiceImpl;
+    private final PagoService pagoService;
 
     @Autowired
     public CitaController(
@@ -76,7 +79,8 @@ public class CitaController {
             PaqueteService paqueteService,
             EmailServiceImpl emailServiceImpl,
             InventarioService inventarioService,
-            WhatsAppServiceImpl whatsAppServiceImpl
+            WhatsAppServiceImpl whatsAppServiceImpl,
+            PagoService pagoService
     ) {
         this.citaService = citaService;
         this.solicitudService = solicitudService;
@@ -87,6 +91,7 @@ public class CitaController {
         this.emailServiceImpl = emailServiceImpl;
         this.inventarioService = inventarioService;
         this.whatsAppServiceImpl = whatsAppServiceImpl;
+        this.pagoService = pagoService;
     }
 
     // Listado de citas
@@ -454,9 +459,10 @@ public class CitaController {
             @RequestParam(value = "notas", required = false) String notas,
             @RequestParam(value = "examenesSeleccionados", required = false) List<Long> examenesSeleccionados,
             @RequestParam(value = "paquetesSeleccionados", required = false) List<Long> paquetesSeleccionados,
+            @RequestParam(required = false) Double pagoMonto,
+            @RequestParam(required = false) String pagoTipo,
             @AuthenticationPrincipal UserDetails userDetails,
             RedirectAttributes redirectAttrs) {
-
         try {
             // 1. Obtener la cita existente
             Cita cita = citaService.getById(idCita);
@@ -468,6 +474,7 @@ public class CitaController {
 
             // 2. Obtener la solicitud asociada
             Solicitud solicitud = cita.getSolicitud();
+            String estadoAnterior = (cita.getEstado() == null) ? "" : cita.getEstado().toUpperCase();
 
             // 3. Limpiar detalles anteriores
             solicitud.getDetalles().clear();
@@ -489,12 +496,27 @@ public class CitaController {
                 for (Long idPaquete : paquetesSeleccionados) {
                     Paquete paquete = paqueteService.getById(idPaquete);
                     if (paquete != null) {
+
+                        // 5.1 Guardar el paquete como detalle (igual que en guardarCita)
+                        SolicitudDetalle detallePaquete = new SolicitudDetalle();
+                        detallePaquete.setPaquete(paquete);
+                        detallePaquete.setExamen(null);
+                        solicitud.addDetalle(detallePaquete);
+
+                        // 5.2 Sumar SOLO el precio del paquete (sin duplicar por exámenes)
+                        precioTotal += paquete.getPrecio().doubleValue();
+
+                        // 5.3 Guardar los exámenes del paquete como detalles (para reporte/lista)
                         for (DetallePaquete dp : paquete.getDetalles()) {
                             Examen examenPaquete = dp.getExamen();
-                            SolicitudDetalle detalle = new SolicitudDetalle();
-                            detalle.setExamen(examenPaquete);
-                            solicitud.addDetalle(detalle);
-                            precioTotal += examenPaquete.getPrecio().doubleValue();
+                            if (examenPaquete == null) {
+                                continue;
+                            }
+
+                            SolicitudDetalle detalleExamen = new SolicitudDetalle();
+                            detalleExamen.setExamen(examenPaquete);
+                            detalleExamen.setPaquete(paquete);
+                            solicitud.addDetalle(detalleExamen);
                         }
                     }
                 }
@@ -508,6 +530,22 @@ public class CitaController {
             cita.setEstado(estado);
             cita.setNotas(notas);
             cita.setUsuario(usuarioService.getUsuarioPorUsername(userDetails.getUsername()));
+
+            //7.1 Confirmacion de estado para insertar pago en caso de CONFIRMADA
+            String estadoNuevo = (estado == null) ? "" : estado.toUpperCase();
+
+            boolean esConfirmada = "CONFIRMADA".equals(estadoNuevo);
+
+            if (esConfirmada) {
+                if (pagoMonto == null || pagoMonto <= 0 || pagoTipo == null || pagoTipo.isBlank()) {
+                    redirectAttrs.addFlashAttribute("mensaje",
+                            "Para marcar la cita como confirmada debes registrar el pago.");
+                    redirectAttrs.addFlashAttribute("clase", "danger");
+                    return "redirect:/cita/modificar/" + idCita;
+                }
+
+                pagoService.saveOrUpdateByCita(idCita, pagoMonto, pagoTipo);
+            }
 
             // 8. Guardar cambios
             solicitudService.save(solicitud);

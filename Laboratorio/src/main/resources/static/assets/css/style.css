@@ -2032,20 +2032,63 @@ h6 {
 }
 
 /* colores de íconos del dashboard */
-#kpiIngresosCard .card-icon {
-    background: rgba(99, 218, 219, 0.25);
-    color: #2E6771; 
+.kpi-card{
+  height: 100%;
 }
 
-#kpiPacientesCard .card-icon {
-    background: rgba(104, 216, 239, 0.25);
-    color: #4594A4;
+#kpiIngresosCard {
+  background: #64D1EE;
+  color: #ffffff;
 }
 
+#kpiIngresosConfirmadosCard{
+  background: #34B7C5;
+  color: #fff;
+}
+
+#kpiPacientesCard {
+  background: #1C94A4;
+  color: #ffffff;
+}
+
+#kpiPromedioCard {
+  background: #3A7A85;
+  color: #ffffff;
+}
+
+/* Iconos */
+#kpiIngresosCard .card-icon,
+#kpiIngresosConfirmadosCard .card-icon,
+#kpiPacientesCard .card-icon,
 #kpiPromedioCard .card-icon {
-    background: rgba(81, 182, 196, 0.25);
-    color: #2E6771;
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
 }
+
+/* Títulos y textos */
+#kpiIngresosCard h5,
+#kpiIngresosConfirmadosCard h5,
+#kpiPacientesCard h5,
+#kpiPromedioCard h5,
+#kpiIngresosCard h6,
+#kpiIngresosConfirmadosCard h6,
+#kpiPacientesCard h6,
+#kpiPromedioCard h6,
+#kpiIngresosCard span,
+#kpiIngresosConfirmadosCard span,
+#kpiPacientesCard span,
+#kpiPromedioCard span {
+  color: #ffffff !important;
+}
+
+/* Texto secundario */
+#kpiIngresosCard .text-muted,
+#kpiIngresosConfirmadosCard .text-muted,
+#kpiPacientesCard .text-muted,
+#kpiPromedioCard .text-muted {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
 
 .btn-filtros {
   background-color: #2E6771;

@@ -11,16 +11,26 @@ public class Dashboard {
     private BigDecimal ingresosTotales;
     private Long pacientesAtendidos;
     private Double promedioExamenesPorPaciente;
+    private Double ingresosConfirmados;
 
     public Dashboard() {
     }
 
     public Dashboard(BigDecimal ingresosTotales,
                                Long pacientesAtendidos,
-                               Double promedioExamenesPorPaciente) {
+                               Double promedioExamenesPorPaciente, Double ingresosConfirmados) {
         this.ingresosTotales = ingresosTotales;
         this.pacientesAtendidos = pacientesAtendidos;
         this.promedioExamenesPorPaciente = promedioExamenesPorPaciente;
+        this.ingresosConfirmados = ingresosConfirmados;
+    }
+
+    public Double getIngresosConfirmados() {
+        return ingresosConfirmados;
+    }
+
+    public void setIngresosConfirmados(Double ingresosConfirmados) {
+        this.ingresosConfirmados = ingresosConfirmados;
     }
 
     public BigDecimal getIngresosTotales() {
