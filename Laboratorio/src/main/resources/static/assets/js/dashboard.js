@@ -192,6 +192,19 @@ document.addEventListener("DOMContentLoaded", () => {
             filtroPeriodo.value = "";
         }
     }
+    
+    function formatearEstado(estado) {
+    if (!estado) return "";
+
+    switch (estado.toUpperCase()) {
+        case "PENDIENTE":
+            return "Agendada";
+        case "CONFIRMADA":
+            return "Terminada";
+        default:
+            return estado;
+    }
+}
 
     if (filtroDesde) {
         filtroDesde.addEventListener("change", marcarPeriodoPersonalizado);
@@ -375,7 +388,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <td>${item.paciente || ""}</td>
                     <td>${item.examen || ""}</td>
                     <td>${item.area || ""}</td>
-                    <td>${item.estado || ""}</td>
+                    <td>${formatearEstado(item.estado)}</td>
                     <td>${montoNum != null ? montoNum.toFixed(2) : ""}</td>
                 `;
                 tablaReporteBody.appendChild(tr);

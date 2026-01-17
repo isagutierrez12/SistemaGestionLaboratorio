@@ -21,7 +21,8 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
     @Query("""
         select coalesce(sum(p.monto), 0)
         from Pago p
-        where p.fechaPago between :desde and :hasta
+        join p.cita c
+        where c.fechaCita between :desde and :hasta
     """)
     Double sumMontoEnRango(@Param("desde") LocalDateTime desde,
                            @Param("hasta") LocalDateTime hasta);

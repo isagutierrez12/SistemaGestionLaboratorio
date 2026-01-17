@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 html: `
                         <p style="margin:0">
                           Ya existe un pago registrado para esta cita.<br>
-                          ¿Deseas <b>modificar</b> el pago anterior?
+                          ¿Desea <b>modificar</b> el pago anterior?
                         </p>
                       `,
                 showCancelButton: true,
@@ -95,6 +95,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <option value="Efectivo">Efectivo</option>
             <option value="Tarjeta">Tarjeta</option>
             <option value="SINPE">SINPE</option>
+            <option value="SINPE y Tarjeta">SINPE y Tarjeta</option>
+            <option value="SINPE y Efectivo">SINPE y Efectivo</option>
+            <option value="Efectivo y Tarjeta">Efectivo y Tarjeta</option>
           </select>
         </div>
       `,
