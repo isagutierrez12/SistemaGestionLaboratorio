@@ -2147,3 +2147,30 @@ h6 {
   border-bottom: 2px solid #0a5a61;
   font-weight: 600;
 }
+
+#tablaPagos thead th{
+  background-color: #0C6C74;
+  color: #ffffff;
+  text-align: center;
+  border-bottom: 2px solid #0a5a61;
+  font-weight: 600;
+}
+
+#tablaPagos td,
+#tablaPagos th{
+  text-align: center;
+  vertical-align: middle;
+}
+
+#tablaPagos tbody tr:nth-child(odd){
+  background-color: rgba(12, 108, 116, 0.06);
+}
+
+#tablaPagos tbody tr:nth-child(even){
+  background-color: #ffffff;
+}
+
+#tablaPagos tbody tr:hover{
+  background-color: rgba(4, 187, 196, 0.18);
+  transition: background-color 0.2s ease-in-out;
+}

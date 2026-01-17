@@ -111,4 +111,18 @@ public class DashboardController {
     ) {
         return reporteService.generarReporte(desde, hasta, area, estado, nombreExamen);
     }
+
+    @GetMapping("/pagos")
+    public List<com.laboratorio.model.PagoRow> obtenerPagosDashboard(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
+            @RequestParam(required = false) String tipoPago
+    ) {
+        return dashboardService.obtenerPagos(
+                desde.atStartOfDay(),
+                hasta.atTime(23, 59, 59),
+                tipoPago
+        );
+    }
+
 }

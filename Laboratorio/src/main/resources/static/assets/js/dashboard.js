@@ -32,6 +32,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const filtroTipoAlerta = document.getElementById("filtroTipoAlerta");
     const tablaAlertasBody = document.querySelector("#tablaAlertasInventario tbody");
 
+    const filtroTipoPago = document.getElementById("filtroTipoPago");
+    const tablaPagosBody = document.querySelector("#tablaPagos tbody");
+    const resumenPagos = document.getElementById("resumenPagos");
+
     const hoy = new Date();
     const yyyy = hoy.getFullYear();
     const mm = String(hoy.getMonth() + 1).padStart(2, '0');
@@ -192,19 +196,56 @@ document.addEventListener("DOMContentLoaded", () => {
             filtroPeriodo.value = "";
         }
     }
-    
-    function formatearEstado(estado) {
-    if (!estado) return "";
 
-    switch (estado.toUpperCase()) {
-        case "PENDIENTE":
-            return "Agendada";
-        case "CONFIRMADA":
-            return "Terminada";
-        default:
-            return estado;
+    function formatearEstado(estado) {
+        if (!estado)
+            return "";
+
+        switch (estado.toUpperCase()) {
+            case "PENDIENTE":
+                return "Agendada";
+            case "CONFIRMADA":
+                return "Terminada";
+            default:
+                return estado;
+        }
     }
-}
+
+    function buildPagosQueryParams() {
+        const params = new URLSearchParams();
+        if (filtroDesde.value)
+            params.append("desde", filtroDesde.value);
+        if (filtroHasta.value)
+            params.append("hasta", filtroHasta.value);
+        if (filtroTipoPago && filtroTipoPago.value)
+            params.append("tipoPago", filtroTipoPago.value);
+        return params;
+    }
+
+    function formatearFechaHora(fechaISO) {
+        if (!fechaISO)
+            return "";
+
+        const fecha = new Date(fechaISO);
+
+        return fecha.toLocaleDateString("es-CR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+    
+    function formatearFecha(fechaISO) {
+        if (!fechaISO)
+            return "";
+
+        const fecha = new Date(fechaISO);
+
+        return fecha.toLocaleDateString("es-CR");
+    }
+
 
     if (filtroDesde) {
         filtroDesde.addEventListener("change", marcarPeriodoPersonalizado);
@@ -384,7 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const montoNum = item.monto != null ? Number(item.monto) : null;
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
-                    <td>${item.fecha || ""}</td>
+                    <td>${formatearFecha(item.fecha)}</td>
                     <td>${item.paciente || ""}</td>
                     <td>${item.examen || ""}</td>
                     <td>${item.area || ""}</td>
@@ -446,7 +487,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <td>${dto.tipoInsumo || ""}</td>
                     <td>${dto.stockActual}</td>
                     <td>${dto.stockMinimo}</td>
-                    <td>${dto.fechaVencimiento || "-"}</td>
+                    <td>${formatearFecha(dto.fechaVencimiento)}</td>
                     <td>${dto.diasParaVencer != null ? dto.diasParaVencer : "-"}</td>
                     <td>${dto.etiquetaAlerta}</td>
                 `;
@@ -457,12 +498,75 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    async function cargarPagos() {
+        try {
+            const params = buildPagosQueryParams();
+            const resp = await fetch(`${API_BASE}/pagos?` + params.toString());
+            if (!resp.ok) {
+                console.error("Error cargando pagos");
+                return;
+            }
+
+            const data = await resp.json();
+
+            tablaPagosBody.innerHTML = "";
+            resumenPagos.textContent = "";
+
+            if (!data || data.length === 0) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                <td colspan="4" class="text-center text-muted">
+                    No hay pagos para mostrar.
+                </td>`;
+                tablaPagosBody.appendChild(tr);
+
+                resumenPagos.textContent = "Sin pagos para mostrar.";
+                return;
+            }
+
+            let totalMonto = 0;
+            const pagosPorMetodo = {};
+
+            data.forEach(p => {
+                const montoNum = p.monto != null ? Number(p.monto) : 0;
+                totalMonto += montoNum;
+
+                const metodo = p.tipoPago || "Sin método";
+                pagosPorMetodo[metodo] = (pagosPorMetodo[metodo] || 0) + 1;
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                <td>${formatearFechaHora(p.fechaCita)}</td>
+                <td>${p.paciente || ""}</td>
+                <td>${montoNum.toFixed(2)}</td>
+                <td>${metodo}</td>
+            `;
+                tablaPagosBody.appendChild(tr);
+            });
+
+            const totalPagos = data.length;
+
+            const detalleMetodos = Object.entries(pagosPorMetodo)
+                    .map(([metodo, cant]) => `${metodo}: ${cant}`)
+                    .join(" | ");
+
+            resumenPagos.textContent =
+                    `Total de pagos: ${totalPagos} | ` +
+                    `Monto total: ₡${totalMonto.toFixed(2)}` +
+                    (detalleMetodos ? ` | ${detalleMetodos}` : "");
+
+        } catch (e) {
+            console.error("Error en cargarPagos", e);
+        }
+    }
+
     async function refrescarDashboard() {
         await Promise.all([
             cargarResumen(),
             cargarTopExamenes(),
             cargarAlertasInventario(),
-            cargarReporteExamenes()
+            cargarReporteExamenes(),
+            cargarPagos()
         ]);
     }
 
@@ -538,6 +642,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (filtroTipoAlerta) {
         filtroTipoAlerta.addEventListener("change", () => {
             cargarAlertasInventario();
+        });
+    }
+
+    if (filtroTipoPago) {
+        filtroTipoPago.addEventListener("change", () => {
+            cargarPagos();
         });
     }
 

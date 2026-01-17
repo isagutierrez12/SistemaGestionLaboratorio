@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <input id="montoOtroInput" type="number" min="0" step="0.01"
                  class="swal2-input" placeholder="Ingrese monto" style="display:none;" />
 
-          <label class="form-label" style="margin-top:.5rem;">Tipo de pago</label>
+          <label class="form-label" style="margin-top:.5rem;">Método de pago</label>
           <select id="tipoPagoSelect" class="swal2-select">
             <option value="">Seleccione...</option>
             <option value="Efectivo">Efectivo</option>
@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     monto = parseFloat(inputOtro.value || "0");
 
                 if (!tipo)
-                    return Swal.showValidationMessage("Seleccione un tipo de pago.");
+                    return Swal.showValidationMessage("Seleccione un método de pago.");
                 if (!monto || monto <= 0)
                     return Swal.showValidationMessage("Ingrese un monto válido.");
 

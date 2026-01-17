@@ -15,9 +15,11 @@ import org.springframework.data.repository.query.Param;
 
 @EnableJpaRepositories
 public interface PagoRepository extends JpaRepository<Pago, Long> {
+
     Optional<Pago> findByCita_IdCita(Long idCita);
+
     boolean existsByCita_IdCita(Long idCita);
-    
+
     @Query("""
         select coalesce(sum(p.monto), 0)
         from Pago p
@@ -25,5 +27,31 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
         where c.fechaCita between :desde and :hasta
     """)
     Double sumMontoEnRango(@Param("desde") LocalDateTime desde,
-                           @Param("hasta") LocalDateTime hasta);
+            @Param("hasta") LocalDateTime hasta);
+
+    @Query("""
+    select new com.laboratorio.model.PagoRow(
+        c.fechaCita,
+        concat(
+            coalesce(pac.nombre, ''),
+            case when pac.primerApellido is not null then concat(' ', pac.primerApellido) else '' end,
+            case when pac.segundoApellido is not null then concat(' ', pac.segundoApellido) else '' end
+        ),
+        p.monto,
+        p.tipoPago
+    )
+    from Pago p
+    join p.cita c
+    join c.solicitud s
+    join s.paciente pac
+    where c.fechaCita between :desde and :hasta
+      and (:tipo is null or p.tipoPago = :tipo)
+    order by c.fechaCita desc
+    """)
+    List<com.laboratorio.model.PagoRow> listarPagosDashboard(
+            @Param("desde") LocalDateTime desde,
+            @Param("hasta") LocalDateTime hasta,
+            @Param("tipo") String tipo
+    );
+
 }

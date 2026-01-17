@@ -6,6 +6,7 @@ package com.laboratorio.service;
 
 import com.laboratorio.model.Dashboard;
 import com.laboratorio.model.ExamenTop;
+import com.laboratorio.model.PagoRow;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,4 +20,7 @@ public interface DashboardService {
                                        int limite);
     
     List<String> obtenerAreas();
+    
+    List<PagoRow> obtenerPagos(LocalDateTime inicio, LocalDateTime fin, String tipoPago);
+
 }
