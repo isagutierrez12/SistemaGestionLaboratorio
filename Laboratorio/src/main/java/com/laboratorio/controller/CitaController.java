@@ -196,7 +196,7 @@ public class CitaController {
 
                             SolicitudDetalle detalleExamen = new SolicitudDetalle();
                             detalleExamen.setExamen(examenPaquete);
-                            detalleExamen.setPaquete(paquete); // opcional
+                            detalleExamen.setPaquete(paquete);
                             solicitud.addDetalle(detalleExamen);
 
                             precioTotal += examenPaquete.getPrecio().doubleValue();

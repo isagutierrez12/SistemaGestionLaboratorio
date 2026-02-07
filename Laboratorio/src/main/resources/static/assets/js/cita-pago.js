@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 html: `
                         <p style="margin:0">
                           Ya existe un pago registrado para esta cita.<br>
-                          ¿Deseas <b>modificar</b> el pago anterior?
+                          ¿Desea <b>modificar</b> el pago anterior?
                         </p>
                       `,
                 showCancelButton: true,
@@ -89,12 +89,15 @@ document.addEventListener("DOMContentLoaded", () => {
           <input id="montoOtroInput" type="number" min="0" step="0.01"
                  class="swal2-input" placeholder="Ingrese monto" style="display:none;" />
 
-          <label class="form-label" style="margin-top:.5rem;">Tipo de pago</label>
+          <label class="form-label" style="margin-top:.5rem;">Método de pago</label>
           <select id="tipoPagoSelect" class="swal2-select">
             <option value="">Seleccione...</option>
             <option value="Efectivo">Efectivo</option>
             <option value="Tarjeta">Tarjeta</option>
             <option value="SINPE">SINPE</option>
+            <option value="SINPE y Tarjeta">SINPE y Tarjeta</option>
+            <option value="SINPE y Efectivo">SINPE y Efectivo</option>
+            <option value="Efectivo y Tarjeta">Efectivo y Tarjeta</option>
           </select>
         </div>
       `,
@@ -128,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     monto = parseFloat(inputOtro.value || "0");
 
                 if (!tipo)
-                    return Swal.showValidationMessage("Seleccione un tipo de pago.");
+                    return Swal.showValidationMessage("Seleccione un método de pago.");
                 if (!monto || monto <= 0)
                     return Swal.showValidationMessage("Ingrese un monto válido.");
 

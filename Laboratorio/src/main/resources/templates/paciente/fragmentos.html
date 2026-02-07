@@ -36,7 +36,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a th:href="@{/dashboard}">Inicio</a></li>
                         <li class="breadcrumb-item">Pacientes</li>
-                     
+
                     </ol>
                 </nav>
             </div><!-- End Page Title -->
@@ -105,7 +105,7 @@
                 </div> 
             </section>
 
-             <div class="d-flex justify-content-center mt-4 text-black">
+            <div class="d-flex justify-content-center mt-4 text-black">
                 <nav>
                     <ul class="pagination pagination-sm"></ul>
                 </nav>
@@ -482,6 +482,11 @@
                     </div> 
                 </div> 
             </section>
+            <div class="d-flex justify-content-center mt-4 text-black">
+                <nav>
+                    <ul class="pagination pagination-sm"></ul>
+                </nav>
+            </div>
         </main>
 
         <main th:fragment="historial" id="main" class="main" th:if="${page == 'historial'}">
@@ -517,50 +522,66 @@
                                     Paciente Inactivo
                                 </div>
 
-                                <!-- Tabla de citas -->
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th style=";">Fecha</th>
-                                            <th style=";">Estado</th>
-                                            <th style=";">Notas</th>
-                                            <th style=";">Precio total</th>
-                                            <th style=";"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="c : ${citas}">
-                                            <td style="vertical-align: middle; ;">
-                                                [[${#temporals.format(c.fechaCita, 'dd/MM/yyyy HH:mm')}]]
-                                            </td>
-                                            <td style="vertical-align: middle; ;">
-                                                [[${c.estado}]]
-                                            </td>
-                                            <td style="vertical-align: middle; ;">
-                                                [[${c.notas}]]
-                                            </td>
-                                            <td style="vertical-align: middle; ;">
-                                                ₡ [[${c.solicitud.precioTotal}]]
-                                            </td>
-                                            <td style="vertical-align: middle; ;">
-                                                <button type="button"
-                                                        class="btn btn-history btn-detalle-cita"
-                                                        th:attr="data-id=${c.idCita}">
-                                                    Ver detalle
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <!-- Lista de citas -->
+                                <div class="catalog" id="contenedorCitas">
 
+                                    <div class="test cita-card" th:each="c : ${citas}" th:attr="data-id=${c.idCita}">
+
+                                        <!-- Header -->
+                                        <div class="test-header cita-header text-white">
+                                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 w-100">
+
+                                                <div>
+                                                    <h3 class="mb-1">
+                                                        [[${#temporals.format(c.fechaCita, 'dd/MM/yyyy HH:mm')}]]
+                                                    </h3>
+                                                    <div class="small opacity-75">
+                                                        Estado: <span class="fw-semibold">[[${c.estado}]]</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Body -->
+                                        <div class="test-body">
+                                            <div class="test-info">
+
+                                                <div class="info-row description mb-3">
+                                                    <strong>Notas:</strong> [[${c.notas}]]
+                                                </div>
+
+                                                <div class="row g-3">
+                                                    <!-- Paquetes -->
+                                                    <div class="col-md-6">
+                                                        <h6 class="mb-2">Paquetes</h6>
+                                                        <ul class="list-group list-group-flush paquetes-container">
+                                                            <li class="list-group-item text-muted small">Cargando paquetes...</li>
+                                                        </ul>
+                                                    </div>
+
+                                                    <!-- Exámenes -->
+                                                    <div class="col-md-6">
+                                                        <h6 class="mb-2">Exámenes</h6>
+                                                        <ul class="list-group list-group-flush examenes-container">
+                                                            <li class="list-group-item text-muted small">Cargando exámenes...</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div> 
                         </div> 
-                    </div> 
 
-                </div>
+                    </div>
                 </div>
             </section>
 
-             <div class="d-flex justify-content-center mt-4 text-black">
+            <div class="d-flex justify-content-center mt-4 text-black">
                 <nav>
                     <ul class="pagination pagination-sm"></ul>
                 </nav>
