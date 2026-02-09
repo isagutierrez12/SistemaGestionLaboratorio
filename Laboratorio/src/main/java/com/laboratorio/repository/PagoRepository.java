@@ -5,6 +5,7 @@
 package com.laboratorio.repository;
 
 import com.laboratorio.model.Pago;
+import com.laboratorio.model.PagoRow;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -30,28 +31,62 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
             @Param("hasta") LocalDateTime hasta);
 
     @Query("""
-    select new com.laboratorio.model.PagoRow(
-        c.fechaCita,
-        concat(
-            coalesce(pac.nombre, ''),
-            case when pac.primerApellido is not null then concat(' ', pac.primerApellido) else '' end,
-            case when pac.segundoApellido is not null then concat(' ', pac.segundoApellido) else '' end
-        ),
-        p.monto,
-        p.tipoPago
-    )
-    from Pago p
-    join p.cita c
-    join c.solicitud s
-    join s.paciente pac
-    where c.fechaCita between :desde and :hasta
-      and (:tipo is null or p.tipoPago = :tipo)
-    order by c.fechaCita desc
-    """)
-    List<com.laboratorio.model.PagoRow> listarPagosDashboard(
+        select new com.laboratorio.model.PagoRow(
+            c.fechaCita,
+            concat(
+                coalesce(pac.nombre, ''),
+                case when pac.primerApellido is not null then concat(' ', pac.primerApellido) else '' end,
+                case when pac.segundoApellido is not null then concat(' ', pac.segundoApellido) else '' end
+            ),
+            p.monto,
+            p.tipoPago
+        )
+        from Pago p
+        join p.cita c
+        join c.solicitud s
+        join s.paciente pac
+        where c.fechaCita between :desde and :hasta
+          and (:tipo is null or :tipo = '' or p.tipoPago = :tipo)
+        order by c.fechaCita desc
+        """)
+    List<PagoRow> listarPagosDashboard(
             @Param("desde") LocalDateTime desde,
             @Param("hasta") LocalDateTime hasta,
             @Param("tipo") String tipo
+    );
+
+    @Query("""
+        select new com.laboratorio.model.PagoRow(
+            c.fechaCita,
+            concat(
+                coalesce(pac.nombre, ''),
+                case when pac.primerApellido is not null then concat(' ', pac.primerApellido) else '' end,
+                case when pac.segundoApellido is not null then concat(' ', pac.segundoApellido) else '' end
+            ),
+            p.monto,
+            p.tipoPago
+        )
+        from Pago p
+        join p.cita c
+        join c.solicitud s
+        join s.paciente pac
+        where c.fechaCita between :desde and :hasta
+          and (:tipo is null or :tipo = '' or p.tipoPago = :tipo)
+          and (
+              :paciente is null or :paciente = '' or
+              lower(concat(
+                  coalesce(pac.nombre, ''),
+                  case when pac.primerApellido is not null then concat(' ', pac.primerApellido) else '' end,
+                  case when pac.segundoApellido is not null then concat(' ', pac.segundoApellido) else '' end
+              )) like lower(concat('%', :paciente, '%'))
+          )
+        order by c.fechaCita desc
+        """)
+    List<PagoRow> listarPagosDashboardExport(
+            @Param("desde") LocalDateTime desde,
+            @Param("hasta") LocalDateTime hasta,
+            @Param("tipo") String tipo,
+            @Param("paciente") String paciente
     );
 
 }

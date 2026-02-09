@@ -4,9 +4,13 @@
  */
 package com.laboratorio.controller;
 
+import com.laboratorio.exporter.PagosPDFExporter;
 import com.laboratorio.model.Reporte;
 import com.laboratorio.exporter.ReportePDFExporter;
 import com.laboratorio.model.ExamenTop;
+import com.laboratorio.model.PagoRow;
+import com.laboratorio.repository.PagoRepository;
+import com.laboratorio.service.PagoService;
 import com.laboratorio.service.ReporteService;
 import com.laboratorio.service.TopExamenReporteService;
 import com.lowagie.text.*;
@@ -18,8 +22,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Base64;
 import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
@@ -28,11 +35,15 @@ public class DashboardPageController {
 
     private final ReporteService reporteService;
     private final TopExamenReporteService topExamenReporteService;
+    private final PagoService pagoService;
+    private final PagoRepository pagoRepository;
 
     public DashboardPageController(ReporteService reporteService,
-            TopExamenReporteService topExamenReporteService) {
+            TopExamenReporteService topExamenReporteService, PagoRepository pagoRepository, PagoService pagoService) {
         this.reporteService = reporteService;
         this.topExamenReporteService = topExamenReporteService;
+        this.pagoService = pagoService;
+        this.pagoRepository = pagoRepository;
     }
 
     @GetMapping
@@ -166,6 +177,60 @@ public class DashboardPageController {
         response.setHeader("Content-Disposition", "attachment; filename=TopExamenes.xlsx");
 
         topExamenReporteService.exportarExcel(datos, response.getOutputStream());
+    }
+
+    //Pagos PDF
+    @GetMapping("/pagos/export/pdf")
+    public void exportarPagosPdf(
+            @RequestParam(required = false) String tipoPago,
+            @RequestParam(required = false) String paciente,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaFin,
+            HttpServletResponse response
+    ) throws IOException {
+
+        if (tipoPago != null && tipoPago.isBlank()) {
+            tipoPago = null;
+        }
+        if (paciente != null && paciente.isBlank()) {
+            paciente = null;
+        }
+
+        LocalDateTime inicio = fechaInicio != null ? fechaInicio.atStartOfDay() : null;
+        LocalDateTime fin = fechaFin != null ? fechaFin.atTime(23, 59, 59) : null;
+
+        List<PagoRow> lista = pagoRepository.listarPagosDashboardExport(inicio, fin, tipoPago, paciente);
+
+        PagosPDFExporter exporter = new PagosPDFExporter(lista);
+        exporter.export(response);
+    }
+
+    //Pagos Excel
+    @GetMapping("/pagos/export/excel")
+    public void exportarPagosExcel(
+            @RequestParam(required = false) String tipoPago,
+            @RequestParam(required = false) String paciente,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaFin,
+            HttpServletResponse response
+    ) throws IOException {
+
+        if (tipoPago != null && tipoPago.isBlank()) {
+            tipoPago = null;
+        }
+        if (paciente != null && paciente.isBlank()) {
+            paciente = null;
+        }
+
+        LocalDateTime inicioDT = fechaInicio != null ? fechaInicio.atStartOfDay() : null;
+        LocalDateTime finDT = fechaFin != null ? fechaFin.atTime(23, 59, 59) : null;
+
+        List<PagoRow> pagos = pagoRepository.listarPagosDashboardExport(inicioDT, finDT, tipoPago, paciente);
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=Pagos_Registrados.xlsx");
+
+        pagoService.exportarPagosExcel(pagos, response.getOutputStream());
     }
 
 }

@@ -7,6 +7,7 @@ package com.laboratorio.controller;
 import com.laboratorio.model.Dashboard;
 import com.laboratorio.model.ExamenTop;
 import com.laboratorio.model.InventarioAlerta;
+import com.laboratorio.model.PagoRow;
 import com.laboratorio.model.Reporte;
 import com.laboratorio.service.DashboardService;
 import com.laboratorio.service.InventarioAlertaService;
@@ -113,11 +114,16 @@ public class DashboardController {
     }
     
     @GetMapping("/pagos")
-    public List<com.laboratorio.model.PagoRow> obtenerPagosDashboard(
+    public List<PagoRow> obtenerPagosDashboard(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
             @RequestParam(required = false) String tipoPago
     ) {
+
+        if (tipoPago != null && tipoPago.isBlank()) {
+            tipoPago = null;
+        }
+
         return dashboardService.obtenerPagos(
                 desde.atStartOfDay(),
                 hasta.atTime(23, 59, 59),

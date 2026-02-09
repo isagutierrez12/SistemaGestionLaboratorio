@@ -119,10 +119,11 @@ public class DashboardServiceImpl implements DashboardService {
                 .map(e -> new ExamenTop(e.getKey(), e.getValue()))
                 .toList();
     }
-    
+
     @Override
     public List<PagoRow> obtenerPagos(LocalDateTime inicio, LocalDateTime fin, String tipoPago) {
         String tipo = (tipoPago == null || tipoPago.isBlank()) ? null : tipoPago.trim();
         return pagoRepository.listarPagosDashboard(inicio, fin, tipo);
     }
+
 }
