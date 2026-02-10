@@ -350,61 +350,61 @@
                 </div>
             </section>
             <script>
-                   document.addEventListener("DOMContentLoaded", function () {
+                document.addEventListener("DOMContentLoaded", function () {
 
-                   const contenedor = document.getElementById("contenedorHoras");
-                   const inputFecha = document.getElementById("fecha");
-                   const inputFinal = document.getElementById("fechaCita");
-                   const horaInicio = 7;
-                   const horaFin = 17;
-                   let horaSeleccionada = null;
-                   function cargarHorasOcupadas(fecha) {
+                const contenedor = document.getElementById("contenedorHoras");
+                const inputFecha = document.getElementById("fecha");
+                const inputFinal = document.getElementById("fechaCita");
+                const horaInicio = 7;
+                const horaFin = 17;
+                let horaSeleccionada = null;
+                function cargarHorasOcupadas(fecha) {
 
-                   fetch(`/cita/horas-ocupadas?fecha=${fecha}`)
-                           .then(res => res.json())
-                           .then(horasOcupadas => {
+                fetch(`/cita/horas-ocupadas?fecha=${fecha}`)
+                        .then(res => res.json())
+                        .then(horasOcupadas => {
 
-                           contenedor.innerHTML = "";
-                           horaSeleccionada = null;
-                           inputFinal.value = "";
-                           for (let h = horaInicio; h < horaFin; h++) {
+                        contenedor.innerHTML = "";
+                        horaSeleccionada = null;
+                        inputFinal.value = "";
+                        for (let h = horaInicio; h < horaFin; h++) {
 
-                           const hora = String(h).padStart(2, "0") + ":00";
-                           const btn = document.createElement("button");
-                           btn.type = "button";
-                           btn.textContent = hora;
-                           btn.classList.add("hora-btn");
-                           // Hora ocupada
-                           if (horasOcupadas.includes(hora)) {
-                           btn.disabled = true;
-                           btn.style.backgroundColor = "#e0e0e0";
-                           btn.style.color = "#888";
-                           btn.style.borderColor = "#ccc";
-                           btn.title = "Hora ocupada";
-                           } else {
-                           btn.addEventListener("click", function () {
+                        const hora = String(h).padStart(2, "0") + ":00";
+                        const btn = document.createElement("button");
+                        btn.type = "button";
+                        btn.textContent = hora;
+                        btn.classList.add("hora-btn");
+                        // Hora ocupada
+                        if (horasOcupadas.includes(hora)) {
+                        btn.disabled = true;
+                        btn.style.backgroundColor = "#e0e0e0";
+                        btn.style.color = "#888";
+                        btn.style.borderColor = "#ccc";
+                        btn.title = "Hora ocupada";
+                        } else {
+                        btn.addEventListener("click", function () {
 
-                           document.querySelectorAll(".hora-btn")
-                                   .forEach(b => b.classList.remove("selected"));
-                           btn.classList.add("selected");
-                           horaSeleccionada = hora;
-                           inputFinal.value = `${fecha}T${horaSeleccionada}`;
-                           console.log("Hora seleccionada:", inputFinal.value);
-                           });
-                           }
+                        document.querySelectorAll(".hora-btn")
+                                .forEach(b => b.classList.remove("selected"));
+                        btn.classList.add("selected");
+                        horaSeleccionada = hora;
+                        inputFinal.value = `${fecha}T${horaSeleccionada}`;
+                        console.log("Hora seleccionada:", inputFinal.value);
+                        });
+                        }
 
-                           contenedor.appendChild(btn);
-                           }
-                           })
-                           .catch(err => console.error("Error cargando horas:", err));
-                   }
+                        contenedor.appendChild(btn);
+                        }
+                        })
+                        .catch(err => console.error("Error cargando horas:", err));
+                }
 
-                   inputFecha.addEventListener("change", function () {
-                   if (this.value) {
-                   cargarHorasOcupadas(this.value);
-                   }
-                   });
-                   });
+                inputFecha.addEventListener("change", function () {
+                if (this.value) {
+                cargarHorasOcupadas(this.value);
+                }
+                });
+                });
             </script>
 
         </section>
@@ -457,9 +457,12 @@
 
                                 <h4 class="text-center mb-4" style="color:#1c94a4;font-weight:bold;">Editar Cita</h4>
 
-                                <form th:action="@{/cita/actualizar}" th:object="${cita}" method="post">
+                                <form id="formEditarCita" th:action="@{/cita/actualizar}" th:object="${cita}" method="post">
                                     <input type="hidden" th:field="*{idCita}" />
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <input type="hidden" id="estadoOriginal" th:value="${cita.estado}" />
+                                    <input type="hidden" name="pagoMonto" id="pagoMonto" />
+                                    <input type="hidden" name="pagoTipo" id="pagoTipo" />
 
                                     <!-- FECHA -->
                                     <div class="col-md-6 mb-3">
@@ -509,6 +512,7 @@
                                         <input class="form-check-input" type="checkbox" 
                                                name="examenesSeleccionados" 
                                                th:value="${examen.idExamen}"
+                                               th:attr="data-precio=${examen.precio}"
                                                th:checked="${cita.solicitud.detalles.?[examen != null].![examen.idExamen].contains(examen.idExamen)}"></input>
                                         <label class="form-check-label" th:text="${examen.nombre}">Examen</label>
                                     </div>
@@ -521,6 +525,7 @@
                                         <input class="form-check-input" type="checkbox" 
                                                name="paquetesSeleccionados" 
                                                th:value="${paquete.idPaquete}"
+                                               th:attr="data-precio=${paquete.precio}"
                                                th:checked="${cita.solicitud.detalles.?[paquete != null].![paquete.idPaquete].contains(paquete.idPaquete)}"></input>
                                         <label class="form-check-label" th:text="${paquete.nombre}">Paquete</label>
                                     </div>

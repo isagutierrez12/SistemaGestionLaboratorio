@@ -828,5 +828,11 @@ public class CitaController {
         LocalDate fechaLocal = LocalDate.parse(fecha);
         return citaService.obtenerHorasOcupadas(fechaLocal);
     }
+    
+    @GetMapping("/pago/existe")
+    @ResponseBody
+    public boolean existePago(@RequestParam Long idCita) {
+        return pagoService.existsByCita(idCita);
+    }
 
 }

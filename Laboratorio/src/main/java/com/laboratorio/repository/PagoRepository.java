@@ -31,24 +31,24 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
             @Param("hasta") LocalDateTime hasta);
 
     @Query("""
-        select new com.laboratorio.model.PagoRow(
-            c.fechaCita,
-            concat(
-                coalesce(pac.nombre, ''),
-                case when pac.primerApellido is not null then concat(' ', pac.primerApellido) else '' end,
-                case when pac.segundoApellido is not null then concat(' ', pac.segundoApellido) else '' end
-            ),
-            p.monto,
-            p.tipoPago
-        )
-        from Pago p
-        join p.cita c
-        join c.solicitud s
-        join s.paciente pac
-        where c.fechaCita between :desde and :hasta
+    select new com.laboratorio.model.PagoRow(
+        c.fechaCita,
+        concat(
+            coalesce(pac.nombre, ''),
+            case when pac.primerApellido is not null then concat(' ', pac.primerApellido) else '' end,
+            case when pac.segundoApellido is not null then concat(' ', pac.segundoApellido) else '' end
+        ),
+        p.monto,
+        p.tipoPago
+    )
+    from Pago p
+    join p.cita c
+    join c.solicitud s
+    join s.paciente pac
+    where c.fechaCita between :desde and :hasta
           and (:tipo is null or :tipo = '' or p.tipoPago = :tipo)
-        order by c.fechaCita desc
-        """)
+    order by c.fechaCita desc
+    """)
     List<PagoRow> listarPagosDashboard(
             @Param("desde") LocalDateTime desde,
             @Param("hasta") LocalDateTime hasta,
