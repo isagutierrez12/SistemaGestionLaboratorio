@@ -184,8 +184,8 @@ public class DashboardPageController {
     public void exportarPagosPdf(
             @RequestParam(required = false) String tipoPago,
             @RequestParam(required = false) String paciente,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaInicio,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaFin,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
             HttpServletResponse response
     ) throws IOException {
 
@@ -196,12 +196,20 @@ public class DashboardPageController {
             paciente = null;
         }
 
-        LocalDateTime inicio = fechaInicio != null ? fechaInicio.atStartOfDay() : null;
-        LocalDateTime fin = fechaFin != null ? fechaFin.atTime(23, 59, 59) : null;
+        LocalDateTime inicio = desde.atStartOfDay();
+        LocalDateTime fin = hasta.atTime(23, 59, 59);
 
-        List<PagoRow> lista = pagoRepository.listarPagosDashboardExport(inicio, fin, tipoPago, paciente);
+        List<PagoRow> pagos = pagoRepository.listarPagosExportRaw(inicio, fin, tipoPago, paciente)
+                .stream()
+                .map(r -> new PagoRow(
+                (r[0] != null ? ((java.sql.Timestamp) r[0]).toLocalDateTime() : null),
+                (String) r[1],
+                (r[2] != null ? ((Number) r[2]).doubleValue() : null),
+                (String) r[3]
+        ))
+                .toList();
 
-        PagosPDFExporter exporter = new PagosPDFExporter(lista);
+        PagosPDFExporter exporter = new PagosPDFExporter(pagos);
         exporter.export(response);
     }
 
@@ -210,8 +218,8 @@ public class DashboardPageController {
     public void exportarPagosExcel(
             @RequestParam(required = false) String tipoPago,
             @RequestParam(required = false) String paciente,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaInicio,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaFin,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
             HttpServletResponse response
     ) throws IOException {
 
@@ -222,10 +230,18 @@ public class DashboardPageController {
             paciente = null;
         }
 
-        LocalDateTime inicioDT = fechaInicio != null ? fechaInicio.atStartOfDay() : null;
-        LocalDateTime finDT = fechaFin != null ? fechaFin.atTime(23, 59, 59) : null;
+        LocalDateTime inicio = desde.atStartOfDay();
+        LocalDateTime fin = hasta.atTime(23, 59, 59);
 
-        List<PagoRow> pagos = pagoRepository.listarPagosDashboardExport(inicioDT, finDT, tipoPago, paciente);
+        List<PagoRow> pagos = pagoRepository.listarPagosExportRaw(inicio, fin, tipoPago, paciente)
+                .stream()
+                .map(r -> new PagoRow(
+                (r[0] != null ? ((java.sql.Timestamp) r[0]).toLocalDateTime() : null),
+                (String) r[1],
+                (r[2] != null ? ((Number) r[2]).doubleValue() : null),
+                (String) r[3]
+        ))
+                .toList();
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=Pagos_Registrados.xlsx");

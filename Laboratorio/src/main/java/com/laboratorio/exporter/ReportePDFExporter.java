@@ -2,91 +2,145 @@ package com.laboratorio.exporter;
 
 import com.laboratorio.model.Reporte;
 import com.lowagie.text.*;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.*;
 import jakarta.servlet.http.HttpServletResponse;
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ReportePDFExporter {
 
     private final List<Reporte> lista;
 
+    private static final Color COLOR_PRINCIPAL = new Color(4, 187, 196);
+    private static final Color COLOR_OSCURO = new Color(12, 108, 116);
+    private static final Color COLOR_SECUNDARIO = new Color(28, 148, 164);
+    private static final Color COLOR_BLANCO = Color.WHITE;
+
     public ReportePDFExporter(List<Reporte> lista) {
         this.lista = lista;
     }
 
-    //PDF
-    private void escribirCabeceraPdf(PdfPTable table) {
-        PdfPCell celda = new PdfPCell();
-        celda.setBackgroundColor(Color.LIGHT_GRAY);
-        celda.setPadding(5);
-
-        com.lowagie.text.Font font = new com.lowagie.text.Font(
-                com.lowagie.text.Font.HELVETICA,
-                12,
-                com.lowagie.text.Font.BOLD
-        );
-
-        String[] headers = {"Fecha", "Paciente", "Examen", "Área", "Estado", "Monto"};
-
-        for (String h : headers) {
-            celda.setPhrase(new Phrase(h, font));
-            table.addCell(celda);
+    private void agregarLogo(Document document) {
+        try {
+            Image logo = Image.getInstance(
+                    getClass().getClassLoader().getResource("static/assets/img/logo-1.png")
+            );
+            logo.scaleToFit(120, 120);
+            logo.setAlignment(Image.ALIGN_CENTER);
+            document.add(logo);
+        } catch (Exception ignored) {
         }
     }
 
-    private void escribirDatosPdf(PdfPTable table) {
-        com.lowagie.text.Font font = new com.lowagie.text.Font(
-                com.lowagie.text.Font.HELVETICA,
-                10
-        );
+    private Paragraph fechaEmision() {
+        Font fontFecha = new Font(Font.HELVETICA, 9, Font.NORMAL, Color.DARK_GRAY);
+        String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+
+        Paragraph p = new Paragraph("Fecha de emisión: " + fecha, fontFecha);
+        p.setAlignment(Element.ALIGN_RIGHT);
+        p.setSpacingAfter(10);
+        return p;
+    }
+
+    private void escribirCabecera(PdfPTable table) {
+        Font font = new Font(Font.HELVETICA, 11, Font.BOLD, COLOR_BLANCO);
+
+        PdfPCell celda = new PdfPCell();
+        celda.setBackgroundColor(COLOR_OSCURO);
+        celda.setPadding(8);
+        celda.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+        celda.setPhrase(new Phrase("Fecha", font));
+        table.addCell(celda);
+
+        celda.setPhrase(new Phrase("Paciente", font));
+        table.addCell(celda);
+
+        celda.setPhrase(new Phrase("Examen", font));
+        table.addCell(celda);
+
+        celda.setPhrase(new Phrase("Área", font));
+        table.addCell(celda);
+
+        celda.setPhrase(new Phrase("Estado", font));
+        table.addCell(celda);
+
+        celda.setPhrase(new Phrase("Monto (CRC)", font));
+        table.addCell(celda);
+    }
+
+    private PdfPCell celdaDato(String texto, Font font, Color fondo, int align) {
+        PdfPCell c = new PdfPCell(new Phrase(texto, font));
+        c.setBackgroundColor(fondo);
+        c.setPadding(6);
+        c.setHorizontalAlignment(align);
+        c.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        return c;
+    }
+
+    private void escribirDatos(PdfPTable table) {
+        Font font = new Font(Font.HELVETICA, 10);
+        boolean alternar = false;
 
         for (Reporte r : lista) {
-            table.addCell(new Phrase(r.getFecha() != null ? r.getFecha().toString() : "", font));
-            table.addCell(new Phrase(r.getPaciente(), font));
-            table.addCell(new Phrase(r.getExamen(), font));
-            table.addCell(new Phrase(r.getArea(), font));
-            table.addCell(new Phrase(r.getEstado(), font));
-            table.addCell(new Phrase(String.valueOf(r.getMonto()), font));
+            Color fondo = alternar ? new Color(230, 247, 248) : Color.WHITE;
+
+            table.addCell(celdaDato(nvl(r.getFecha() != null ? r.getFecha().toString() : ""), font, fondo, Element.ALIGN_LEFT));
+            table.addCell(celdaDato(nvl(r.getPaciente()), font, fondo, Element.ALIGN_LEFT));
+            table.addCell(celdaDato(nvl(r.getExamen()), font, fondo, Element.ALIGN_LEFT));
+            table.addCell(celdaDato(nvl(r.getArea()), font, fondo, Element.ALIGN_LEFT));
+            table.addCell(celdaDato(nvl(r.getEstado()), font, fondo, Element.ALIGN_LEFT));
+
+            String montoTxt = String.format("%.2f", r.getMonto());
+            table.addCell(celdaDato(montoTxt, font, fondo, Element.ALIGN_RIGHT));
+
+            alternar = !alternar;
         }
+
+        if (lista == null || lista.isEmpty()) {
+            PdfPCell vacio = new PdfPCell(new Phrase("No hay datos para mostrar."));
+            vacio.setColspan(6);
+            vacio.setPadding(10);
+            vacio.setHorizontalAlignment(Element.ALIGN_CENTER);
+            vacio.setBackgroundColor(Color.WHITE);
+            table.addCell(vacio);
+        }
+    }
+
+    private String nvl(String s) {
+        return s == null ? "" : s;
     }
 
     public void exportPdf(HttpServletResponse response) throws IOException {
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=ReporteExamenes.pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=Reporte_Examenes_Realizados.pdf");
 
-        Document document = new Document(PageSize.A4.rotate());
+        Document document = new Document(PageSize.A4);
+        PdfWriter.getInstance(document, response.getOutputStream());
+        document.open();
 
-        try {
-            PdfWriter.getInstance(document, response.getOutputStream());
-            document.open();
+        agregarLogo(document);
 
-            com.lowagie.text.Font fontTitulo = new com.lowagie.text.Font(
-                    com.lowagie.text.Font.HELVETICA,
-                    18,
-                    com.lowagie.text.Font.BOLD
-            );
-            Paragraph titulo = new Paragraph("Reporte de exámenes", fontTitulo);
-            titulo.setAlignment(Element.ALIGN_CENTER);
-            titulo.setSpacingAfter(20);
-            document.add(titulo);
+        Font fontTitulo = new Font(Font.HELVETICA, 18, Font.BOLD, COLOR_SECUNDARIO);
+        Paragraph titulo = new Paragraph("Reporte de Exámenes Realizados\nLaboratorio Clínico Calderón Piedra", fontTitulo);
+        titulo.setAlignment(Element.ALIGN_CENTER);
+        titulo.setSpacingAfter(10);
+        document.add(titulo);
 
-            PdfPTable table = new PdfPTable(6);
-            table.setWidthPercentage(100f);
-            table.setSpacingBefore(10);
+        document.add(fechaEmision());
 
-            escribirCabeceraPdf(table);
-            escribirDatosPdf(table);
+        PdfPTable table = new PdfPTable(6);
+        table.setWidthPercentage(100);
+        table.setWidths(new float[]{1.6f, 3.0f, 3.2f, 1.8f, 1.5f, 1.6f});
+        table.setSpacingBefore(10);
 
-            document.add(table);
+        escribirCabecera(table);
+        escribirDatos(table);
 
-        } catch (DocumentException e) {
-            throw new IOException("Error al generar PDF", e);
-        } finally {
-            document.close();
-        }
+        document.add(table);
+        document.close();
     }
 }

@@ -144,6 +144,30 @@ public class ReporteServiceImpl implements ReporteService {
             }
         }
 
+        resultado.sort((a, b) -> {
+            if (a.getFecha() == null && b.getFecha() == null) {
+                return 0;
+            }
+            if (a.getFecha() == null) {
+                return 1;
+            }
+            if (b.getFecha() == null) {
+                return -1;
+            }
+
+            int cmp = b.getFecha().compareTo(a.getFecha());
+            if (cmp != 0) {
+                return cmp;
+            }
+
+            cmp = nullSafe(a.getPaciente()).compareToIgnoreCase(nullSafe(b.getPaciente()));
+            if (cmp != 0) {
+                return cmp;
+            }
+
+            return nullSafe(a.getExamen()).compareToIgnoreCase(nullSafe(b.getExamen()));
+        });
+
         return resultado;
     }
 

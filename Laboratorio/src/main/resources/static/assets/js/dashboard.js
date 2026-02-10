@@ -46,6 +46,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const mm = String(hoy.getMonth() + 1).padStart(2, '0');
     const dd = String(hoy.getDate()).padStart(2, '0');
     const hoyStr = `${yyyy}-${mm}-${dd}`;
+
+    const paginacionReporte = document.getElementById("paginacionReporte");
+
+    const paginadorReporte = crearPaginador({
+        container: paginacionReporte,
+        pageSize: 10,
+        onPageChange: (page) => {
+            renderReporteExamenes(getReporteFiltrado(), page);
+        }
+    });
+
+    const paginacionPagos = document.getElementById("paginacionPagos");
+
+    const paginadorPagos = crearPaginador({
+        container: paginacionPagos,
+        pageSize: 10,
+        onPageChange: (page) => {
+            renderPagos(getPagosFiltrados(), page);
+        }
+    });
+
+    const paginacionAlertas = document.getElementById("paginacionAlertas");
+    let alertasCache = [];
+
+    const paginadorAlertas = crearPaginador({
+        container: paginacionAlertas,
+        pageSize: 10,
+        onPageChange: (page) => {
+            renderAlertas(getAlertasFiltradas(), page);
+        }
+    });
+
     filtroDesde.value = hoyStr;
     filtroHasta.value = hoyStr;
     filtroPeriodo.value = "DIA";
@@ -57,6 +89,31 @@ document.addEventListener("DOMContentLoaded", () => {
             currency: 'CRC',
             minimumFractionDigits: 2
         });
+    }
+
+    function getReporteFiltrado() {
+        const q = normalizarTexto(filtroNombreExamenReporte?.value);
+        let data = [...reporteExamenesCache];
+
+        if (q) {
+            data = data.filter(item => normalizarTexto(item.examen).includes(q));
+        }
+
+        return data;
+    }
+
+    function getPagosFiltrados() {
+        const q = normalizarTexto(busquedaClientePagos?.value);
+        let data = [...pagosCache];
+
+        if (q) {
+            data = data.filter(p => normalizarTexto(p.paciente).includes(q));
+        }
+        return data;
+    }
+
+    function getAlertasFiltradas() {
+        return [...alertasCache];
     }
 
     function getPeriodoLabel() {
@@ -424,70 +481,213 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function renderReporteExamenes(data) {
+    function crearPaginador( { container, pageSize = 8, onPageChange }) {
+        let currentPage = 1;
+        let totalItems = 0;
+
+        function render() {
+            if (!container)
+                return;
+            container.innerHTML = "";
+
+            const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
+            // ocultar si no hace falta
+            if (totalItems <= pageSize)
+                return;
+
+            const nav = document.createElement("nav");
+            const ul = document.createElement("ul");
+            ul.className = "pagination pagination-sm";
+
+            nav.appendChild(ul);
+            container.appendChild(nav);
+
+            const addBtn = (text, page, disabled, active = false) => {
+                const li = document.createElement("li");
+                li.className = "page-item";
+                if (disabled)
+                    li.classList.add("disabled");
+                if (active)
+                    li.classList.add("active");
+
+                const a = document.createElement("a");
+                a.href = "#";
+                a.className = "page-link";
+                a.textContent = text;
+
+                a.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    if (disabled)
+                        return;
+                    currentPage = page;
+                    onPageChange(currentPage);
+                    render();
+                });
+
+                li.appendChild(a);
+                ul.appendChild(li);
+            };
+
+            addBtn("Anterior", currentPage - 1, currentPage === 1);
+
+            for (let i = 1; i <= totalPages; i++) {
+                addBtn(String(i), i, false, i === currentPage);
+            }
+
+            addBtn("Siguiente", currentPage + 1, currentPage === totalPages);
+        }
+
+        return {
+            setTotalItems(n) {
+                totalItems = n || 0;
+                const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+                if (currentPage > totalPages)
+                    currentPage = totalPages;
+                render();
+            },
+            setPage(p) {
+                currentPage = p || 1;
+                render();
+            },
+            getPage() {
+                return currentPage;
+            },
+            getPageSize() {
+                return pageSize;
+            },
+            reset() {
+                currentPage = 1;
+                render();
+            }
+        };
+    }
+
+    function paginarArray(arr, page, pageSize) {
+        const start = (page - 1) * pageSize;
+        return arr.slice(start, start + pageSize);
+    }
+
+
+    function renderReporteExamenes(data, page = 1) {
         tablaReporteBody.innerHTML = "";
         resumenReporte.textContent = "";
 
         if (!data || data.length === 0) {
             const tr = document.createElement("tr");
             tr.innerHTML = `
-            <td colspan="6" class="text-center text-muted">
-                No se encontraron resultados para los filtros aplicados.
-            </td>`;
+                <td colspan="6" class="text-center text-muted">
+                  No se encontraron resultados para los filtros aplicados.
+                </td>`;
             tablaReporteBody.appendChild(tr);
 
             resumenReporte.textContent = "Sin datos para mostrar.";
+            paginadorReporte.setTotalItems(0);
             return;
         }
 
         let totalMonto = 0;
         const porArea = {};
-
         data.forEach(item => {
             const montoNum = item.monto != null ? Number(item.monto) : null;
-
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-            <td>${formatearFecha(item.fecha)}</td>
-            <td>${item.paciente || ""}</td>
-            <td>${item.examen || ""}</td>
-            <td>${item.area || ""}</td>
-            <td>${formatearEstado(item.estado)}</td>
-            <td>${montoNum != null ? montoNum.toFixed(2) : ""}</td>
-        `;
-            tablaReporteBody.appendChild(tr);
-
-            if (montoNum != null && !Number.isNaN(montoNum)) {
+            if (montoNum != null && !Number.isNaN(montoNum))
                 totalMonto += montoNum;
-            }
-
             const area = item.area || "Sin área";
             porArea[area] = (porArea[area] || 0) + 1;
         });
 
         const totalReg = data.length;
-        const partesArea = Object.entries(porArea)
-                .map(([area, cant]) => `${area}: ${cant}`)
-                .join(" | ");
-
+        const partesArea = Object.entries(porArea).map(([a, c]) => `${a}: ${c}`).join(" | ");
         resumenReporte.innerHTML =
                 `Total de registros: ${totalReg} | Monto total: ₡${totalMonto.toFixed(2)}` +
                 (partesArea ? `<br>Registros por área: ${partesArea}` : "");
+
+        //paginar
+        paginadorReporte.setTotalItems(data.length);
+        const pageSize = paginadorReporte.getPageSize();
+        const pageData = paginarArray(data, page, pageSize);
+
+        pageData.forEach(item => {
+            const montoNum = item.monto != null ? Number(item.monto) : null;
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${formatearFecha(item.fecha)}</td>
+                <td>${item.paciente || ""}</td>
+                <td>${item.examen || ""}</td>
+                <td>${item.area || ""}</td>
+                <td>${formatearEstado(item.estado)}</td>
+                <td>${montoNum != null ? montoNum.toFixed(2) : ""}</td>
+              `;
+            tablaReporteBody.appendChild(tr);
+        });
     }
 
-    function aplicarFiltroReporteExamenes() {
-        const q = normalizarTexto(filtroNombreExamenReporte?.value);
 
-        if (!q) {
-            renderReporteExamenes(reporteExamenesCache);
+    function renderAlertas(data, page = 1) {
+        tablaAlertasBody.innerHTML = "";
+
+        if (!data || data.length === 0) {
+            const trVacio = document.createElement("tr");
+            trVacio.innerHTML = `
+                <td colspan="8" class="text-center text-muted">
+                  No hay insumos en alerta.
+                </td>`;
+            tablaAlertasBody.appendChild(trVacio);
+
+            paginadorAlertas.setTotalItems(0);
             return;
         }
 
-        const filtrados = reporteExamenesCache.filter(item =>
-            normalizarTexto(item.examen).includes(q)
-        );
+        paginadorAlertas.setTotalItems(data.length);
 
-        renderReporteExamenes(filtrados);
+        const pageSize = paginadorAlertas.getPageSize();
+        const pageData = paginarArray(data, page, pageSize);
+
+        pageData.forEach(dto => {
+            const tr = document.createElement("tr");
+            const clase = clasePorAlerta(dto);
+            if (clase)
+                tr.classList.add(clase);
+
+            tr.innerHTML = `
+                <td>${dto.codigoBarras || ""}</td>
+                <td>${dto.nombreInsumo || ""}</td>
+                <td>${dto.tipoInsumo || ""}</td>
+                <td>${dto.stockActual ?? ""}</td>
+                <td>${dto.stockMinimo ?? ""}</td>
+                <td>${formatearFecha(dto.fechaVencimiento)}</td>
+                <td>${dto.diasParaVencer != null ? dto.diasParaVencer : "-"}</td>
+                <td>${dto.etiquetaAlerta || ""}</td>
+              `;
+            tablaAlertasBody.appendChild(tr);
+        });
+    }
+
+    async function cargarAlertasInventario() {
+        try {
+            const tipo = filtroTipoAlerta ? filtroTipoAlerta.value : "TODAS";
+            const params = new URLSearchParams();
+            params.append("tipo", tipo || "TODAS");
+
+            const resp = await fetch(`${API_BASE}/inventario-alertas?` + params.toString());
+            if (!resp.ok) {
+                console.error("Error cargando alertas de inventario");
+                return;
+            }
+
+            const data = await resp.json();
+            alertasCache = Array.isArray(data) ? data : [];
+            paginadorAlertas.reset();
+            renderAlertas(getAlertasFiltradas(), 1);
+
+        } catch (e) {
+            console.error("Error cargando alertas de inventario:", e);
+        }
+    }
+
+    function aplicarFiltroReporteExamenes() {
+        paginadorReporte.reset();
+        renderReporteExamenes(getReporteFiltrado(), 1);
     }
 
     async function cargarReporteExamenes() {
@@ -516,53 +716,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    async function cargarAlertasInventario() {
-        try {
-            const tipo = filtroTipoAlerta ? filtroTipoAlerta.value : "TODAS";
-            const params = new URLSearchParams();
-            params.append("tipo", tipo || "TODAS");
-            const resp = await fetch(`${API_BASE}/inventario-alertas?` + params.toString());
-            if (!resp.ok) {
-                console.error("Error cargando alertas de inventario");
-                return;
-            }
-
-            const data = await resp.json();
-            tablaAlertasBody.innerHTML = "";
-            if (!data || data.length === 0) {
-                const trVacio = document.createElement("tr");
-                trVacio.innerHTML =
-                        `<td colspan="8" class="text-center text-muted">
-                        No hay insumos en alerta.
-                    </td>`;
-                tablaAlertasBody.appendChild(trVacio);
-                return;
-            }
-
-            data.forEach(dto => {
-                const tr = document.createElement("tr");
-                const clase = clasePorAlerta(dto);
-                if (clase) {
-                    tr.classList.add(clase);
-                }
-
-                tr.innerHTML = `
-                    <td>${dto.codigoBarras || ""}</td>
-                    <td>${dto.nombreInsumo}</td>
-                    <td>${dto.tipoInsumo || ""}</td>
-                    <td>${dto.stockActual}</td>
-                    <td>${dto.stockMinimo}</td>
-                    <td>${formatearFecha(dto.fechaVencimiento)}</td>
-                    <td>${dto.diasParaVencer != null ? dto.diasParaVencer : "-"}</td>
-                    <td>${dto.etiquetaAlerta}</td>
-                `;
-                tablaAlertasBody.appendChild(tr);
-            });
-        } catch (e) {
-            console.error("Error cargando alertas de inventario:", e);
-        }
-    }
-
     function normalizarTexto(s) {
         return (s || "")
                 .toString()
@@ -571,66 +724,61 @@ document.addEventListener("DOMContentLoaded", () => {
                 .trim();
     }
 
-    function renderPagos(data) {
+    function renderPagos(data, page = 1) {
         tablaPagosBody.innerHTML = "";
         resumenPagos.textContent = "";
 
         if (!data || data.length === 0) {
             const tr = document.createElement("tr");
             tr.innerHTML = `
-            <td colspan="4" class="text-center text-muted">
-                No hay pagos para mostrar.
-            </td>`;
+                <td colspan="4" class="text-center text-muted">
+                  No hay pagos para mostrar.
+                </td>`;
             tablaPagosBody.appendChild(tr);
 
             resumenPagos.textContent = "Sin pagos para mostrar.";
+            paginadorPagos.setTotalItems(0);
             return;
         }
 
         let totalMonto = 0;
         const pagosPorMetodo = {};
-
         data.forEach(p => {
             const montoNum = p.monto != null ? Number(p.monto) : 0;
             totalMonto += montoNum;
-
             const metodo = p.tipoPago || "Sin método";
             pagosPorMetodo[metodo] = (pagosPorMetodo[metodo] || 0) + 1;
-
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-            <td>${formatearFechaHora(p.fechaCita)}</td>
-            <td>${p.paciente || ""}</td>
-            <td>${montoNum.toFixed(2)}</td>
-            <td>${metodo}</td>
-        `;
-            tablaPagosBody.appendChild(tr);
         });
 
         const totalPagos = data.length;
-
         const detalleMetodos = Object.entries(pagosPorMetodo)
-                .map(([metodo, cant]) => `${metodo}: ${cant}`)
+                .map(([m, c]) => `${m}: ${c}`)
                 .join(" | ");
 
         resumenPagos.innerHTML =
                 `Total de pagos: ${totalPagos} | Monto total: ₡${totalMonto.toFixed(2)}` +
                 (detalleMetodos ? `<br>Detalle por método: ${detalleMetodos}` : "");
+
+        paginadorPagos.setTotalItems(data.length);
+        const pageSize = paginadorPagos.getPageSize();
+        const pageData = paginarArray(data, page, pageSize);
+
+        pageData.forEach(p => {
+            const montoNum = p.monto != null ? Number(p.monto) : 0;
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${formatearFechaHora(p.fechaCita)}</td>
+                <td>${p.paciente || ""}</td>
+                <td>${montoNum.toFixed(2)}</td>
+                <td>${p.tipoPago || ""}</td>
+              `;
+            tablaPagosBody.appendChild(tr);
+        });
     }
 
     function aplicarFiltroPagos() {
-        const q = normalizarTexto(busquedaClientePagos?.value);
-
-        if (!q) {
-            renderPagos(pagosCache);
-            return;
-        }
-
-        const filtrados = pagosCache.filter(p =>
-            normalizarTexto(p.paciente).includes(q)
-        );
-
-        renderPagos(filtrados);
+        paginadorPagos.reset();
+        renderPagos(getPagosFiltrados(), 1);
     }
 
     async function cargarPagos() {
@@ -654,6 +802,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function refrescarDashboard() {
+        paginadorReporte.reset();
+        paginadorPagos.reset();
+        paginadorAlertas.reset();
+
         await Promise.all([
             cargarResumen(),
             cargarTopExamenes(),

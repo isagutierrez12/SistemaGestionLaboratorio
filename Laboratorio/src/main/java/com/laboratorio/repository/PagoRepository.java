@@ -89,4 +89,32 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
             @Param("paciente") String paciente
     );
 
+    @Query(value = """
+        select 
+            c.fecha_cita as fechaCita,
+            concat(
+                coalesce(pac.nombre, ''),
+                case when pac.primer_apellido is not null then concat(' ', pac.primer_apellido) else '' end,
+                case when pac.segundo_apellido is not null then concat(' ', pac.segundo_apellido) else '' end
+            ) as paciente,
+            p.monto as monto,
+            p.tipo_pago as tipoPago
+        from pago p
+        join cita c on c.id_cita = p.id_cita
+        join solicitud s on s.id_solicitud = c.id_solicitud
+        join paciente pac on pac.id_paciente = s.id_paciente
+        where c.fecha_cita between :desde and :hasta
+          and (:tipo is null or :tipo = '' or p.tipo_pago = :tipo)
+          and (:paciente is null or :paciente = '' or 
+               lower(concat(coalesce(pac.nombre,''),' ',coalesce(pac.primer_apellido,''),' ',coalesce(pac.segundo_apellido,'')))
+               like lower(concat('%', :paciente, '%')))
+        order by c.fecha_cita desc
+        """, nativeQuery = true)
+    List<Object[]> listarPagosExportRaw(
+            @Param("desde") LocalDateTime desde,
+            @Param("hasta") LocalDateTime hasta,
+            @Param("tipo") String tipo,
+            @Param("paciente") String paciente
+    );
+
 }
