@@ -32,6 +32,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional(readOnly = true)
+    public boolean existsByCedula(String cedula) {
+        return usuarioRepository.existsByCedula(cedula);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByUsername(String username) {
+        return usuarioRepository.existsByUsername(username);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Usuario> getUsuarios() {
         return usuarioRepository.findAll();
     }

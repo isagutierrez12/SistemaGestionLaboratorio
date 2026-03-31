@@ -51,8 +51,9 @@
                         <div class="card">
                             <div class="card-body">
 
-                                <div class="datatable-controls">
-                                    <a th:href="@{/usuario/agregar}" class="btn-register"> Agregar</a>                    
+                                <div class="datatable-controls d-flex justify-content-between align-items-center gap-2">
+                                    <a th:href="@{/usuario/agregar}" class="btn-register"> Agregar</a>      
+                                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/usuario/inactivos}" class="btn btn-primary">Usuarios Inactivos</a>
                                 </div>
 
                                 <div th:replace="~{usuario/fragmentos :: busqueda}"></div>
@@ -173,11 +174,13 @@
                                     </div>
 
                                     <!-- USERNAME -->
-                                    <div class="col-md-6">
+                                  <div class="col-md-6">
                                         <label class="form-label">Nombre de usuario</label>
                                         <input type="text" class="form-control"
                                                th:field="*{username}"
-                                               required minlength="4" maxlength="20"/>
+                                               required minlength="4" maxlength="20"
+                                               pattern="^[A-Za-z0-9_]+$"
+                                               title="Solo se permiten letras, números y guion bajo (_)"/>
                                     </div>
 
                                     <!-- CEDULA -->
@@ -358,6 +361,76 @@
                 </div>
                 </div>
             </section>
+        </section>
+        
+        
+         <section th:fragment="inactivos" id="main" class="main">
+
+            <div class="pagetitle">
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a>Inicio</a></li>
+                        <li class="breadcrumb-item">Usuarios</li>
+                        <li class="breadcrumb-item active">Datos</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <section class="section">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="card">
+                            <div class="card-body">
+
+                                <div class="datatable-controls d-flex justify-content-between align-items-center gap-2">
+                                    <a th:href="@{/usuario/usuarios}" class="btn-register">Regresar</a>      
+                                    
+                                </div>
+
+                                <div th:replace="~{usuario/fragmentos :: busqueda}"></div>
+
+                                <!-- Table with stripped rows -->
+                                <table class="table datatable">
+                                    <thead>
+                                        <tr>     
+                                            <th >Nombre</th>  
+                                            <th >Primer Apellido</th>            
+                                            <th >Segundo Apellido</th>        
+                                            <th >Usuario</th>
+                                            <th> Cédula</th>           
+                                            <th >Estado</th>        
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyUsuarios">
+                                        <tr th:each="u : ${usuarios}">
+                                            <td style="vertical-align: middle; ">[[${u.nombre}]]</td>
+                                            <td style="vertical-align: middle; ">[[${u.primerApellido}]]</td>
+                                            <td style="vertical-align: middle; ">[[${u.segundoApellido}]]</td>
+                                            <td style="vertical-align: middle; ">[[${u.username}]]</td>
+                                            <td style="vertical-align: middle; ">[[${u.cedula}]]</td>
+                                            <td style="vertical-align: middle; ">
+                                                [[${u.activo} ? 'Activo' : 'Inactivo']]
+                                            </td>
+
+                                            <td class="actions-cell" style="vertical-align: middle; ">
+                                                <a th:href="@{/usuario/modificar/{id}(id=${u.idUsuario})}" class="btn-edit" title="Actualizar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+             <div class="d-flex justify-content-center mt-4 text-black">
+                <nav>
+                    <ul class="pagination pagination-sm"></ul>
+                </nav>
+            </div>
         </section>
 
         <div th:replace="~{layout/layout :: jsfiles-admin}"></div>

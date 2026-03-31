@@ -6,6 +6,8 @@ import com.laboratorio.model.Ruta;
 import com.laboratorio.service.RutaPermitService;
 import com.laboratorio.service.RutaService;
 import com.laboratorio.security.UsuarioActivoFilter;
+import com.laboratorio.service.NotificacionService;
+import com.laboratorio.service.UsuarioService;
 import java.util.Arrays;
 
 import java.util.List;
@@ -38,52 +40,54 @@ public class ProjectConfig implements WebMvcConfigurer {
     @Autowired
     private CustomAuthenticationSuccessHandler authenticationSuccessHandler;
 
-    @Autowired
-    private CustomAuthenticationFailureHandler authenticationFailureHandler;
+   @Bean
+public CustomAuthenticationFailureHandler authenticationFailureHandler(
+        NotificacionService notificacionService,
+        UsuarioService usuarioService) {
+    return new CustomAuthenticationFailureHandler(notificacionService, usuarioService);
+}
+  @Bean
+public SecurityFilterChain securityFilterChain(
+        HttpSecurity http,
+        UsuarioActivoFilter usuarioActivoFilter,
+        CustomAuthenticationSuccessHandler authenticationSuccessHandler,
+        CustomAuthenticationFailureHandler authenticationFailureHandler
+) throws Exception {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http,
-            UsuarioActivoFilter usuarioActivoFilter
-    ) throws Exception {
+    String[] rutaPermit = rutaPermitService.getRutaPermitsString();
+    List<Ruta> rutas = rutaService.getAll();
 
-        String[] rutaPermit = rutaPermitService.getRutaPermitsString();
-        List<Ruta> rutas = rutaService.getAll();
+    http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/session/**"))
+            .addFilterBefore(usuarioActivoFilter,
+                    org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+            .authorizeHttpRequests(request -> {
+                request.requestMatchers(rutaPermit).permitAll();
+                for (Ruta ruta : rutas) {
+                    String[] roles = ruta.getRoleName().split(",");
+                    request.requestMatchers(ruta.getRuta()).hasAnyRole(roles);
+                }
+            })
+            .formLogin(form -> form
+                    .loginPage("/login")
+                    .successHandler(authenticationSuccessHandler)
+                    .failureHandler(authenticationFailureHandler)  // ← ya existe aquí
+                    .defaultSuccessUrl("/dashboard", true)
+                    .permitAll()
+            )
+            .logout(logout -> logout
+                    .logoutSuccessUrl("/login?reason=logout")
+                    .permitAll()
+            )
+            .sessionManagement(session -> session
+                    .invalidSessionUrl("/login?reason=expired")
+                    .maximumSessions(1)
+                    .expiredUrl("/login?reason=expired")
+            );
 
-        http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/session/**"))
-                .addFilterBefore(
-                        usuarioActivoFilter,
-                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class
-                )
-              . authorizeHttpRequests((request) -> {
-                    request.requestMatchers(rutaPermit).permitAll();
-                    for (Ruta ruta : rutas) {
-                        String[] roles = ruta.getRoleName().split(",");
-                        request.requestMatchers(ruta.getRuta()).hasAnyRole(roles);
-                    }
-
-                })
-                .formLogin(form -> form
-                .loginPage("/login")
-                .successHandler(authenticationSuccessHandler)
-                .failureHandler(authenticationFailureHandler)
-                .defaultSuccessUrl("/dashboard", true)
-                .permitAll()
-                )
-                .logout(logout -> logout
-                .logoutSuccessUrl("/login?reason=logout")
-                .permitAll()
-                )
-                .sessionManagement(session -> session
-                .invalidSessionUrl("/login?reason=expired")
-                .maximumSessions(1)
-                .expiredUrl("/login?reason=expired")
-                );
-
-        return http.build();
-    }
+    return http.build();
+}
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -119,7 +123,7 @@ public class ProjectConfig implements WebMvcConfigurer {
     @Bean
     public SpringResourceTemplateResolver templateResolver_0(){
         SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
-        resolver.setPrefix("classpath:/temnplates");
+        resolver.setPrefix("classpath:/templates");
         resolver.setSuffix(".html");
         resolver.setTemplateMode(TemplateMode.HTML);
         resolver.setOrder(0);
