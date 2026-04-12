@@ -72,7 +72,7 @@ public SecurityFilterChain securityFilterChain(
             .formLogin(form -> form
                     .loginPage("/login")
                     .successHandler(authenticationSuccessHandler)
-                    .failureHandler(authenticationFailureHandler)  // ← ya existe aquí
+                    .failureHandler(authenticationFailureHandler)
                     .defaultSuccessUrl("/dashboard", true)
                     .permitAll()
             )

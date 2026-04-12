@@ -15,48 +15,49 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
-
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
-    
-  
+
     private final NotificacionService notificacionService;
     private final UsuarioService usuarioService;
 
     public CustomAuthenticationFailureHandler(NotificacionService notificacionService,
-                                              UsuarioService usuarioService) {
+            UsuarioService usuarioService) {
         this.notificacionService = notificacionService;
         this.usuarioService = usuarioService;
     }
 
-   
     public void onAuthenticationFailure(HttpServletRequest request,
-                                      HttpServletResponse response,
-                                      AuthenticationException exception) throws IOException {
-        
+            HttpServletResponse response,
+            AuthenticationException exception) throws IOException {
+
         String username = request.getParameter("username");
         String ip = request.getRemoteAddr();
-        
+
+        String password = request.getParameter("password");
+
         if (username != null && !username.trim().isEmpty()) {
             notificacionService.registrarIntentoFallido(username, ip);
-            
+
             System.out.println("Intento fallido para: " + username + " desde IP: " + ip);
         }
-         String errorMessage = "Credenciales incorrectas";
+        String errorMessage = "Credenciales incorrectas";
 
+        if (username == null || username.trim().isEmpty()
+                || password == null || password.trim().isEmpty()) {
+
+            errorMessage = "Debe completar todos los campos";
+        }
         if (!usuarioService.existsByUsername(username)) {
             errorMessage = "El usuario no existe";
-        } 
-        else if (exception.getMessage().contains("Bad credentials")) {
+        } else if (exception.getMessage().contains("Bad credentials")) {
             errorMessage = "La contraseña es incorrecta";
-        } 
-        else if (exception.getMessage().contains("User is disabled")) {
+        } else if (exception.getMessage().contains("User is disabled")) {
             errorMessage = "La cuenta está desactivada";
-        }
-        else if (exception.getMessage().contains("locked")) {
+        } else if (exception.getMessage().contains("locked")) {
             errorMessage = "La cuenta está bloqueada";
         }
-        
-        response.sendRedirect("/login?error=" +
-                URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+
+        response.sendRedirect("/login?error="
+                + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
     }
 }
