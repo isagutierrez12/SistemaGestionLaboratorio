@@ -8,5 +8,6 @@ import org.springframework.stereotype.Service;
 public interface InsumoService extends CrudService<Insumo>{
     
     List<Insumo> buscarPorQuery(String query);
+     public List<Insumo> getActive();
 
 }

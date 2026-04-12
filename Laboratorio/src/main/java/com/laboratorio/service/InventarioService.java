@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface InventarioService extends CrudService<Inventario> {
+   
 
     public void ajustarInventarioPorCita(Long idCita, String nuevoEstado);
 
@@ -18,4 +19,8 @@ public interface InventarioService extends CrudService<Inventario> {
 
     void exportarExcel(List<Inventario> inventarios, OutputStream os) throws IOException;
 
+    boolean existsByCodigoBarras(String codigoBarras);
+    
+    public Inventario findByCodigoBarras(String codigoBarras);
+    public boolean existsByInsumo_IdInsumoAndActiveTrue(Long idInsumo);
 }

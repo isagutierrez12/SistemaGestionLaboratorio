@@ -1,7 +1,9 @@
 function exportarPDFInventario() {
-    window.location.href = "/inventario/export/pdf";
+    const query = document.getElementById("busquedaInventarioInput").value;
+    window.location.href = '/inventario/export/pdf?query=' + encodeURIComponent(query);
 }
 
 function exportarExcelInventario() {
-    window.location.href = "/inventario/export/excel";
+    const query = document.getElementById("busquedaInventarioInput").value;
+    window.location.href = '/inventario/export/excel?query=' + encodeURIComponent(query);
 }

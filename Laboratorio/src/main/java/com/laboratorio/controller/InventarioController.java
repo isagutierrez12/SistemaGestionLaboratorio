@@ -40,7 +40,7 @@ public class InventarioController {
     @GetMapping("/agregar")
     public String agregarInsumo(Model model) {
         model.addAttribute("inventario", new Inventario());
-        model.addAttribute("insumos", insumoService.getAll());
+        model.addAttribute("insumos", insumoService.getActive());
         return "/inventario/agregar";
     }
 
@@ -67,8 +67,22 @@ public class InventarioController {
             RedirectAttributes redirectAttributes,
             Model model) {
 
-        boolean esNuevo = (inventario.getIdInventario() == null); 
+        boolean esNuevo = (inventario.getIdInventario() == null);
 
+        Inventario existente = inventarioService.findByCodigoBarras(inventario.getCodigoBarras());
+
+        if (existente != null) {
+
+            if (esNuevo) {
+                model.addAttribute("error", "No se pueden agregar códigos de barras duplicados");
+                return "/inventario/agregar";
+            }
+
+            if (!existente.getIdInventario().equals(inventario.getIdInventario())) {
+                model.addAttribute("error", "El código de barras ya está en uso");
+                return "/inventario/modificar";
+            }
+        }
         try {
             if (!esNuevo) {
                 Inventario original = inventarioService.get(new Inventario() {
@@ -100,7 +114,7 @@ public class InventarioController {
         } catch (IllegalArgumentException e) {
 
             model.addAttribute("error", e.getMessage());
-            model.addAttribute("insumos", insumoService.getAll());
+            model.addAttribute("insumos", insumoService.getActive());
             model.addAttribute("inventario", inventario);
 
             return esNuevo ? "/inventario/agregar" : "/inventario/modificar";
@@ -119,16 +133,34 @@ public class InventarioController {
     }
 
     @GetMapping("/export/pdf")
-    public void exportToPDF(HttpServletResponse response) throws IOException {
-        List<Inventario> lista = inventarioService.getAll();
+    public void exportToPDF(
+            @RequestParam(value = "query", required = false) String query,
+            HttpServletResponse response) throws IOException {
+
+        List<Inventario> lista;
+
+        if (query == null || query.trim().isEmpty()) {
+            lista = inventarioService.getAll();
+        } else {
+            lista = inventarioService.buscarInventarioPorQuery(query.trim());
+        }
 
         InventarioPDFExporter exporter = new InventarioPDFExporter(lista);
         exporter.export(response);
     }
 
     @GetMapping("/export/excel")
-    public void exportToExcel(HttpServletResponse response) throws IOException {
-        List<Inventario> lista = inventarioService.getAll();
+    public void exportToExcel(
+            @RequestParam(value = "query", required = false) String query,
+            HttpServletResponse response) throws IOException {
+
+        List<Inventario> lista;
+
+        if (query == null || query.trim().isEmpty()) {
+            lista = inventarioService.getAll();
+        } else {
+            lista = inventarioService.buscarInventarioPorQuery(query.trim());
+        }
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=Inventario.xlsx");
