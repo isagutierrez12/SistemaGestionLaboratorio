@@ -251,6 +251,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                     </tbody>
                                 </table>
                             </div>
+                            <div id="paginacionAlertas" class="d-flex justify-content-center mt-3"></div>
 
                         </div>
 
@@ -267,48 +268,56 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         <div class="card-body">
 
                             <div class="mb-3">
-                                <h5 class="card-title mb-1">Reporte de exámenes realizados</h5>
+
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h5 class="card-title mb-0">Reporte de exámenes realizados</h5>
+
+                                    <div class="d-flex gap-2">
+                                        <button id="btnExportarReportePdf"
+                                                class="btn btn-save">Exportar PDF</button>
+
+                                        <button id="btnExportarReporteExcel"
+                                                class="btn btn-save">Exportar Excel</button>
+                                    </div>
+                                </div>
+
                                 <small class="text-muted">
-                                    Usa el rango de fechas y el área del dashboard. Filtra por estado y por nombre de examen.
+                                    Usa el rango de fechas del dashboard. Filtra por nombre del examen, por área y por estado.
                                 </small>
+
                             </div>
 
-                            <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                            <div class="row align-items-center mb-3 g-3">
+
                                 <!-- filtro por nombre de examen -->
-                                <input id="filtroNombreExamenReporte"
-                                       type="text"
-                                       class="form-control filtro-alto"
-                                       placeholder="Nombre de examen" style="width: 200px;"/>
+                                <div class="col-12 col-md-6">
+                                    <input id="filtroNombreExamenReporte"
+                                           type="text"
+                                           class="form-control filtro-alto"
+                                           placeholder="Nombre de examen"/>
+                                </div>
 
                                 <!-- filtro por area -->
-                                <select id="filtroAreaReporte"
-                                        class="form-select filtro-alto"
-                                        style="width: 200px;">
-                                    <option value="">Todas las áreas</option>
-                                </select>
+                                <div class="col-12 col-md-3">
+                                    <select id="filtroAreaReporte"
+                                            class="form-select filtro-alto">
+                                        <option value="">Todas las áreas</option>
+                                    </select>
+                                </div>
 
                                 <!-- estados de la cita -->
-                                <select id="filtroEstadoReporte"
-                                        class="form-select filtro-alto"
-                                        style="width: 200px;">
-                                    <option value="">Todos los estados</option>
-                                    <option value="CONFIRMADA">Confirmadas</option>
-                                    <option value="PENDIENTE">Pendientes</option>
-                                    <option value="AGENDADA">Agendadas</option>
-                                    <option value="CANCELADA">Canceladas</option>
-                                </select>
+                                <div class="col-12 col-md-3">
+                                    <select id="filtroEstadoReporte"
+                                            class="form-select filtro-alto">
+                                        <option value="">Todos los estados</option>
+                                        <option value="CONFIRMADA">Terminadas</option>
+                                        <option value="PENDIENTE">Agendadas</option>
+                                    </select>
+                                </div>
+
                             </div>
 
-                            <div class="d-flex flex-wrap gap-3 mb-3">
-                                <button id="btnGenerarReporte"
-                                        class="btn btn-save">Generar reporte</button>
 
-                                <button id="btnExportarReportePdf"
-                                        class="btn btn-save">Exportar PDF</button>
-
-                                <button id="btnExportarReporteExcel"
-                                        class="btn btn-save">Exportar Excel</button>
-                            </div>
 
                             <div class="table-responsive">
                                 <table class="table table-sm table-hover align-middle"
@@ -326,15 +335,85 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                     <tbody>
                                         <tr>
                                             <td colspan="6" class="text-center text-muted">
-                                                No se han generado resultados. Ajusta los filtros y presiona "Generar reporte".
+                                                No se han generado resultados.
                                             </td>
                                         </tr>
                                     </tbody>
-                                </table>
+                                </table>                                
+                            </div>
+                            <div id="paginacionReporte" class="d-flex justify-content-center mt-3"></div>
+
+                            <div id="resumenReporte" class="mt-2 small text-muted"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+
+
+        <th:block th:fragment="pagos">
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h5 class="card-title mb-0">Pagos registrados</h5>
+
+                                    <div class="d-flex gap-2">
+                                        <button id="btnExportarPagosPdf"
+                                                class="btn btn-save">Exportar PDF</button>
+
+                                        <button id="btnExportarPagosExcel"
+                                                class="btn btn-save">Exportar Excel</button>
+                                    </div>
+                                </div>
+                                
+                                <small class="text-muted">
+                                    Usa el rango de fechas del dashboard. Filtra por nombre de cliente y por método de pago.
+                                </small>
                             </div>
 
-                            <div id="resumenReporte"
-                                 class="mt-2 small text-muted"></div>
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <input id="busquedaClientePagos" type="text" class="form-control"
+                                           placeholder="Buscar cliente por nombre" autocomplete="off"/>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="filtroTipoPago" class="form-select filtro-alto" style="max-width: 230px;">
+                                        <option value="">Todos los métodos</option>
+                                        <option value="Efectivo">Efectivo</option>
+                                        <option value="Tarjeta">Tarjeta</option>
+                                        <option value="SINPE">SINPE</option>
+                                        <option value="SINPE y Tarjeta">SINPE y Tarjeta</option>
+                                        <option value="SINPE y Efectivo">SINPE y Efectivo</option>
+                                        <option value="Efectivo y Tarjeta">Efectivo y Tarjeta</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover align-middle" id="tablaPagos">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha cita</th>
+                                            <th>Paciente</th>
+                                            <th>Monto</th>
+                                            <th>Método</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted">No hay pagos para mostrar.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>                             
+                            </div>
+                            <div id="paginacionPagos" class="d-flex justify-content-center mt-3"></div>
+
+                            <div id="resumenPagos" class="mt-2 small text-muted"></div>
+
                         </div>
                     </div>
                 </div>

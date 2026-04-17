@@ -196,7 +196,7 @@ public class CitaController {
 
                             SolicitudDetalle detalleExamen = new SolicitudDetalle();
                             detalleExamen.setExamen(examenPaquete);
-                            detalleExamen.setPaquete(paquete); // opcional
+                            detalleExamen.setPaquete(paquete);
                             solicitud.addDetalle(detalleExamen);
 
                             precioTotal += examenPaquete.getPrecio().doubleValue();
@@ -827,6 +827,12 @@ public class CitaController {
     public List<String> horasOcupadas(@RequestParam String fecha) {
         LocalDate fechaLocal = LocalDate.parse(fecha);
         return citaService.obtenerHorasOcupadas(fechaLocal);
+    }
+    
+    @GetMapping("/pago/existe")
+    @ResponseBody
+    public boolean existePago(@RequestParam Long idCita) {
+        return pagoService.existsByCita(idCita);
     }
 
 }
