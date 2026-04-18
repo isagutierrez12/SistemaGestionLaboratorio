@@ -52,32 +52,56 @@ public class PaqueteController {
     @PostMapping("/guardar")
     public String guardarPaquete(@ModelAttribute("paquete") @Valid Paquete paquete,
             BindingResult result,
+            @RequestParam(value = "examenesSeleccionados", required = false) String examenesSeleccionados,
             RedirectAttributes redirectAttributes,
             Model model) {
 
         boolean esNuevo = (paquete.getIdPaquete() == null);
 
         if (result.hasErrors()) {
-            model.addAttribute("paquete", paquete); // <-- Agregar esto
+            model.addAttribute("paquete", paquete);
             model.addAttribute("error", "Hay campos inválidos. Revise la información.");
+
+            if (!esNuevo) {
+                cargarDatosEdicion(paquete.getIdPaquete(), model);
+            }
+
             return esNuevo ? "paquete/agregar" : "paquete/modificar";
         }
 
         try {
             paqueteService.save(paquete);
+
+            // Solo actualizar detalles si realmente vino el hidden del frontend
+            if (!esNuevo && examenesSeleccionados != null) {
+                paqueteService.actualizarExamenesDelPaquete(paquete.getIdPaquete(), examenesSeleccionados);
+            }
+
         } catch (IllegalArgumentException ex) {
             model.addAttribute("paquete", paquete);
             model.addAttribute("error", ex.getMessage());
+
+            if (!esNuevo) {
+                cargarDatosEdicion(paquete.getIdPaquete(), model);
+            }
+
             return esNuevo ? "paquete/agregar" : "paquete/modificar";
         }
 
-        if (esNuevo) {
-            redirectAttributes.addFlashAttribute("success", "Paquete registrado correctamente.");
-        } else {
-            redirectAttributes.addFlashAttribute("success", "Paquete actualizado correctamente.");
-        }
+        redirectAttributes.addFlashAttribute("success",
+                esNuevo ? "Paquete registrado correctamente." : "Paquete actualizado correctamente.");
 
         return "redirect:/paquete/paquetes";
+    }
+
+    private void cargarDatosEdicion(Long idPaquete, Model model) {
+        List<DetallePaquete> detalles = detallePaqueteRepository.findByPaqueteIdPaquete(idPaquete);
+        model.addAttribute("detallesPaquete", detalles);
+
+        List<Examen> examenesActivos = examenService.getAll().stream()
+                .filter(Examen::getActivo)
+                .collect(Collectors.toList());
+        model.addAttribute("examenesActivos", examenesActivos);
     }
 
     @GetMapping("/modificar/{idPaquete}")

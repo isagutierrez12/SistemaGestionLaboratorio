@@ -40,12 +40,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     </select>
                 </div>
 
-                <!-- Botón aplicar -->
-                <div class="col-md-3 d-flex align-items-end">
-                    <button id="btnAplicarFiltros"
-                            class="btn btn-filtros w-100">
-                        Aplicar filtros
-                    </button>
+                <!-- Botón restaurar filtros -->
+                <div class="col-md-3 d-flex justify-content-end align-items-end">
+                    <button id="btnRestaurarPeriodo" class="btn btn-save"
+                            style="min-width: 150px;
+                            white-space: nowrap">Restaurar Periodo</button>
                 </div>
 
             </div>
@@ -175,11 +174,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                 </div>
 
                                 <div class="d-flex gap-2">
+                                    <button id="btnRestaurarGrafico" class="btn btn-save">Restaurar Filtro</button>
+
                                     <button id="btnExportarTopPdf"
-                                            class="btn btn-save">Exportar PDF</button>
+                                            class="btn btn-export-pdf">Exportar PDF</button>
 
                                     <button id="btnExportarTopExcel"
-                                            class="btn btn-save">Exportar Excel</button>
+                                            class="btn btn-export-excel">Exportar Excel</button>
                                 </div>
                             </div>
 
@@ -216,14 +217,20 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="card-title mb-0">Insumos en alerta</h5>
 
-                                <!-- Filtro por tipo de alerta -->
-                                <select id="filtroTipoAlerta"
-                                        class="form-select filtro-alto"
-                                        style="max-width: 230px;">
-                                    <option value="TODAS">Todas las alertas</option>
-                                    <option value="BAJO_STOCK">Solo bajo stock</option>
-                                    <option value="VENCIMIENTO">Solo próximos a vencer</option>
-                                </select>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <button id="btnRestaurarAlertas" class="btn btn-save" 
+                                            style="min-width: 150px;
+                                            white-space: nowrap">Restaurar Filtro</button>
+
+                                    <!-- Filtro por tipo de alerta -->
+                                    <select id="filtroTipoAlerta"
+                                            class="form-select filtro-alto"
+                                            style="max-width: 230px;">
+                                        <option value="TODAS">Todas las alertas</option>
+                                        <option value="BAJO_STOCK">Solo bajo stock</option>
+                                        <option value="VENCIMIENTO">Solo próximos a vencer</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="table-responsive">
@@ -273,11 +280,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                     <h5 class="card-title mb-0">Reporte de exámenes realizados</h5>
 
                                     <div class="d-flex gap-2">
+                                        <button id="btnRestaurarReportes" class="btn btn-save">Restaurar Filtros</button>
+
                                         <button id="btnExportarReportePdf"
-                                                class="btn btn-save">Exportar PDF</button>
+                                                class="btn btn-export-pdf">Exportar PDF</button>
 
                                         <button id="btnExportarReporteExcel"
-                                                class="btn btn-save">Exportar Excel</button>
+                                                class="btn btn-export-excel">Exportar Excel</button>
                                     </div>
                                 </div>
 
@@ -362,14 +371,16 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                     <h5 class="card-title mb-0">Pagos registrados</h5>
 
                                     <div class="d-flex gap-2">
+                                        <button id="btnRestaurarPagos" class="btn btn-save">Restaurar Filtros</button>
+
                                         <button id="btnExportarPagosPdf"
-                                                class="btn btn-save">Exportar PDF</button>
+                                                class="btn btn-export-pdf">Exportar PDF</button>
 
                                         <button id="btnExportarPagosExcel"
-                                                class="btn btn-save">Exportar Excel</button>
+                                                class="btn btn-export-excel">Exportar Excel</button>
                                     </div>
                                 </div>
-                                
+
                                 <small class="text-muted">
                                     Usa el rango de fechas del dashboard. Filtra por nombre de cliente y por método de pago.
                                 </small>

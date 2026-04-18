@@ -118,4 +118,32 @@ public class PaqueteServiceImpl implements PaqueteService {
     public List<Paquete> getActivosConExamenes() {
         return paqueteRepository.findActivosConExamenes();
     }
+
+    @Transactional
+    @Override
+    public void actualizarExamenesDelPaquete(Long idPaquete, String examenesSeleccionados) {
+        Paquete paquete = paqueteRepository.findById(idPaquete)
+                .orElseThrow(() -> new IllegalArgumentException("Paquete no encontrado."));
+
+        detalleRepository.deleteByPaqueteIdPaquete(idPaquete);
+
+        if (examenesSeleccionados == null || examenesSeleccionados.trim().isEmpty()) {
+            return;
+        }
+
+        String[] ids = examenesSeleccionados.split(",");
+
+        for (String idStr : ids) {
+            Long idExamen = Long.valueOf(idStr.trim());
+
+            Examen examen = examenRepository.findById(idExamen)
+                    .orElseThrow(() -> new IllegalArgumentException("Examen no encontrado."));
+
+            DetallePaquete detalle = new DetallePaquete();
+            detalle.setPaquete(paquete);
+            detalle.setExamen(examen);
+
+            detalleRepository.save(detalle);
+        }
+    }
 }
