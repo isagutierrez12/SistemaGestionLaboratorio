@@ -43,5 +43,10 @@ public class InsumoServiceImpl implements InsumoService {
     public List<Insumo> buscarPorQuery(String query) {
         return insumoRepository.buscarPorQuery(query);
     }
+    @Override
+     public List<Insumo> getActive(){
+         return insumoRepository.findByActivoTrue();
+     }
+     
 
 }

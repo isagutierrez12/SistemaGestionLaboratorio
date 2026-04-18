@@ -28,5 +28,7 @@ public interface UsuarioService {
     List<Usuario> buscarUsuariosPorQuery(String query);
 
     public Usuario buscarPorUsername(String username);
+    boolean existsByCedula(String cedula);
+    boolean existsByUsername(String username);
 
 }

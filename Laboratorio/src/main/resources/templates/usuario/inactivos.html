@@ -9,13 +9,10 @@
         <aside th:replace="~{layout/admin :: aside}"></aside>
         <header th:replace="~{layout/admin :: header}"></header>
         <!-- Preloader -->
-        <main id="main" class="main" th:if="${page == 'list'}">
-            <div th:replace="~{auditoria/fragmentos :: catalogoAuditoriaGeneral}"></div>
-        </main>
-
+        <section th:replace="~{usuario/fragmentos :: inactivos}"></section>
         <div id="preloader"></div>
-        <script src="/assets/js/auditoriaExport.js"></script>
-        <script src="/assets/js/auditorias.js"></script>
         <div th:replace="~{layout/admin :: jsfiles}"></div>
+        <div th:replace="~{usuario/fragmentos :: alertas}"></div>
+        <script th:src="@{/assets/js/usuarios.js}"></script>
     </body>
 </html>

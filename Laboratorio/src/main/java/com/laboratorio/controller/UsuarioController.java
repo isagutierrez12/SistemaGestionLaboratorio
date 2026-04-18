@@ -41,7 +41,7 @@ public class UsuarioController {
     @GetMapping("/agregar")
     public String agregarUsuarios(Model model) {
         model.addAttribute("usuario", new Usuario());
-        return "/usuario/agregar";
+        return "usuario/agregar";
     }
 
     @PostMapping("/guardar")
@@ -58,6 +58,18 @@ public class UsuarioController {
             model.addAttribute("usuario", usuario);
             model.addAttribute("rol", rolSeleccionado);
             model.addAttribute("errores", result.getAllErrors());
+            return esNuevo ? "/usuario/agregar" : "/usuario/modificar";
+        }
+        if (usuarioService.existsByCedula(usuario.getCedula()) && esNuevo) {
+            model.addAttribute("usuario", usuario);
+            model.addAttribute("rol", rolSeleccionado);
+            model.addAttribute("error", "La cédula ingresada ya está registrada");
+            return esNuevo ? "/usuario/agregar" : "/usuario/modificar";
+        }
+        if(usuarioService.existsByUsername(usuario.getUsername()) && esNuevo){
+            model.addAttribute("usuario", usuario);
+            model.addAttribute("rol", rolSeleccionado);
+            model.addAttribute("error", "El nombre de usuario ya se encuentra registrado en el sistema.");
             return esNuevo ? "/usuario/agregar" : "/usuario/modificar";
         }
 
@@ -129,6 +141,15 @@ public class UsuarioController {
         }
 
         return usuarioService.buscarUsuariosPorQuery(query.trim());
+    }
+    
+    
+    @GetMapping("/inactivos")
+    public String listadoUsuariosInactivos(Model model){
+        List<Usuario> usuarios = usuarioService.getUsuariosInactivos();
+        model.addAttribute("usuarios", usuarios);
+        model.addAttribute("page", "inactive");
+        return "usuario/inactivos";
     }
 
 }

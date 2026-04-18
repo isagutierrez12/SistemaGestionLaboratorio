@@ -164,7 +164,7 @@
 
                                         <div class="col-md-6 mb-3">
                                             <label for="precio" class="form-label">Precio</label>
-                                            <input type="number" step="0.01" class="form-control text-center" id="precio" th:field="*{precio}" required="required" />
+                                            <input type="number" step="0.01" min="1" class="form-control text-center" id="precio" th:field="*{precio}" required />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
@@ -174,7 +174,7 @@
 
                                         <div class="col-md-6 mb-3">
                                             <label for="valorMinimo" class="form-label">Valor Mínimo</label>
-                                            <input type="number" step="0.01" class="form-control text-center" id="valorMinimo" th:field="*{valorMinimo}" />
+                                            <input type="number" step="0.01" min="0.01" class="form-control text-center" id="valorMinimo" th:field="*{valorMinimo}" />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
@@ -278,7 +278,7 @@
 
                                         <div class="col-md-6 mb-3">
                                             <label for="precio" class="form-label">Precio</label>
-                                            <input type="number" step="0.01" class="form-control text-center" id="precio" th:field="*{precio}" required="required" />
+                                            <input type="number" step="0.01" min="1" class="form-control text-center" id="precio" th:field="*{precio}" required />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
@@ -288,7 +288,7 @@
 
                                         <div class="col-md-6 mb-3">
                                             <label for="valorMinimo" class="form-label">Valor Mínimo</label>
-                                            <input type="number" step="0.01" class="form-control text-center" id="valorMinimo" th:field="*{valorMinimo}" />
+                                            <input type="number" step="0.01" min="0.01" class="form-control text-center" id="valorMinimo" th:field="*{valorMinimo}" />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
@@ -382,7 +382,7 @@
                                         </button>
 
                                         <button form="formExamenes" type="submit"
-                                                class="btn-register" id="btnContinuar" disabled=true>
+                                                class="btn-register" id="btnContinuar">
                                             Continuar
                                         </button>
 
@@ -452,6 +452,18 @@
                     </div>
                 </div>
             </section>
+              <script>
+                document.getElementById("btnContinuar").addEventListener("click", function(e) {
+
+                    const seleccionados = document.querySelectorAll(".exam-check:checked").length;
+
+                    if (seleccionados === 0) {
+                        e.preventDefault();
+                        alert("Debe seleccionar al menos un examen");
+                    }
+
+                });
+            </script>
         </section>
 
         <section th:fragment="vista-proforma" class="section">

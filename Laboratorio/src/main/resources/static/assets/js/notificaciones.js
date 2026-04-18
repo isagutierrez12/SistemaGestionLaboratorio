@@ -72,9 +72,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
 
                         if (n.leida) {
-                            li.style.opacity = "0.5";
+                            li.style.opacity = "1"; 
+                            li.style.fontWeight = "normal";
+                        } else {
+                            li.style.opacity = "0.8";
+                            li.style.fontWeight = "600"; 
                         }
-
                         li.innerHTML = `
                         <i class="${iconClass} ${iconColor}"></i>
                         <div>
@@ -96,12 +99,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     actualizarBadgeYTitle(totalNoLeidas);
 
-                    
+
                 })
                 .catch(error => {
                     console.error("Error al cargar notificaciones:", error);
                     badge.style.display = "none";
-                    title.textContent = "Error al cargar notificaciones";
                 });
     }
 
@@ -118,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                [csrfHeader]: csrfToken  
+                [csrfHeader]: csrfToken
             }
         })
                 .then(response => {
@@ -147,13 +149,12 @@ document.addEventListener("DOMContentLoaded", () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                [csrfHeader]: csrfToken 
+                [csrfHeader]: csrfToken
             }
         })
                 .then(response => {
                     if (response.ok) {
                         badge.style.display = "none";
-                      
 
                         document.querySelectorAll('.dropdown-item').forEach(item => {
                             item.style.opacity = "0.5";
@@ -172,31 +173,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
     }
 
-  
     function actualizarBadgeYTitle(totalNoLeidas) {
         if (totalNoLeidas > 0) {
             badge.textContent = totalNoLeidas;
             badge.style.display = "inline-block";
-            title.textContent = `Tienes ${totalNoLeidas} notificación(es) nueva(s)`;
+            if (title)
+                title.textContent = `Tienes ${totalNoLeidas} notificación(es) nueva(s)`;
         } else {
             badge.style.display = "none";
-          
         }
     }
 
-    campana.addEventListener("click", (event) => {
-        event.preventDefault();
+    // ✅ CAMBIO: Se eliminó el listener de "click" en la campana.
+    // Ahora se usa el evento de Bootstrap "show.bs.dropdown" para marcar
+    // como leídas SOLO cuando el usuario abre el dropdown visualmente.
+    const dropdownEl = campana.closest('.nav-item.dropdown') || campana.parentElement;
 
+    dropdownEl.addEventListener("show.bs.dropdown", () => {
         if (badge.style.display !== "none" && parseInt(badge.textContent) > 0) {
             marcarTodasComoLeidas();
-            cargarNotificaciones();
         }
-
-
-//        const dropdown = document.querySelector('.dropdown-menu');
-//        if (dropdown) {
-//            dropdown.classList.toggle('show');
-//        }
     });
 
     list.addEventListener('click', (event) => {
@@ -206,8 +202,5 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarNotificaciones();
 
     setInterval(cargarNotificaciones, 30000);
-
-    
-    
 
 });

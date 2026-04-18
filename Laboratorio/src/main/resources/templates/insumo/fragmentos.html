@@ -158,12 +158,12 @@
 
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Cantidad por unidad</label>
-                                            <input type="number" th:field="*{cantidadPorUnidad}" class="form-control " min="0" />
+                                            <input type="number" th:field="*{cantidadPorUnidad}" class="form-control " min="1" />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Unidad de medida</label>
-                                            <input type="text" th:field="*{unidadMedida}" class="form-control " />
+                                            <input type="text" th:field="*{unidadMedida}" class="form-control " required/>
                                         </div>
 
                                         <div class="col-md-6 mb-3">
@@ -245,12 +245,12 @@
 
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Cantidad por unidad</label>
-                                            <input type="number" th:field="*{cantidadPorUnidad}" class="form-control " min="0" />
+                                            <input type="number" th:field="*{cantidadPorUnidad}" class="form-control " min="1" />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Unidad de medida</label>
-                                            <input type="text" th:field="*{unidadMedida}" class="form-control " />
+                                            <input type="text" th:field="*{unidadMedida}" class="form-control " required/>
                                         </div>
 
                                         <div class="col-md-6 mb-3">
@@ -260,6 +260,9 @@
                                                 <option value="false">Inactivo</option>
                                             </select>
                                         </div>
+                                    <div th:if="${error}" class="alert alert-danger" style="margin-top: 30px;">
+                                                                            <span th:text="${error}"></span>
+                                    </div>
 
                                         <div class="col-12  mt-3">
                                             <button type="submit" class="btn btn-save me-2">Actualizar</button>

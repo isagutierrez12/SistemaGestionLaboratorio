@@ -39,6 +39,19 @@ public class InventarioServiceImpl implements InventarioService {
     }
 
     @Override
+    public boolean existsByCodigoBarras(String codigoBarras){
+        return inventarioRepository.existsByCodigoBarras(codigoBarras);
+    }
+    @Override
+    public Inventario findByCodigoBarras(String codigoBarras){
+        return inventarioRepository.findByCodigoBarras(codigoBarras);
+    }
+  
+      @Override 
+        public boolean existsByInsumo_IdInsumoAndActiveTrue(Long idInsumo){
+        return inventarioRepository.existsByInsumo_IdInsumoAndActivoTrue(idInsumo);
+    }
+    @Override
     public void save(Inventario entity) {
 
         LocalDate hoy = LocalDate.now();

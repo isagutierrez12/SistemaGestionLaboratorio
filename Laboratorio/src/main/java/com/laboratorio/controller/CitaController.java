@@ -132,12 +132,13 @@ public class CitaController {
 
     // Formulario para agregar una nueva cita
     @GetMapping("/agregar")
-    public String agregarCita(Model model) {
+    public String agregarCita(@RequestParam(required = false) String fecha, Model model) {
         model.addAttribute("cita", new Cita());
         model.addAttribute("pacientes", pacienteService.getAll());
         model.addAttribute("examenesDisponibles", examenService.getAll());
         model.addAttribute("paquetesDisponibles", paqueteService.getAll());
-        model.addAttribute("solicitudes", solicitudService.getAll());
+        model.addAttribute("solicitudes", solicitudService.getAll());      
+        model.addAttribute("fechaSeleccionada", fecha);
         return "cita/agregar";
     }
 

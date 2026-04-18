@@ -45,8 +45,13 @@ public class Paciente implements Serializable {
     @Pattern(regexp = "\\d{8,12}", message = "El teléfono debe tener entre 8 y 12 números")
     private String telefono;
 
-    @Email(message = "El correo debe ser válido")
-    @Pattern(regexp = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "Formato de correo inválido")
+    @NotBlank(message = "El correo es obligatorio")
+    @Email(message = "Formato de correo inválido")
+    @Pattern(
+            regexp = "^[a-z0-9._%+-]+@[a-z0-9-]+(\\.[a-z]{2,})+$",
+            message = "El correo debe tener formato usuario@dominio.com en minúsculas"
+    )
+    @Column(nullable = false)
     private String email;
 
     private Boolean activo;
@@ -55,7 +60,10 @@ public class Paciente implements Serializable {
     private Date fechaCreacion;
 
     @NotBlank(message = "La cédula es obligatoria")
-    @Pattern(regexp = "\\d{1,9}", message = "La cédula debe tener máximo 9 dígitos numéricos")
+    @Pattern(
+            regexp = "\\d{9}",
+            message = "La cédula debe tener exactamente 9 dígitos"
+    )
     private String cedula;
 
     @Pattern(regexp = "\\d{8,12}", message = "El contacto de emergencia debe tener entre 8 y 12 números")

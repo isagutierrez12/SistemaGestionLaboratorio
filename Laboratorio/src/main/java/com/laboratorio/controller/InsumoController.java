@@ -3,6 +3,7 @@ package com.laboratorio.controller;
 import com.laboratorio.model.Insumo;
 import com.laboratorio.model.Inventario;
 import com.laboratorio.service.InsumoService;
+import com.laboratorio.service.InventarioService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,10 +21,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class InsumoController {
 
     private final InsumoService insumoService;
+    private final InventarioService inventarioService;
 
     @Autowired
-    public InsumoController(InsumoService insumoService) {
+    public InsumoController(InsumoService insumoService, InventarioService inventarioService) {
         this.insumoService = insumoService;
+        this.inventarioService = inventarioService;
     }
 
     @GetMapping("/insumos")
@@ -43,10 +46,21 @@ public class InsumoController {
     public String guardarInsumo(@ModelAttribute Insumo insumo, Model model, RedirectAttributes redirectAttributes) {
         boolean esNuevo = (insumo.getIdInsumo() == null);
         
-        
+        if (Boolean.FALSE.equals(insumo.isActivo())) {
+            boolean enUso = inventarioService
+                    .existsByInsumo_IdInsumoAndActiveTrue(insumo.getIdInsumo());
+
+            if (enUso) {
+                model.addAttribute("error", "No se puede desactivar un insumo que esté relacionado a inventario activo");
+                return  "/insumo/modificar";
+              
+            }
+            insumoService.save(insumo);
+        }
+
         try {
             insumoService.save(insumo);
-            redirectAttributes.addFlashAttribute("mensaje",  esNuevo ? "Insumo registrado correctamente" : "Insumo modificado correctamente");
+            redirectAttributes.addFlashAttribute("mensaje", esNuevo ? "Insumo registrado correctamente" : "Insumo modificado correctamente");
             redirectAttributes.addFlashAttribute("tipo", "success");
             return "redirect:/insumo/insumos";
         } catch (IllegalArgumentException e) {
