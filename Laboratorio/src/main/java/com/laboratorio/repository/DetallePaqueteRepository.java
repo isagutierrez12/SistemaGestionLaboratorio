@@ -18,4 +18,6 @@ public interface DetallePaqueteRepository extends JpaRepository<DetallePaquete, 
     boolean existsByPaqueteIdPaqueteAndExamenIdExamen(Long idPaquete, Long idExamen);
 
     long deleteByPaqueteIdPaqueteAndExamenIdExamen(Long idPaquete, Long idExamen);
+    
+    void deleteByPaqueteIdPaquete(Long idPaquete);
 }

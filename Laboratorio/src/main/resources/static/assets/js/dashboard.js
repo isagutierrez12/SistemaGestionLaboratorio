@@ -9,31 +9,35 @@ document.addEventListener("DOMContentLoaded", () => {
     const lblIngConf = document.getElementById("kpiPeriodoIngresosConfirmados");
     const lblPac = document.getElementById("kpiPeriodoPacientes");
     const lblProm = document.getElementById("kpiPeriodoPromedio");
+
     const filtroDesde = document.getElementById("filtroDesde");
     const filtroHasta = document.getElementById("filtroHasta");
     const filtroPeriodo = document.getElementById("filtroPeriodo");
+    const btnRestaurarPeriodo = document.getElementById("btnRestaurarPeriodo");
 
     const filtroArea = document.getElementById("filtroArea");
+    const btnRestaurarGrafico = document.getElementById("btnRestaurarGrafico");
     const btnExportarTopPdf = document.getElementById("btnExportarTopPdf");
     const btnExportarTopExcel = document.getElementById("btnExportarTopExcel");
     const formTopPdf = document.getElementById("formTopPdf");
     const inputChartImage = document.getElementById("chartImageInput");
 
-    const btnAplicar = document.getElementById("btnAplicarFiltros");
     const filtroEstadoReporte = document.getElementById("filtroEstadoReporte");
     const filtroNombreExamenReporte = document.getElementById("filtroNombreExamenReporte");
     const filtroAreaReporte = document.getElementById("filtroAreaReporte");
+    const btnRestaurarReportes = document.getElementById("btnRestaurarReportes");
     const tablaReporteBody = document.querySelector("#tablaReporteExamenes tbody");
     const resumenReporte = document.getElementById("resumenReporte");
-    const btnGenerarReporte = document.getElementById("btnGenerarReporte");
     const btnExportarReportePdf = document.getElementById("btnExportarReportePdf");
     const btnExportarReporteExcel = document.getElementById("btnExportarReporteExcel");
     let reporteExamenesCache = [];
 
     const filtroTipoAlerta = document.getElementById("filtroTipoAlerta");
+    const btnRestaurarAlertas = document.getElementById("btnRestaurarAlertas");
     const tablaAlertasBody = document.querySelector("#tablaAlertasInventario tbody");
 
     const filtroTipoPago = document.getElementById("filtroTipoPago");
+    const btnRestaurarPagos = document.getElementById("btnRestaurarPagos");
     const tablaPagosBody = document.querySelector("#tablaPagos tbody");
     const resumenPagos = document.getElementById("resumenPagos");
     const btnExportarPagosPdf = document.getElementById("btnExportarPagosPdf");
@@ -48,6 +52,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const hoyStr = `${yyyy}-${mm}-${dd}`;
 
     const paginacionReporte = document.getElementById("paginacionReporte");
+    const paginacionPagos = document.getElementById("paginacionPagos");
+    const paginacionAlertas = document.getElementById("paginacionAlertas");
+
+    let alertasCache = [];
+    let topExamsChart = null;
 
     const paginadorReporte = crearPaginador({
         container: paginacionReporte,
@@ -57,8 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    const paginacionPagos = document.getElementById("paginacionPagos");
-
     const paginadorPagos = crearPaginador({
         container: paginacionPagos,
         pageSize: 10,
@@ -66,9 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
             renderPagos(getPagosFiltrados(), page);
         }
     });
-
-    const paginacionAlertas = document.getElementById("paginacionAlertas");
-    let alertasCache = [];
 
     const paginadorAlertas = crearPaginador({
         container: paginacionAlertas,
@@ -81,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
     filtroDesde.value = hoyStr;
     filtroHasta.value = hoyStr;
     filtroPeriodo.value = "DIA";
-    let topExamsChart = null;
+    filtroHasta.min = filtroDesde.value;
 
     function formatoCRC(monto) {
         return monto.toLocaleString('es-CR', {
@@ -89,6 +93,54 @@ document.addEventListener("DOMContentLoaded", () => {
             currency: 'CRC',
             minimumFractionDigits: 2
         });
+    }
+
+    function normalizarTexto(s) {
+        return (s || "")
+                .toString()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase()
+                .trim();
+    }
+
+    function capitalizar(texto) {
+        if (!texto)
+            return "";
+        return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
+    }
+
+    function setPeriodoDefault() {
+        filtroPeriodo.value = "DIA";
+        filtroDesde.value = hoyStr;
+        filtroHasta.value = hoyStr;
+    }
+
+    function restaurarFiltroGrafico() {
+        if (filtroArea) {
+            filtroArea.value = "";
+        }
+    }
+
+    function restaurarFiltroAlertas() {
+        if (filtroTipoAlerta) {
+            filtroTipoAlerta.value = "TODAS";
+        }
+    }
+
+    function restaurarFiltrosReportes() {
+        if (filtroNombreExamenReporte)
+            filtroNombreExamenReporte.value = "";
+        if (filtroAreaReporte)
+            filtroAreaReporte.value = "";
+        if (filtroEstadoReporte)
+            filtroEstadoReporte.value = "";
+    }
+
+    function restaurarFiltrosPagos() {
+        if (busquedaClientePagos)
+            busquedaClientePagos.value = "";
+        if (filtroTipoPago)
+            filtroTipoPago.value = "";
     }
 
     function getReporteFiltrado() {
@@ -119,7 +171,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function getPeriodoLabel() {
         const periodo = (filtroPeriodo?.value || "").toUpperCase();
 
-        // si eligieron un periodo rápido
         if (periodo === "DIA")
             return "| Hoy";
         if (periodo === "SEMANA")
@@ -131,7 +182,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (periodo === "ANIO")
             return "| Este año";
 
-        // personalizado: usar fechas
         const d = filtroDesde?.value;
         const h = filtroHasta?.value;
         if (d && h) {
@@ -143,14 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return "| Personalizado";
     }
 
-    function capitalizar(texto) {
-        if (!texto)
-            return "";
-        return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
-    }
-
     function actualizarRangoFechasPorPeriodo() {
-
         const hoy = new Date();
         const yyyy = hoy.getFullYear();
         const mm = String(hoy.getMonth() + 1).padStart(2, '0');
@@ -166,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (filtroPeriodo.value === "SEMANA") {
             const date = new Date();
             const day = date.getDay();
-            const diff = date.getDate() - day + (day === 0 ? -6 : 1); // lunes
+            const diff = date.getDate() - day + (day === 0 ? -6 : 1);
             const lunes = new Date(date.setDate(diff));
 
             const yyyyL = lunes.getFullYear();
@@ -190,8 +233,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (filtroPeriodo.value === "TRIMESTRE") {
-            const currentQuarter = Math.floor(hoy.getMonth() / 3); // 0,1,2,3
-            const startMonth = currentQuarter * 3; // 0,3,6,9
+            const currentQuarter = Math.floor(hoy.getMonth() / 3);
+            const startMonth = currentQuarter * 3;
 
             const inicioTrimestre = new Date(hoy.getFullYear(), startMonth, 1);
 
@@ -219,10 +262,9 @@ document.addEventListener("DOMContentLoaded", () => {
             params.append("hasta", filtroHasta.value);
         if (filtroArea.value)
             params.append("area", filtroArea.value);
-        params.append("limite", "10"); // mismo límite que el gráfico
+        params.append("limite", "10");
         return params;
     }
-
 
     function buildReporteQueryParams() {
         const params = new URLSearchParams();
@@ -238,6 +280,36 @@ document.addEventListener("DOMContentLoaded", () => {
             params.append("examen", filtroNombreExamenReporte.value);
 
         return params;
+    }
+
+    function buildPagosQueryParams() {
+        const params = new URLSearchParams();
+        if (filtroDesde.value)
+            params.append("desde", filtroDesde.value);
+        if (filtroHasta.value)
+            params.append("hasta", filtroHasta.value);
+        if (filtroTipoPago && filtroTipoPago.value)
+            params.append("tipoPago", filtroTipoPago.value);
+        return params;
+    }
+
+    function buildPagosExportParams() {
+        const params = new URLSearchParams();
+
+        if (filtroDesde?.value) {
+            params.append("desde", filtroDesde.value);
+        }
+        if (filtroHasta?.value) {
+            params.append("hasta", filtroHasta.value);
+        }
+        if (filtroTipoPago?.value) {
+            params.append("tipoPago", filtroTipoPago.value);
+        }
+        if (busquedaClientePagos?.value) {
+            params.append("paciente", busquedaClientePagos.value);
+        }
+
+        return params.toString();
     }
 
     function clasePorAlerta(dto) {
@@ -274,38 +346,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function buildPagosQueryParams() {
-        const params = new URLSearchParams();
-        if (filtroDesde.value)
-            params.append("desde", filtroDesde.value);
-        if (filtroHasta.value)
-            params.append("hasta", filtroHasta.value);
-        if (filtroTipoPago && filtroTipoPago.value)
-            params.append("tipoPago", filtroTipoPago.value);
-        return params;
-    }
-
-    function buildPagosExportParams() {
-        const params = new URLSearchParams();
-
-        if (filtroDesde?.value) {
-            params.append("desde", filtroDesde.value);
-        }
-        if (filtroHasta?.value) {
-            params.append("hasta", filtroHasta.value);
-        }
-
-        if (filtroTipoPago?.value) {
-            params.append("tipoPago", filtroTipoPago.value);
-        }
-
-        if (busquedaClientePagos?.value) {
-            params.append("paciente", busquedaClientePagos.value);
-        }
-
-        return params.toString();
-    }
-
     function formatearFechaHora(fechaISO) {
         if (!fechaISO)
             return "";
@@ -335,11 +375,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return fecha.toLocaleDateString("es-CR");
     }
 
-    if (filtroDesde) {
-        filtroDesde.addEventListener("change", marcarPeriodoPersonalizado);
-    }
-    if (filtroHasta) {
-        filtroHasta.addEventListener("change", marcarPeriodoPersonalizado);
+    function refrescarPorCambioDePeriodo() {
+        if (filtroPeriodo && filtroPeriodo.value) {
+            actualizarRangoFechasPorPeriodo();
+        }
+        refrescarDashboard();
     }
 
     async function cargarAreas() {
@@ -352,7 +392,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const areas = await resp.json();
 
-            //Dropdown del dashboard
             filtroArea.innerHTML = "";
             const optTodas = document.createElement("option");
             optTodas.value = "";
@@ -366,17 +405,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 filtroArea.appendChild(opt);
             });
 
-            //Dropdown del reporte
             if (typeof filtroAreaReporte !== "undefined" && filtroAreaReporte) {
                 filtroAreaReporte.innerHTML = "";
 
-                // Todas las áreas
                 const optAll = document.createElement("option");
                 optAll.value = "";
                 optAll.textContent = "Todas las áreas";
                 filtroAreaReporte.appendChild(optAll);
 
-                // Paquetes
                 const optPaquetes = document.createElement("option");
                 optPaquetes.value = "Paquetes";
                 optPaquetes.textContent = "Paquetes";
@@ -394,7 +430,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error cargando áreas:", e);
         }
     }
-
 
     async function cargarResumen() {
         const params = new URLSearchParams();
@@ -441,9 +476,11 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error cargando top exámenes");
             return;
         }
+
         const data = await resp.json();
         const nombres = data.map(d => d.nombreExamen);
         const cantidades = data.map(d => d.cantidad);
+
         if (!topExamsChart) {
             topExamsChart = new ApexCharts(document.querySelector("#topExamsChart"), {
                 series: [{
@@ -481,7 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function crearPaginador( { container, pageSize = 8, onPageChange }) {
+    function crearPaginador({container, pageSize = 8, onPageChange}) {
         let currentPage = 1;
         let totalItems = 0;
 
@@ -492,7 +529,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
-            // ocultar si no hace falta
             if (totalItems <= pageSize)
                 return;
 
@@ -568,7 +604,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return arr.slice(start, start + pageSize);
     }
 
-
     function renderReporteExamenes(data, page = 1) {
         tablaReporteBody.innerHTML = "";
         resumenReporte.textContent = "";
@@ -588,6 +623,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let totalMonto = 0;
         const porArea = {};
+
         data.forEach(item => {
             const montoNum = item.monto != null ? Number(item.monto) : null;
             if (montoNum != null && !Number.isNaN(montoNum))
@@ -602,7 +638,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 `Total de registros: ${totalReg} | Monto total: ₡${totalMonto.toFixed(2)}` +
                 (partesArea ? `<br>Registros por área: ${partesArea}` : "");
 
-        //paginar
         paginadorReporte.setTotalItems(data.length);
         const pageSize = paginadorReporte.getPageSize();
         const pageData = paginarArray(data, page, pageSize);
@@ -621,7 +656,6 @@ document.addEventListener("DOMContentLoaded", () => {
             tablaReporteBody.appendChild(tr);
         });
     }
-
 
     function renderAlertas(data, page = 1) {
         tablaAlertasBody.innerHTML = "";
@@ -708,20 +742,11 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             reporteExamenesCache = Array.isArray(data) ? data : [];
-
             aplicarFiltroReporteExamenes();
 
         } catch (e) {
             console.error("Error en cargarReporteExamenes", e);
         }
-    }
-
-    function normalizarTexto(s) {
-        return (s || "")
-                .toString()
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                .toLowerCase()
-                .trim();
     }
 
     function renderPagos(data, page = 1) {
@@ -743,6 +768,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let totalMonto = 0;
         const pagosPorMetodo = {};
+
         data.forEach(p => {
             const montoNum = p.monto != null ? Number(p.monto) : 0;
             totalMonto += montoNum;
@@ -791,9 +817,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const data = await resp.json();
-
             pagosCache = Array.isArray(data) ? data : [];
-
             aplicarFiltroPagos();
 
         } catch (e) {
@@ -815,12 +839,52 @@ document.addEventListener("DOMContentLoaded", () => {
         ]);
     }
 
-    btnAplicar.addEventListener("click", () => {
-        actualizarRangoFechasPorPeriodo();
+    if (filtroDesde) {
+    filtroDesde.addEventListener("change", () => {
+
+        //Restringe la fecha mínima en "Hasta"
+        if (filtroHasta) {
+            filtroHasta.min = filtroDesde.value;
+
+            //Si "Hasta" es menor, lo ajusta automáticamente
+            if (filtroHasta.value < filtroDesde.value) {
+                filtroHasta.value = filtroDesde.value;
+            }
+        }
+
+        marcarPeriodoPersonalizado();
         refrescarDashboard();
     });
+}
+
+    if (filtroHasta) {
+        filtroHasta.addEventListener("change", () => {
+            marcarPeriodoPersonalizado();
+            refrescarDashboard();
+        });
+    }
+
+    if (filtroPeriodo) {
+        filtroPeriodo.addEventListener("change", () => {
+            refrescarPorCambioDePeriodo();
+        });
+    }
+
+    if (btnRestaurarPeriodo) {
+        btnRestaurarPeriodo.addEventListener("click", () => {
+            setPeriodoDefault();
+            refrescarDashboard();
+        });
+    }
 
     filtroArea.addEventListener("change", refrescarDashboard);
+
+    if (btnRestaurarGrafico) {
+        btnRestaurarGrafico.addEventListener("click", () => {
+            restaurarFiltroGrafico();
+            cargarTopExamenes();
+        });
+    }
 
     if (btnExportarTopPdf && formTopPdf && inputChartImage) {
         btnExportarTopPdf.addEventListener("click", async () => {
@@ -832,7 +896,6 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 const result = await topExamsChart.dataURI();
                 const imgURI = result.imgURI;
-
                 inputChartImage.value = imgURI;
                 formTopPdf.submit();
             } catch (e) {
@@ -840,7 +903,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
 
     if (btnExportarTopExcel) {
         btnExportarTopExcel.addEventListener("click", () => {
@@ -863,6 +925,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (filtroEstadoReporte) {
         filtroEstadoReporte.addEventListener("change", () => {
+            cargarReporteExamenes();
+        });
+    }
+
+    if (btnRestaurarReportes) {
+        btnRestaurarReportes.addEventListener("click", () => {
+            restaurarFiltrosReportes();
             cargarReporteExamenes();
         });
     }
@@ -893,6 +962,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    if (btnRestaurarAlertas) {
+        btnRestaurarAlertas.addEventListener("click", () => {
+            restaurarFiltroAlertas();
+            cargarAlertasInventario();
+        });
+    }
+
     if (filtroTipoPago) {
         filtroTipoPago.addEventListener("change", () => {
             cargarPagos();
@@ -902,6 +978,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (busquedaClientePagos) {
         busquedaClientePagos.addEventListener("input", () => {
             aplicarFiltroPagos();
+        });
+    }
+
+    if (btnRestaurarPagos) {
+        btnRestaurarPagos.addEventListener("click", () => {
+            restaurarFiltrosPagos();
+            cargarPagos();
         });
     }
 

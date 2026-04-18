@@ -16,4 +16,6 @@ public interface PaqueteService extends CrudService<Paquete> {
     boolean existsByNombre(String nombre);
     
     List<Paquete> getActivosConExamenes();
+    
+    void actualizarExamenesDelPaquete(Long idPaquete, String examenesSeleccionados);
 }
