@@ -197,10 +197,21 @@
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="email" class="form-label">Correo electrónico</label>
-                                            <input type="email" class="form-control text-center" id="email" th:field="*{email}"
-                                                   pattern="^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$"
-                                                   title="Formato de correo inválido"/>
+
+                                            <input type="email"
+                                                   class="form-control text-center"
+                                                   id="email"
+                                                   th:field="*{email}"
+                                                   required
+                                                   minlength="5"
+                                                   maxlength="100"
+                                                   title="El correo es obligatorio y debe ser válido"/>
+                                            <div th:if="${#fields.hasErrors('email')}" class="text-danger mt-1">
+                                                <small th:errors="*{email}"></small>
+                                            </div>
                                         </div>
+
+
 
                                         <div class="col-md-6 mb-3 text-center">
                                             <label for="contactoEmergencia" class="form-label">Contacto de Emergencia</label>
