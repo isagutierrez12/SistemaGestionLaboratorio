@@ -6,6 +6,7 @@ package com.laboratorio.repository;
 
 import com.laboratorio.model.ExamenInsumo;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,4 +17,18 @@ public interface ExamenInsumoRepository extends JpaRepository<ExamenInsumo, Long
           WHERE id_examen IN (?1)
       """, nativeQuery = true)
     List<ExamenInsumo> findByExamenInList(List<Long> examenes);
+    
+    @Query(value = """
+          SELECT * FROM examen_insumo
+          WHERE id_examen = ?1
+          ORDER BY id_examen_insumo ASC
+      """, nativeQuery = true)
+    List<ExamenInsumo> findByIdExamen(Long idExamen);
+
+    @Query(value = """
+          SELECT * FROM examen_insumo
+          WHERE id_examen = ?1 AND id_insumo = ?2
+          LIMIT 1
+      """, nativeQuery = true)
+    Optional<ExamenInsumo> findByIdExamenAndIdInsumo(Long idExamen, Long idInsumo);
 }

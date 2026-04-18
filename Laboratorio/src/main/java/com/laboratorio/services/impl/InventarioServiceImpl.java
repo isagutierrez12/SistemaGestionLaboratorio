@@ -80,8 +80,7 @@ public class InventarioServiceImpl implements InventarioService {
                 throw new IllegalArgumentException("Otro inventario ya está asociado a este insumo.");
             }
         }
-*/
-
+         */
         inventarioRepository.save(entity);
     }
 
@@ -92,41 +91,108 @@ public class InventarioServiceImpl implements InventarioService {
 
     @Override
     public void ajustarInventarioPorCita(Long idCita, String nuevoEstado) {
-
         List<Long> examenes = solicitudDetalleRepository.findExamenesByCita(idCita);
 
-        if (examenes.isEmpty()) {
+        if (examenes == null || examenes.isEmpty()) {
             return;
         }
 
-        List<ExamenInsumo> insumosRequeridos = examenInsumoRepository.findByExamenInList(examenes);
+        ajustarInventarioPorExamenes(examenes, nuevoEstado);
+    }
+
+    @Override
+    public void ajustarInventarioPorExamenes(List<Long> idsExamen, String estado) {
+        if (idsExamen == null || idsExamen.isEmpty()) {
+            return;
+        }
+
+        List<ExamenInsumo> insumosRequeridos = examenInsumoRepository.findByExamenInList(idsExamen);
+
+        if (insumosRequeridos == null || insumosRequeridos.isEmpty()) {
+            return;
+        }
+
+        LocalDate hoy = LocalDate.now();
+        String estadoNormalizado = (estado == null) ? "" : estado.toUpperCase();
 
         for (ExamenInsumo req : insumosRequeridos) {
-            Inventario inv = inventarioRepository.findByInsumo_IdInsumo(req.getIdInsumo());
+            Long idInsumo = req.getIdInsumo();
+            int cantidadNecesaria = req.getCantidadNecesaria();
 
-            if (inv == null) {
-                continue;
-            }
-
-            switch (nuevoEstado.toUpperCase()) {
+            switch (estadoNormalizado) {
                 case "AGENDADA":
+                case "CONFIRMADA": {
+                    Inventario inv = inventarioRepository.buscarInventarioParaBloqueo(
+                            idInsumo, hoy, cantidadNecesaria
+                    );
 
-                    inv.setStockBloqueado(inv.getStockBloqueado() + req.getCantidadNecesaria());
+                    if (inv == null) {
+                        throw new IllegalArgumentException(
+                                "No existe un lote válido con stock suficiente para el insumo ID " + idInsumo
+                        );
+                    }
+
+                    inv.setStockBloqueado(inv.getStockBloqueado() + cantidadNecesaria);
+                    inventarioRepository.save(inv);
                     break;
+                }
 
-                case "TERMINADA":
-
-                    inv.setStockActual(inv.getStockActual() - req.getCantidadNecesaria());
-                    inv.setStockBloqueado(Math.max(0, inv.getStockBloqueado() - req.getCantidadNecesaria()));
+                case "TERMINADA": {
+                    consumirBloqueadoEnLotes(idInsumo, cantidadNecesaria, hoy);
                     break;
+                }
 
-                case "CANCELADA":
+                case "CANCELADA": {
+                    liberarBloqueadoEnLotes(idInsumo, cantidadNecesaria, hoy);
+                    break;
+                }
 
-                    inv.setStockBloqueado(Math.max(0, inv.getStockBloqueado() - req.getCantidadNecesaria()));
+                default:
                     break;
             }
+        }
+    }
 
-            inventarioRepository.save(inv);
+    @Override
+    public void reajustarInventarioPorCambio(Long idCita, String estadoAnterior, String estadoNuevo,
+            List<Long> examenesAnteriores, List<Long> examenesNuevos) {
+
+        String anterior = (estadoAnterior == null) ? "" : estadoAnterior.toUpperCase();
+        String nuevo = (estadoNuevo == null) ? "" : estadoNuevo.toUpperCase();
+
+        boolean mismosExamenes = (examenesAnteriores == null && examenesNuevos == null)
+                || (examenesAnteriores != null && examenesAnteriores.equals(examenesNuevos));
+
+        if (anterior.equals(nuevo) && mismosExamenes) {
+            return;
+        }
+
+        // Revertir lo anterior solo si era estado que bloqueaba
+        switch (anterior) {
+            case "AGENDADA":
+            case "CONFIRMADA":
+                ajustarInventarioPorExamenes(examenesAnteriores, "CANCELADA");
+                break;
+
+            case "TERMINADA":
+                // No se revierte automáticamente porque ya hubo consumo real
+                break;
+
+            default:
+                break;
+        }
+
+        // Aplicar lo nuevo
+        switch (nuevo) {
+            case "AGENDADA":
+            case "CONFIRMADA":
+            case "TERMINADA":
+            case "CANCELADA":
+                ajustarInventarioPorExamenes(examenesNuevos, nuevo);
+                break;
+
+            default:
+                break;
         }
     }
 
@@ -137,7 +203,6 @@ public class InventarioServiceImpl implements InventarioService {
 
     @Override
     public void exportarExcel(List<Inventario> inventarios, OutputStream os) throws IOException {
-
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("Inventario");
 
@@ -154,7 +219,6 @@ public class InventarioServiceImpl implements InventarioService {
         int idx = 1;
 
         for (Inventario inv : inventarios) {
-
             Row row = sheet.createRow(idx++);
 
             row.createCell(0).setCellValue(inv.getCodigoBarras());
@@ -177,4 +241,70 @@ public class InventarioServiceImpl implements InventarioService {
         workbook.close();
     }
 
+    private void liberarBloqueadoEnLotes(Long idInsumo, int cantidadNecesaria, LocalDate hoy) {
+        List<Inventario> inventarios = inventarioRepository.buscarLotesConBloqueado(idInsumo, hoy);
+
+        int totalBloqueado = inventarios.stream()
+                .mapToInt(Inventario::getStockBloqueado)
+                .sum();
+
+        if (totalBloqueado < cantidadNecesaria) {
+            throw new IllegalArgumentException(
+                    "No existe stock bloqueado suficiente para liberar el insumo ID " + idInsumo
+            );
+        }
+
+        int restante = cantidadNecesaria;
+
+        for (Inventario inv : inventarios) {
+            if (inv.getStockBloqueado() <= 0) {
+                continue;
+            }
+
+            int aLiberar = Math.min(inv.getStockBloqueado(), restante);
+            inv.setStockBloqueado(inv.getStockBloqueado() - aLiberar);
+            inventarioRepository.save(inv);
+
+            restante -= aLiberar;
+
+            if (restante == 0) {
+                break;
+            }
+        }
+    }
+
+    private void consumirBloqueadoEnLotes(Long idInsumo, int cantidadNecesaria, LocalDate hoy) {
+        List<Inventario> inventarios = inventarioRepository.buscarLotesConBloqueado(idInsumo, hoy);
+
+        int totalBloqueado = inventarios.stream()
+                .mapToInt(Inventario::getStockBloqueado)
+                .sum();
+
+        if (totalBloqueado < cantidadNecesaria) {
+            throw new IllegalArgumentException(
+                    "No existe stock bloqueado suficiente para consumir el insumo ID " + idInsumo
+            );
+        }
+
+        int restante = cantidadNecesaria;
+
+        for (Inventario inv : inventarios) {
+            if (inv.getStockBloqueado() <= 0) {
+                continue;
+            }
+
+            int aConsumir = Math.min(inv.getStockBloqueado(), restante);
+
+            inv.setStockBloqueado(inv.getStockBloqueado() - aConsumir);
+            inv.setStockActual(inv.getStockActual() - aConsumir);
+
+            inventarioRepository.save(inv);
+
+            restante -= aConsumir;
+
+            if (restante == 0) {
+                break;
+            }
+        }
+    }
 }

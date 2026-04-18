@@ -416,7 +416,7 @@ public class CitaController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttrs.addFlashAttribute("mensaje", "Error al registrar la cita.");
+            redirectAttrs.addFlashAttribute("mensaje", "Error al registrar la cita: " + e.getMessage());
             redirectAttrs.addFlashAttribute("clase", "danger");
         }
 
@@ -476,6 +476,13 @@ public class CitaController {
             Solicitud solicitud = cita.getSolicitud();
             String estadoAnterior = (cita.getEstado() == null) ? "" : cita.getEstado().toUpperCase();
 
+            // Guardar exámenes anteriores antes de limpiar
+            List<Long> examenesAnteriores = solicitud.getDetalles().stream()
+                    .filter(d -> d.getExamen() != null)
+                    .map(d -> d.getExamen().getIdExamen())
+                    .distinct()
+                    .toList();
+
             // 3. Limpiar detalles anteriores
             solicitud.getDetalles().clear();
             double precioTotal = 0.0;
@@ -525,6 +532,12 @@ public class CitaController {
             // 6. Actualizar precio total
             solicitud.setPrecioTotal(precioTotal);
 
+            List<Long> examenesNuevos = solicitud.getDetalles().stream()
+                    .filter(d -> d.getExamen() != null)
+                    .map(d -> d.getExamen().getIdExamen())
+                    .distinct()
+                    .toList();
+
             // 7. Actualizar datos de la cita
             cita.setFechaCita(fechaCita);
             cita.setEstado(estado);
@@ -551,7 +564,13 @@ public class CitaController {
             solicitudService.save(solicitud);
             citaService.save(cita);
 
-            inventarioService.ajustarInventarioPorCita(idCita, estado);
+            inventarioService.reajustarInventarioPorCambio(
+                    idCita,
+                    estadoAnterior,
+                    estado,
+                    examenesAnteriores,
+                    examenesNuevos
+            );
             // Enviar correo al paciente
             Paciente paciente = solicitud.getPaciente();
             String destinatario = paciente.getEmail();
@@ -745,7 +764,7 @@ public class CitaController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttrs.addFlashAttribute("mensaje", "Error al actualizar la cita.");
+            redirectAttrs.addFlashAttribute("mensaje", "Error al actualizar la cita: " + e.getMessage());
             redirectAttrs.addFlashAttribute("clase", "danger");
         }
 
@@ -822,13 +841,14 @@ public class CitaController {
                     .body("Error al obtener detalle");
         }
     }
+
     @GetMapping("/horas-ocupadas")
     @ResponseBody
     public List<String> horasOcupadas(@RequestParam String fecha) {
         LocalDate fechaLocal = LocalDate.parse(fecha);
         return citaService.obtenerHorasOcupadas(fechaLocal);
     }
-    
+
     @GetMapping("/pago/existe")
     @ResponseBody
     public boolean existePago(@RequestParam Long idCita) {

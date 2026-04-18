@@ -5,10 +5,17 @@
 package com.laboratorio.controller;
 
 import com.laboratorio.model.Examen;
+import com.laboratorio.model.ExamenInsumo;
+import com.laboratorio.model.ExamenInsumoForm;
+import com.laboratorio.model.Insumo;
+import com.laboratorio.service.ExamenInsumoService;
 import com.laboratorio.service.ExamenService;
+import com.laboratorio.service.InsumoService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,10 +35,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ExamenController {
 
     private final ExamenService examenService;
+    private final ExamenInsumoService examenInsumoService;
+    private final InsumoService insumoService;
 
     @Autowired
-    public ExamenController(ExamenService examenService) {
+    public ExamenController(ExamenService examenService,
+            ExamenInsumoService examenInsumoService,
+            InsumoService insumoService) {
         this.examenService = examenService;
+        this.examenInsumoService = examenInsumoService;
+        this.insumoService = insumoService;
     }
 
     @GetMapping("/examenes")
@@ -184,5 +197,64 @@ public class ExamenController {
         model.addAttribute("total", total);
         model.addAttribute("fechaActual", LocalDate.now());
         return "examen/mostrar-proforma";
+    }
+
+    @GetMapping("/{idExamen}/insumos")
+    public String gestionarInsumosExamen(@PathVariable Long idExamen, Model model) {
+        Examen examen = new Examen();
+        examen.setIdExamen(idExamen);
+        examen = examenService.get(examen);
+
+        if (examen == null) {
+            return "redirect:/examen/examenes";
+        }
+
+        List<ExamenInsumo> relaciones = examenInsumoService.listarPorExamen(idExamen);
+
+        Map<Long, Insumo> insumosRelacionados = new HashMap<>();
+        for (ExamenInsumo relacion : relaciones) {
+            Insumo insumo = new Insumo();
+            insumo.setIdInsumo(relacion.getIdInsumo());
+            insumo = insumoService.get(insumo);
+
+            if (insumo != null) {
+                insumosRelacionados.put(relacion.getIdInsumo(), insumo);
+            }
+        }
+
+        model.addAttribute("examen", examen);
+        model.addAttribute("relaciones", relaciones);
+        model.addAttribute("insumosRelacionados", insumosRelacionados);
+        model.addAttribute("insumos", insumoService.getAll().stream().filter(Insumo::isActivo).toList());
+        model.addAttribute("examenInsumoForm", new ExamenInsumoForm());
+
+        return "examen/examen_insumo";
+    }
+
+    @PostMapping("/{idExamen}/insumos/guardar")
+    public String guardarRelacionInsumo(@PathVariable Long idExamen,
+            @ModelAttribute("examenInsumoForm") ExamenInsumoForm form,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            examenInsumoService.guardarRelacion(idExamen, form.getIdInsumo(), form.getCantidadNecesaria());
+            redirectAttributes.addFlashAttribute("success", "Relación guardada correctamente.");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("mensaje", e.getMessage());
+            redirectAttributes.addFlashAttribute("tipo", "error");
+        }
+
+        return "redirect:/examen/" + idExamen + "/insumos";
+    }
+
+    @GetMapping("/{idExamen}/insumos/eliminar/{idExamenInsumo}")
+    public String eliminarRelacionInsumo(@PathVariable Long idExamen,
+            @PathVariable Long idExamenInsumo,
+            RedirectAttributes redirectAttributes) {
+
+        examenInsumoService.eliminarRelacion(idExamenInsumo);
+        redirectAttributes.addFlashAttribute("success", "Relación eliminada correctamente.");
+
+        return "redirect:/examen/" + idExamen + "/insumos";
     }
 }

@@ -18,4 +18,8 @@ public interface InventarioService extends CrudService<Inventario> {
 
     void exportarExcel(List<Inventario> inventarios, OutputStream os) throws IOException;
 
+    void reajustarInventarioPorCambio(Long idCita, String estadoAnterior, String estadoNuevo,
+            List<Long> examenesAnteriores, List<Long> examenesNuevos);
+
+    void ajustarInventarioPorExamenes(List<Long> idsExamen, String estado);
 }
