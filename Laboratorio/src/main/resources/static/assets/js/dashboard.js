@@ -337,10 +337,14 @@ document.addEventListener("DOMContentLoaded", () => {
             return "";
 
         switch (estado.toUpperCase()) {
-            case "PENDIENTE":
+            case "AGENDADA":
+            case "PENDIENTE":   // compat con datos históricos
                 return "Agendada";
-            case "CONFIRMADA":
+            case "TERMINADA":
+            case "CONFIRMADA":  // compat con datos históricos
                 return "Terminada";
+            case "CANCELADA":
+                return "Cancelada";
             default:
                 return estado;
         }

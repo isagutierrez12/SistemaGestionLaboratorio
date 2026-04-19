@@ -81,13 +81,29 @@
             </script>
 
             <script th:if="${mensaje}" th:inline="javascript">
-                Swal.fire({
-                title: /*[[${tipo == 'success' ? 'Éxito' : (tipo == 'warning' ? 'Atención' : 'Error')}]]*/,
-                        text: /*[[${mensaje}]]*/,
-                        icon: /*[[${tipo}]]*/,
+                (function () {
+                    var clase = /*[[${clase}]]*/ '';
+                    var titulo, icono;
+
+                    switch (clase) {
+                        case 'success':
+                            titulo = 'Éxito';       icono = 'success'; break;
+                        case 'warning':
+                            titulo = 'Atención';    icono = 'warning'; break;
+                        case 'info':
+                            titulo = 'Información'; icono = 'info';    break;
+                        default:
+                            titulo = 'Error';       icono = 'error';   break;
+                    }
+
+                    Swal.fire({
+                        title: titulo,
+                        text: /*[[${mensaje}]]*/ '',
+                        icon: icono,
                         confirmButtonText: 'Aceptar',
                         confirmButtonColor: '#1c94a4'
-                });
+                    });
+                })();
             </script>
         </section>
 
@@ -195,7 +211,7 @@
                         var cita = info.event;
                         document.getElementById("detallePaciente").textContent = cita.title;
                         document.getElementById("detalleFecha").textContent = new Date(cita.start).toLocaleString('es-CR');
-                        document.getElementById("detalleEstado").textContent = cita.extendedProps.estado || 'Pendiente';
+                        document.getElementById("detalleEstado").textContent = cita.extendedProps.estado || 'Agendada';
                         document.getElementById("detalleNotas").textContent = cita.extendedProps.notas || 'Sin notas';
                         // Llenar listas
                         var listaExamenes = document.getElementById("detalleExamenes");
@@ -512,9 +528,12 @@
 
                                 <h4 class="text-center mb-4" style="color:#1c94a4;font-weight:bold;">Editar Cita</h4>
 
-                                <form th:action="@{/cita/actualizar}" th:object="${cita}" method="post">
+                                <form id="formEditarCita" th:action="@{/cita/actualizar}" th:object="${cita}" method="post">
                                     <input type="hidden" th:field="*{idCita}" />
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <input type="hidden" id="estadoOriginal" th:value="${cita.estado}" />
+                                    <input type="hidden" id="pagoMonto" name="pagoMonto" />
+                                    <input type="hidden" id="pagoTipo"  name="pagoTipo"  />
 
                                     <!-- FECHA -->
                                     <div class="col-md-6 mb-3">
@@ -544,9 +563,9 @@
                                     <div class="col-md-6 mb-3">
                                         <label for="estado" class="form-label">Estado</label>
                                         <select id="estado" th:field="*{estado}" class="form-select" required="required">
-                                            <option value="PENDIENTE" th:selected="${cita.estado == 'AGENDADA'}">Agendada</option>
-                                            <option value="CONFIRMADA" th:selected="${cita.estado == 'TERMINADA'}">Terminada</option>
-                                            <option value="CANCELADA" th:selected="${cita.estado == 'CANCELADA'}">Cancelada</option>
+                                            <option value="AGENDADA">Agendada</option>
+                                            <option value="TERMINADA">Terminada</option>
+                                            <option value="CANCELADA">Cancelada</option>
                                         </select>
                                     </div>
 
@@ -565,6 +584,7 @@
                                         <input class="form-check-input" type="checkbox" 
                                                name="examenesSeleccionados" 
                                                th:value="${examen.idExamen}"
+                                               th:data-precio="${examen.precio}"
                                                th:checked="${cita.solicitud.detalles.?[examen != null].![examen.idExamen].contains(examen.idExamen)}"></input>
                                         <label class="form-check-label" th:text="${examen.nombre}">Examen</label>
                                     </div>
@@ -577,6 +597,7 @@
                                         <input class="form-check-input" type="checkbox" 
                                                name="paquetesSeleccionados" 
                                                th:value="${paquete.idPaquete}"
+                                               th:data-precio="${paquete.precio}"
                                                th:checked="${cita.solicitud.detalles.?[paquete != null].![paquete.idPaquete].contains(paquete.idPaquete)}"></input>
                                         <label class="form-check-label" th:text="${paquete.nombre}">Paquete</label>
                                     </div>

@@ -16,12 +16,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <!-- Preloader -->
         <main id="main" class="main">
             <section class="section dashboard">
-                <div th:replace="dashboard/fragmentos :: filtros"></div>
-                <div th:replace="dashboard/fragmentos :: kpis"></div>
-                <div th:replace="dashboard/fragmentos :: grafico-examenes"></div>
-                <div th:replace="dashboard/fragmentos :: reportes"></div>
-                <div th:replace="dashboard/fragmentos :: pagos"></div>
-                <div th:replace="dashboard/fragmentos :: alertas"></div>
+                <div th:replace="~{dashboard/fragmentos :: filtros}"></div>
+                <div th:replace="~{dashboard/fragmentos :: kpis}"></div>
+                <div th:replace="~{dashboard/fragmentos :: grafico-examenes}"></div>
+                <div th:replace="~{dashboard/fragmentos :: reportes}"></div>
+                <div th:replace="~{dashboard/fragmentos :: pagos}"></div>
+                <div th:replace="~{dashboard/fragmentos :: alertas}"></div>
             </section>
         </main>
 

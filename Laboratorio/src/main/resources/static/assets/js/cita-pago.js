@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
 
         const estadoNuevo = (estadoSelect?.value || "").toUpperCase();
-        const requierePago = (estadoNuevo === "CONFIRMADA");
+        const requierePago = (estadoNuevo === "TERMINADA");
 
         if (!requierePago)
             return;
@@ -150,4 +150,3 @@ document.addEventListener("DOMContentLoaded", () => {
         form.requestSubmit();
     });
 });
-

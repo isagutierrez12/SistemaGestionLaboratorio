@@ -2,6 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.laboratorio.controller;
 
 import com.laboratorio.model.Cita;
@@ -185,7 +189,9 @@ public class CitaController {
             solicitud.setPaciente(pacienteService.get(idPaciente));
             solicitud.setUsuario(usuarioService.getUsuarioPorUsername(userDetails.getUsername()));
             solicitud.setFechaSolicitud(LocalDateTime.now());
-            solicitud.setEstado("Agendada");
+            // Solicitud tiene su propio ciclo (Pendiente/Procesando/Completada).
+            // No se mezcla con los estados de Cita.
+            solicitud.setEstado("Pendiente");
 
             double precioTotal = 0.0;
 
@@ -594,15 +600,15 @@ public class CitaController {
             cita.setNotas(notas);
             cita.setUsuario(usuarioService.getUsuarioPorUsername(userDetails.getUsername()));
 
-            //7.1 Confirmacion de estado para insertar pago en caso de CONFIRMADA
+            //7.1 Confirmacion de estado para insertar pago en caso de TERMINADA
             String estadoNuevo = (estado == null) ? "" : estado.toUpperCase();
 
-            boolean esConfirmada = "CONFIRMADA".equals(estadoNuevo);
+            boolean esTerminada = "TERMINADA".equals(estadoNuevo);
 
-            if (esConfirmada) {
+            if (esTerminada) {
                 if (pagoMonto == null || pagoMonto <= 0 || pagoTipo == null || pagoTipo.isBlank()) {
                     redirectAttrs.addFlashAttribute("mensaje",
-                            "Para marcar la cita como confirmada debes registrar el pago.");
+                            "Para marcar la cita como terminada debes registrar el pago.");
                     redirectAttrs.addFlashAttribute("clase", "danger");
                     return "redirect:/cita/modificar/" + idCita;
                 }

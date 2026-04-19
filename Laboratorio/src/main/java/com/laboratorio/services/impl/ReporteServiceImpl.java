@@ -69,7 +69,8 @@ public class ReporteServiceImpl implements ReporteService {
             String estadoReal = c.getEstado(); // puede ser null
 
             if (estadoFiltro != null) {
-                if (estadoReal == null || !estadoReal.trim().toLowerCase().equals(estadoFiltro)) {
+                if (estadoReal == null
+                        || !normalizarEstado(estadoReal).equals(normalizarEstado(estadoFiltro))) {
                     continue;
                 }
             } else {
@@ -207,5 +208,22 @@ public class ReporteServiceImpl implements ReporteService {
 
         workbook.write(os);
         workbook.close();
+    }
+
+    private String normalizarEstado(String estado) {
+        if (estado == null) return "";
+        String e = estado.trim().toUpperCase();
+        switch (e) {
+            case "PENDIENTE":
+            case "AGENDADA":
+                return "AGENDADA";
+            case "CONFIRMADA":
+            case "TERMINADA":
+                return "TERMINADA";
+            case "CANCELADA":
+                return "CANCELADA";
+            default:
+                return e;
+        }
     }
 }
