@@ -9,12 +9,16 @@ import com.laboratorio.service.InventarioService;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class InventarioServiceImpl implements InventarioService {
@@ -39,18 +43,20 @@ public class InventarioServiceImpl implements InventarioService {
     }
 
     @Override
-    public boolean existsByCodigoBarras(String codigoBarras){
+    public boolean existsByCodigoBarras(String codigoBarras) {
         return inventarioRepository.existsByCodigoBarras(codigoBarras);
     }
+
     @Override
-    public Inventario findByCodigoBarras(String codigoBarras){
+    public Inventario findByCodigoBarras(String codigoBarras) {
         return inventarioRepository.findByCodigoBarras(codigoBarras);
     }
-  
-      @Override 
-        public boolean existsByInsumo_IdInsumoAndActiveTrue(Long idInsumo){
+
+    @Override
+    public boolean existsByInsumo_IdInsumoAndActivoTrue(Long idInsumo) {
         return inventarioRepository.existsByInsumo_IdInsumoAndActivoTrue(idInsumo);
     }
+
     @Override
     public void save(Inventario entity) {
 
@@ -103,6 +109,7 @@ public class InventarioServiceImpl implements InventarioService {
     }
 
     @Override
+    @Transactional
     public void ajustarInventarioPorCita(Long idCita, String nuevoEstado) {
         List<Long> examenes = solicitudDetalleRepository.findExamenesByCita(idCita);
 
@@ -113,53 +120,34 @@ public class InventarioServiceImpl implements InventarioService {
         ajustarInventarioPorExamenes(examenes, nuevoEstado);
     }
 
-    @Override
+    @Transactional
     public void ajustarInventarioPorExamenes(List<Long> idsExamen, String estado) {
         if (idsExamen == null || idsExamen.isEmpty()) {
             return;
         }
-
         List<ExamenInsumo> insumosRequeridos = examenInsumoRepository.findByExamenInList(idsExamen);
-
         if (insumosRequeridos == null || insumosRequeridos.isEmpty()) {
             return;
         }
-
         LocalDate hoy = LocalDate.now();
-        String estadoNormalizado = (estado == null) ? "" : estado.toUpperCase();
+        String estadoNormalizado = normalizarEstado(estado);
 
         for (ExamenInsumo req : insumosRequeridos) {
             Long idInsumo = req.getIdInsumo();
             int cantidadNecesaria = req.getCantidadNecesaria();
-
             switch (estadoNormalizado) {
-                case "AGENDADA":
-                case "CONFIRMADA": {
-                    Inventario inv = inventarioRepository.buscarInventarioParaBloqueo(
-                            idInsumo, hoy, cantidadNecesaria
-                    );
-
-                    if (inv == null) {
-                        throw new IllegalArgumentException(
-                                "No existe un lote válido con stock suficiente para el insumo ID " + idInsumo
-                        );
-                    }
-
-                    inv.setStockBloqueado(inv.getStockBloqueado() + cantidadNecesaria);
-                    inventarioRepository.save(inv);
+                case "AGENDADA": {
+                    bloquearDisponibleEnLotes(idInsumo, cantidadNecesaria, hoy);
                     break;
                 }
-
                 case "TERMINADA": {
                     consumirBloqueadoEnLotes(idInsumo, cantidadNecesaria, hoy);
                     break;
                 }
-
                 case "CANCELADA": {
                     liberarBloqueadoEnLotes(idInsumo, cantidadNecesaria, hoy);
                     break;
                 }
-
                 default:
                     break;
             }
@@ -167,11 +155,12 @@ public class InventarioServiceImpl implements InventarioService {
     }
 
     @Override
+    @Transactional
     public void reajustarInventarioPorCambio(Long idCita, String estadoAnterior, String estadoNuevo,
             List<Long> examenesAnteriores, List<Long> examenesNuevos) {
 
-        String anterior = (estadoAnterior == null) ? "" : estadoAnterior.toUpperCase();
-        String nuevo = (estadoNuevo == null) ? "" : estadoNuevo.toUpperCase();
+        String anterior = normalizarEstado(estadoAnterior);
+        String nuevo = normalizarEstado(estadoNuevo);
 
         boolean mismosExamenes = (examenesAnteriores == null && examenesNuevos == null)
                 || (examenesAnteriores != null && examenesAnteriores.equals(examenesNuevos));
@@ -180,30 +169,37 @@ public class InventarioServiceImpl implements InventarioService {
             return;
         }
 
-        // Revertir lo anterior solo si era estado que bloqueaba
-        switch (anterior) {
-            case "AGENDADA":
-            case "CONFIRMADA":
-                ajustarInventarioPorExamenes(examenesAnteriores, "CANCELADA");
-                break;
+        boolean eraBloqueante = anterior.equals("AGENDADA");
+        boolean esBloqueante = nuevo.equals("AGENDADA");
 
-            case "TERMINADA":
-                // No se revierte automáticamente porque ya hubo consumo real
-                break;
-
-            default:
-                break;
+        if (mismosExamenes) {
+            if (eraBloqueante && nuevo.equals("TERMINADA")) {
+                ajustarInventarioPorExamenes(examenesNuevos, "TERMINADA");
+                return;
+            }
+            if (eraBloqueante && nuevo.equals("CANCELADA")) {
+                ajustarInventarioPorExamenes(examenesNuevos, "CANCELADA");
+                return;
+            }
+            if (anterior.equals("CANCELADA") && esBloqueante) {
+                ajustarInventarioPorExamenes(examenesNuevos, nuevo);
+                return;
+            }
         }
 
-        // Aplicar lo nuevo
+        if (eraBloqueante && examenesAnteriores != null && !examenesAnteriores.isEmpty()) {
+            ajustarInventarioPorExamenes(examenesAnteriores, "CANCELADA");
+        }
+
         switch (nuevo) {
             case "AGENDADA":
-            case "CONFIRMADA":
-            case "TERMINADA":
             case "CANCELADA":
                 ajustarInventarioPorExamenes(examenesNuevos, nuevo);
                 break;
-
+            case "TERMINADA":
+                ajustarInventarioPorExamenes(examenesNuevos, "AGENDADA");
+                ajustarInventarioPorExamenes(examenesNuevos, "TERMINADA");
+                break;
             default:
                 break;
         }
@@ -318,6 +314,99 @@ public class InventarioServiceImpl implements InventarioService {
             if (restante == 0) {
                 break;
             }
+        }
+    }
+
+    private void bloquearDisponibleEnLotes(Long idInsumo, int cantidadNecesaria, LocalDate hoy) {
+        List<Inventario> inventarios = inventarioRepository.buscarLotesDisponiblesParaDescuento(idInsumo, hoy);
+
+        int totalDisponible = inventarios.stream()
+                .mapToInt(inv -> inv.getStockActual() - inv.getStockBloqueado())
+                .sum();
+
+        if (totalDisponible < cantidadNecesaria) {
+            throw new IllegalArgumentException(
+                    "No existe stock disponible suficiente para bloquear el insumo ID " + idInsumo
+            );
+        }
+
+        int restante = cantidadNecesaria;
+
+        for (Inventario inv : inventarios) {
+            int disponible = inv.getStockActual() - inv.getStockBloqueado();
+
+            if (disponible <= 0) {
+                continue;
+            }
+
+            int aBloquear = Math.min(disponible, restante);
+
+            inv.setStockBloqueado(inv.getStockBloqueado() + aBloquear);
+            inventarioRepository.save(inv);
+
+            restante -= aBloquear;
+
+            if (restante == 0) {
+                break;
+            }
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void validarDisponibilidadParaExamenes(List<Long> idsExamen) {
+        if (idsExamen == null || idsExamen.isEmpty()) {
+            return;
+        }
+        List<ExamenInsumo> insumosRequeridos = examenInsumoRepository.findByExamenInList(idsExamen);
+        if (insumosRequeridos == null || insumosRequeridos.isEmpty()) {
+            return;
+        }
+        LocalDate hoy = LocalDate.now();
+
+        // Agrupa cantidades por insumo: si dos exámenes comparten insumo, se suman
+        Map<Long, Integer> requeridoPorInsumo = new HashMap<>();
+        for (ExamenInsumo ei : insumosRequeridos) {
+            requeridoPorInsumo.merge(ei.getIdInsumo(), ei.getCantidadNecesaria(), Integer::sum);
+        }
+
+        List<String> faltantes = new ArrayList<>();
+        for (Map.Entry<Long, Integer> e : requeridoPorInsumo.entrySet()) {
+            Long idInsumo = e.getKey();
+            int necesaria = e.getValue();
+            List<Inventario> lotes = inventarioRepository
+                    .buscarLotesDisponiblesParaDescuento(idInsumo, hoy);
+            int disponible = lotes.stream()
+                    .mapToInt(inv -> inv.getStockActual() - inv.getStockBloqueado())
+                    .sum();
+            if (disponible < necesaria) {
+                faltantes.add("insumo ID " + idInsumo
+                        + " (disponible: " + disponible + ", requerido: " + necesaria + ")");
+            }
+        }
+
+        if (!faltantes.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "No hay stock suficiente para: " + String.join("; ", faltantes));
+        }
+    }
+
+    private String normalizarEstado(String estado) {
+        if (estado == null) {
+            return "";
+        }
+        String e = estado.toUpperCase().trim();
+        switch (e) {
+            case "PENDIENTE":
+            case "AGENDADA":
+                return "AGENDADA";
+            case "CONFIRMADA":
+            case "TERMINADA":
+                return "TERMINADA";
+            case "CANCELADA":
+                return "CANCELADA";
+            default:
+                return e;
         }
     }
 }

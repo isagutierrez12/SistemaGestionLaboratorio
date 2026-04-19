@@ -48,7 +48,7 @@ public class InsumoController {
         
         if (Boolean.FALSE.equals(insumo.isActivo())) {
             boolean enUso = inventarioService
-                    .existsByInsumo_IdInsumoAndActiveTrue(insumo.getIdInsumo());
+                    .existsByInsumo_IdInsumoAndActivoTrue(insumo.getIdInsumo());
 
             if (enUso) {
                 model.addAttribute("error", "No se puede desactivar un insumo que esté relacionado a inventario activo");

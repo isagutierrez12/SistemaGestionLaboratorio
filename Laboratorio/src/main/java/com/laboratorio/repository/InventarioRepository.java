@@ -29,8 +29,11 @@ public interface InventarioRepository extends JpaRepository<Inventario, Long> {
     List<Inventario> buscarInventarioPorQuery(@Param("query") String query);
 
     boolean existsByInsumo_IdInsumo(Long idInsumo);
+
     boolean existsByInsumo_IdInsumoAndActivoTrue(Long idInsumo);
+
     boolean existsByCodigoBarras(String codigoBarras);
+
     public Inventario findByCodigoBarras(String codigoBarras);
 
     @Query(value = """
@@ -71,5 +74,17 @@ public interface InventarioRepository extends JpaRepository<Inventario, Long> {
     ORDER BY i.fecha_apertura ASC NULLS LAST
     """, nativeQuery = true)
     List<Inventario> buscarLotesConBloqueado(@Param("idInsumo") Long idInsumo,
+            @Param("hoy") LocalDate hoy);
+
+    @Query(value = """
+    SELECT *
+    FROM inventario i
+    WHERE i.id_insumo = :idInsumo
+      AND i.activo = true
+      AND (i.fecha_vencimiento IS NULL OR i.fecha_vencimiento >= :hoy)
+      AND (i.stock_actual - i.stock_bloqueado) > 0
+    ORDER BY i.fecha_apertura ASC NULLS LAST
+    """, nativeQuery = true)
+    List<Inventario> buscarLotesDisponiblesParaDescuento(@Param("idInsumo") Long idInsumo,
             @Param("hoy") LocalDate hoy);
 }

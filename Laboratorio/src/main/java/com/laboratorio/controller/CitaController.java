@@ -29,9 +29,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -137,7 +140,7 @@ public class CitaController {
         model.addAttribute("pacientes", pacienteService.getAll());
         model.addAttribute("examenesDisponibles", examenService.getAll());
         model.addAttribute("paquetesDisponibles", paqueteService.getAll());
-        model.addAttribute("solicitudes", solicitudService.getAll());      
+        model.addAttribute("solicitudes", solicitudService.getAll());
         model.addAttribute("fechaSeleccionada", fecha);
         return "cita/agregar";
     }
@@ -154,6 +157,29 @@ public class CitaController {
             RedirectAttributes redirectAttrs) {
 
         try {
+            validarExamenesNoDuplicadosEnPaquetes(examenesSeleccionados, paquetesSeleccionados);
+
+            // Armar lista completa de exámenes (individuales + los que vienen en paquetes)
+            List<Long> todosLosExamenes = new ArrayList<>();
+            if (examenesSeleccionados != null) {
+                todosLosExamenes.addAll(examenesSeleccionados);
+            }
+            if (paquetesSeleccionados != null) {
+                for (Long idPaq : paquetesSeleccionados) {
+                    Paquete p = paqueteService.getById(idPaq);
+                    if (p != null && p.getDetalles() != null) {
+                        for (DetallePaquete dp : p.getDetalles()) {
+                            if (dp.getExamen() != null) {
+                                todosLosExamenes.add(dp.getExamen().getIdExamen());
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Pre-validar inventario ANTES de guardar nada
+            inventarioService.validarDisponibilidadParaExamenes(todosLosExamenes);
+
             // 1. Crear la solicitud
             Solicitud solicitud = new Solicitud();
             solicitud.setPaciente(pacienteService.get(idPaciente));
@@ -465,6 +491,29 @@ public class CitaController {
             @AuthenticationPrincipal UserDetails userDetails,
             RedirectAttributes redirectAttrs) {
         try {
+            validarExamenesNoDuplicadosEnPaquetes(examenesSeleccionados, paquetesSeleccionados);
+
+            // Armar lista completa de exámenes (individuales + los que vienen en paquetes)
+            List<Long> todosLosExamenes = new ArrayList<>();
+            if (examenesSeleccionados != null) {
+                todosLosExamenes.addAll(examenesSeleccionados);
+            }
+            if (paquetesSeleccionados != null) {
+                for (Long idPaq : paquetesSeleccionados) {
+                    Paquete p = paqueteService.getById(idPaq);
+                    if (p != null && p.getDetalles() != null) {
+                        for (DetallePaquete dp : p.getDetalles()) {
+                            if (dp.getExamen() != null) {
+                                todosLosExamenes.add(dp.getExamen().getIdExamen());
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Pre-validar inventario ANTES de guardar nada
+            inventarioService.validarDisponibilidadParaExamenes(todosLosExamenes);
+
             // 1. Obtener la cita existente
             Cita cita = citaService.getById(idCita);
             if (cita == null) {
@@ -856,4 +905,50 @@ public class CitaController {
         return pagoService.existsByCita(idCita);
     }
 
+    private void validarExamenesNoDuplicadosEnPaquetes(
+            List<Long> examenesSeleccionados,
+            List<Long> paquetesSeleccionados) {
+
+        if (examenesSeleccionados == null || examenesSeleccionados.isEmpty()
+                || paquetesSeleccionados == null || paquetesSeleccionados.isEmpty()) {
+            return;
+        }
+
+        // Mapa: idExamen → nombre del primer paquete donde aparece
+        Map<Long, String> paqueteDeExamen = new HashMap<>();
+        for (Long idPaquete : paquetesSeleccionados) {
+            Paquete paquete = paqueteService.getById(idPaquete);
+            if (paquete == null || paquete.getDetalles() == null) {
+                continue;
+            }
+            for (DetallePaquete dp : paquete.getDetalles()) {
+                if (dp.getExamen() != null) {
+                    paqueteDeExamen.putIfAbsent(
+                            dp.getExamen().getIdExamen(),
+                            paquete.getNombre()
+                    );
+                }
+            }
+        }
+
+        List<Long> idsConflictivos = examenesSeleccionados.stream()
+                .filter(paqueteDeExamen::containsKey)
+                .distinct()
+                .toList();
+
+        if (idsConflictivos.isEmpty()) {
+            return;
+        }
+
+        List<Examen> conflictivos = examenService.findById(idsConflictivos);
+        String detalle = conflictivos.stream()
+                .map(e -> e.getNombre() + " (ya incluido en paquete '"
+                + paqueteDeExamen.get(e.getIdExamen()) + "')")
+                .collect(Collectors.joining(", "));
+
+        throw new IllegalArgumentException(
+                "No se pueden agendar exámenes que ya están incluidos en paquetes seleccionados: "
+                + detalle
+        );
+    }
 }

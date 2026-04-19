@@ -164,7 +164,7 @@
 
                                         <div class="col-md-6 mb-3">
                                             <label for="precio" class="form-label">Precio</label>
-                                            <input type="number" step="0.01" min="1" class="form-control text-center" id="precio" th:field="*{precio}" required />
+                                            <input type="number" step="0.01" min="1" class="form-control text-center" id="precio" th:field="*{precio}" required="required" />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
@@ -278,7 +278,7 @@
 
                                         <div class="col-md-6 mb-3">
                                             <label for="precio" class="form-label">Precio</label>
-                                            <input type="number" step="0.01" min="1" class="form-control text-center" id="precio" th:field="*{precio}" required />
+                                            <input type="number" step="0.01" min="1" class="form-control text-center" id="precio" th:field="*{precio}" required="required" />
                                         </div>
 
                                         <div class="col-md-6 mb-3">
@@ -428,7 +428,7 @@
                                                            position: relative;
                                                            "
                                                            oninput="this.style.backgroundColor=this.checked?'#1c94a4':'transparent';
-                                                           this.style.borderColor=this.checked?'#1c94a4':'#1c94a4';">
+                                                           this.style.borderColor=this.checked?'#1c94a4':'#1c94a4';"/>
                                                 </td>
 
                                                 <td>[[${e.nombre}]]</td>
@@ -533,7 +533,6 @@
 
                                 <div class="proforma-total"> 
                                     <p><strong>Total:</strong> <span th:text="${total}"></span></p>
-                                    </p>
                                 </div>
 
                                 <div class="proforma-footer">

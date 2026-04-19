@@ -22,5 +22,10 @@ public interface InventarioService extends CrudService<Inventario> {
     boolean existsByCodigoBarras(String codigoBarras);
     
     public Inventario findByCodigoBarras(String codigoBarras);
-    public boolean existsByInsumo_IdInsumoAndActiveTrue(Long idInsumo);
+    public boolean existsByInsumo_IdInsumoAndActivoTrue(Long idInsumo);
+    
+    public void reajustarInventarioPorCambio(Long idCita, String estadoAnterior, String estadoNuevo,
+        List<Long> examenesAnteriores, List<Long> examenesNuevos);
+    
+    void validarDisponibilidadParaExamenes(List<Long> idsExamen);
 }
