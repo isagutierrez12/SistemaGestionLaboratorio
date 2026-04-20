@@ -184,20 +184,13 @@
 
             <script th:inline="javascript">
                 document.addEventListener('DOMContentLoaded', function () {
-                    const calendarEl = document.getElementById('calendar');
-                    const buscadorPaciente = document.getElementById("buscadorPaciente");
-                    const toggleBtn = document.querySelector('.toggle-sidebar-btn');
-                    const citas = /*[[${citas}]]*/ [];
-
-                    const eventos = citas.map(function (cita) {
-                        const inicio = new Date(cita.fechaCita);
-                        const fin = new Date(inicio.getTime() + 15 * 60000);
-
+                    var calendarEl = document.getElementById('calendar');
+                    var citas = /*[[${citas}]]*/ [];
+                    var eventos = citas.map(function (cita) {
                         return {
                             id: cita.idCita,
                             title: cita.paciente,
-                            start: inicio.toISOString(),
-                            end: fin.toISOString(),
+                            start: cita.fechaCita,
                             extendedProps: {
                                 estado: cita.estado,
                                 notas: cita.notas,
@@ -206,8 +199,7 @@
                             }
                         };
                     });
-
-                    const calendar = new FullCalendar.Calendar(calendarEl, {
+                    var calendar = new FullCalendar.Calendar(calendarEl, {
                         initialView: 'dayGridMonth',
                         locale: 'es',
                         headerToolbar: {
@@ -223,47 +215,28 @@
                             list: 'Lista'
                         },
                         events: eventos,
-                        slotDuration: '00:15:00',
-                        snapDuration: '00:15:00',
-                        slotLabelInterval: '00:15:00',
-                        slotLabelFormat: {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: false
-                        },
-                        defaultTimedEventDuration: '00:15:00',
-                        allDaySlot: false,
-                        slotMinTime: '05:00:00',
-                        slotMaxTime: '18:00:00',
-                        eventOverlap: false,
-                        expandRows: true,
-                        height: "auto",
-                        contentHeight: 900,
-                        eventMinHeight: 30,
                         eventClick: function (info) {
-                            const cita = info.event;
+                            var cita = info.event;
                             document.getElementById("detallePaciente").textContent = cita.title;
                             document.getElementById("detalleFecha").textContent = new Date(cita.start).toLocaleString('es-CR');
                             document.getElementById("detalleEstado").textContent = cita.extendedProps.estado || 'Agendada';
                             document.getElementById("detalleNotas").textContent = cita.extendedProps.notas || 'Sin notas';
-
-                            const listaExamenes = document.getElementById("detalleExamenes");
+                            // Llenar listas
+                            var listaExamenes = document.getElementById("detalleExamenes");
                             listaExamenes.innerHTML = "";
                             (cita.extendedProps.examenes || []).forEach(function (examen) {
-                                const li = document.createElement("li");
+                                var li = document.createElement("li");
                                 li.textContent = examen;
                                 listaExamenes.appendChild(li);
                             });
-
-                            const listaPaquetes = document.getElementById("detallePaquetes");
+                            var listaPaquetes = document.getElementById("detallePaquetes");
                             listaPaquetes.innerHTML = "";
                             (cita.extendedProps.paquetes || []).forEach(function (paquete) {
-                                const li = document.createElement("li");
+                                var li = document.createElement("li");
                                 li.textContent = paquete;
                                 listaPaquetes.appendChild(li);
                             });
-
-                            const modal = new bootstrap.Modal(document.getElementById('detalleCitaModal'));
+                            var modal = new bootstrap.Modal(document.getElementById('detalleCitaModal'));
                             modal.show();
                             document.getElementById("editarCitaBtn").href = "/cita/modificar/" + cita.id;
                             info.jsEvent.preventDefault();
@@ -272,33 +245,16 @@
                             window.location.href = '/cita/agregar?fecha=' + info.dateStr;
                         }
                     });
-
-                    if (buscadorPaciente) {
-                        buscadorPaciente.addEventListener("input", function () {
-                            const texto = this.value.toLowerCase();
-                            const eventosFiltrados = eventos.filter(function (ev) {
-                                return ev.title.toLowerCase().includes(texto);
-                            });
-                            calendar.removeAllEvents();
-                            calendar.addEventSource(eventosFiltrados);
+                    // FILTRO DE BÚSQUEDA POR NOMBRE
+                    document.getElementById("buscadorPaciente").addEventListener("input", function () {
+                        var texto = this.value.toLowerCase();
+                        var eventosFiltrados = eventos.filter(function (ev) {
+                            return ev.title.toLowerCase().includes(texto);
                         });
-                    }
-
-                    calendar.render();
-
-                    function reajustarCalendario() {
-                        setTimeout(() => {
-                            calendar.updateSize();
-                        }, 320);
-                    }
-
-                    if (toggleBtn) {
-                        toggleBtn.addEventListener('click', reajustarCalendario);
-                    }
-
-                    window.addEventListener('resize', function () {
-                        calendar.updateSize();
+                        calendar.removeAllEvents();
+                        calendar.addEventSource(eventosFiltrados);
                     });
+                    calendar.render();
                 });
             </script>
 
@@ -345,7 +301,8 @@
                                                 <option value="">Seleccione...</option>
                                                 <option th:each="p : ${pacientes}" 
                                                         th:value="${p.idPaciente}" 
-                                                        th:text="${p.nombre} + ' ' + ${p.primerApellido} + ' ' + ${p.segundoApellido}">
+                                                        th:text="${p.nombre} + ' ' + ${p.primerApellido} + ' ' + ${p.segundoApellido}"
+                                                        th:selected="${idPacienteSeleccionado != null and idPacienteSeleccionado == p.idPaciente}">
                                                 </option>
                                             </select>
                                         </div>
@@ -361,18 +318,20 @@
                                         <!-- HORAS -->
                                         <div class="col-md-12 mb-3">
                                             <label class="form-label">Seleccione Hora</label>
-                                            <div id="contenedorHoras" class="d-flex flex-wrap gap-2"></div>
+                                            <div id="contenedorHoras" class="d-flex flex-wrap gap-2"
+                                                 th:data-hora-preseleccionada="${horaSeleccionada}"></div>
                                         </div>
 
                                         <!-- EXÁMENES -->
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Exámenes</label>
                                             <div id="listaExamenes" class="opciones-lista">
-                                                <div th:each="e : ${examenesDisponibles}" class="form-check">
+                                                <div th:each="e : ${examenesDisponibles}" th:if="${e.activo}" class="form-check">
                                                     <input class="form-check-input examen-checkbox" type="checkbox"
                                                            th:id="'examen_' + ${e.idExamen}"
                                                            name="examenesSeleccionados"
-                                                           th:value="${e.idExamen}"></input>
+                                                           th:value="${e.idExamen}"
+                                                           th:checked="${examenesSeleccionados != null and examenesSeleccionados.contains(e.idExamen)}"></input>
                                                     <label class="form-check-label" th:for="'examen_' + ${e.idExamen}"
                                                            th:text="${e.nombre}"></label>
                                                 </div>
@@ -383,16 +342,21 @@
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Paquetes</label>
                                             <div id="listaPaquetes" class="opciones-lista">
-                                                <div th:each="p : ${paquetesDisponibles}" class="form-check">
+                                                <div th:each="p : ${paquetesDisponibles}" class="form-check mb-2">
                                                     <input class="form-check-input paquete-checkbox" type="checkbox"
                                                            th:id="'paquete_' + ${p.idPaquete}"
                                                            name="paquetesSeleccionados"
                                                            th:value="${p.idPaquete}"
-                                                           th:data-examenes="${#strings.listJoin(p.detalles.^[#this.examen.idExamen], ',')}"
-                                                           th:data-nombres="${#strings.listJoin(p.detalles.^[#this.examen.nombre], ', ')}"
-                                                           th:title="'Incluye: ' + ${#strings.listJoin(p.detalles.^[#this.examen.nombre], ', ')}"></input>
+                                                           th:data-examenes="${#strings.listJoin(p.detalles.![examen.idExamen], ',')}"
+                                                           th:data-nombres="${#strings.listJoin(p.detalles.![examen.nombre], ', ')}"
+                                                           th:title="${examenesPorPaquete != null and examenesPorPaquete.containsKey(p.idPaquete) ? 'Incluye: ' + examenesPorPaquete.get(p.idPaquete) : ''}"
+                                                           th:checked="${paquetesSeleccionados != null and paquetesSeleccionados.contains(p.idPaquete)}"></input>
                                                     <label class="form-check-label" th:for="'paquete_' + ${p.idPaquete}"
                                                            th:text="${p.nombre}"></label>
+                                                    <div class="text-muted small"
+                                                         style="margin-left: 25px; font-size: 0.78rem; line-height: 1.1;"
+                                                         th:if="${examenesPorPaquete != null and examenesPorPaquete.containsKey(p.idPaquete)}"
+                                                         th:text="'Incluye: ' + ${examenesPorPaquete.get(p.idPaquete)}"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -470,6 +434,7 @@
                                 .then(res => res.json())
                                 .then(horasOcupadas => {
                                     const bloques = generarBloques(horario.inicio, horario.fin);
+                                    const horaPre = contenedor.dataset.horaPreseleccionada;
                                     bloques.forEach(hora => {
 
                                         const btn = document.createElement("button");
@@ -488,10 +453,16 @@
                                                 btn.classList.add("selected");
                                                 inputFinal.value = `${fecha}T${hora}`;
                                             });
+
+                                            if (horaPre && hora === horaPre) {
+                                                btn.classList.add("selected");
+                                                inputFinal.value = `${fecha}T${hora}`;
+                                            }
                                         }
 
                                         contenedor.appendChild(btn);
                                     });
+                                    delete contenedor.dataset.horaPreseleccionada;
                                 })
                                 .catch(err => console.error("Error cargando horas:", err));
                     }
@@ -636,12 +607,14 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Exámenes</label>
-                                    <div class="form-check" th:each="examen : ${examenesDisponibles}">
+                                    <div class="form-check" th:each="examen : ${examenesDisponibles}" th:if="${examen.activo}">
                                         <input class="form-check-input" type="checkbox" 
                                                name="examenesSeleccionados" 
                                                th:value="${examen.idExamen}"
                                                th:data-precio="${examen.precio}"
-                                               th:checked="${cita.solicitud.detalles.?[examen != null].![examen.idExamen].contains(examen.idExamen)}"></input>
+                                               th:checked="${examenesSeleccionados != null
+                                               ? examenesSeleccionados.contains(examen.idExamen)
+                                               : cita.solicitud.detalles.?[examen != null].![examen.idExamen].contains(examen.idExamen)}"></input>
                                         <label class="form-check-label" th:text="${examen.nombre}">Examen</label>
                                     </div>
                                 </div>
@@ -649,13 +622,19 @@
                                 <!-- Paquetes -->
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Paquetes</label>
-                                    <div class="form-check" th:each="paquete : ${paquetesDisponibles}">
+                                    <div class="form-check mb-2" th:each="paquete : ${paquetesDisponibles}">
                                         <input class="form-check-input" type="checkbox" 
                                                name="paquetesSeleccionados" 
                                                th:value="${paquete.idPaquete}"
                                                th:data-precio="${paquete.precio}"
-                                               th:checked="${cita.solicitud.detalles.?[paquete != null].![paquete.idPaquete].contains(paquete.idPaquete)}"></input>
+                                               th:checked="${paquetesSeleccionados != null
+                                               ? paquetesSeleccionados.contains(paquete.idPaquete)
+                                               : cita.solicitud.detalles.?[paquete != null].![paquete.idPaquete].contains(paquete.idPaquete)}"></input>
                                         <label class="form-check-label" th:text="${paquete.nombre}">Paquete</label>
+                                        <div class="text-muted small"
+                                             style="margin-left: 25px; font-size: 0.78rem; line-height: 1.1;"
+                                             th:if="${examenesPorPaquete != null and examenesPorPaquete.containsKey(paquete.idPaquete)}"
+                                             th:text="'Incluye: ' + ${examenesPorPaquete.get(paquete.idPaquete)}"></div>
                                     </div>
                                 </div>
                             </div>
@@ -771,7 +750,6 @@
                                                 });
                                             }
 
-                                            //  El botón actual queda marcado Y se re-asigna el hidden input
                                             if (hora === horaSeleccionada) {
                                                 btn.classList.add("selected");
                                                 inputFinal.value = `${fecha}T${hora}`;
@@ -783,12 +761,10 @@
                                     .catch(err => console.error("Error cargando horas:", err));
                         }
 
-                        // CARGA INICIAL: no limpiar
                         if (inputFecha.value) {
                             cargarHoras(inputFecha.value, true);
                         }
 
-                        // CAMBIO DE FECHA: limpiar hora porque puede no existir en la nueva fecha
                         inputFecha.addEventListener("change", function () {
                             if (this.value) {
                                 cargarHoras(this.value, false);

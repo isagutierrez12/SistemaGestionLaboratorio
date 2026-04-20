@@ -142,10 +142,26 @@ public class CitaController {
         model.addAttribute("cita", new Cita());
         model.addAttribute("pacientes", pacienteService.getAll());
         model.addAttribute("examenesDisponibles", examenService.getAll());
-        model.addAttribute("paquetesDisponibles", paqueteService.getAll());
+        model.addAttribute("paquetesDisponibles", paqueteService.getActivosConExamenes());
+        model.addAttribute("examenesPorPaquete", construirExamenesPorPaquete());
         model.addAttribute("solicitudes", solicitudService.getAll());
         model.addAttribute("fechaSeleccionada", fecha);
         return "cita/agregar";
+    }
+
+    private Map<Long, String> construirExamenesPorPaquete() {
+        List<Object[]> filas = detallePaqueteRepository.findNombresExamenesDePaquetes();
+        Map<Long, List<String>> agrupado = new HashMap<>();
+        for (Object[] row : filas) {
+            Long idPaq = ((Number) row[0]).longValue();
+            String nombreExamen = (String) row[1];
+            agrupado.computeIfAbsent(idPaq, k -> new ArrayList<>()).add(nombreExamen);
+        }
+        Map<Long, String> resultado = new HashMap<>();
+        for (Map.Entry<Long, List<String>> e : agrupado.entrySet()) {
+            resultado.put(e.getKey(), String.join(", ", e.getValue()));
+        }
+        return resultado;
     }
 
     // Guardar cita
@@ -157,7 +173,8 @@ public class CitaController {
             @RequestParam(value = "examenesSeleccionados", required = false) List<Long> examenesSeleccionados,
             @RequestParam(value = "paquetesSeleccionados", required = false) List<Long> paquetesSeleccionados,
             @AuthenticationPrincipal UserDetails userDetails,
-            RedirectAttributes redirectAttrs) {
+            RedirectAttributes redirectAttrs,
+            Model model) {
 
         try {
             validarExamenesNoDuplicadosEnPaquetes(examenesSeleccionados, paquetesSeleccionados);
@@ -188,8 +205,6 @@ public class CitaController {
             solicitud.setPaciente(pacienteService.get(idPaciente));
             solicitud.setUsuario(usuarioService.getUsuarioPorUsername(userDetails.getUsername()));
             solicitud.setFechaSolicitud(LocalDateTime.now());
-            // Solicitud tiene su propio ciclo (Pendiente/Procesando/Completada).
-            // No se mezcla con los estados de Cita.
             solicitud.setEstado("Pendiente");
 
             double precioTotal = 0.0;
@@ -216,7 +231,7 @@ public class CitaController {
 
                         // ---------- GUARDAR EL PAQUETE COMO DETALLE -----------
                         SolicitudDetalle detallePaquete = new SolicitudDetalle();
-                        detallePaquete.setPaquete(paquete);  // ← AQUÍ SÍ EXISTE "paquete"
+                        detallePaquete.setPaquete(paquete);
                         detallePaquete.setExamen(null);
 
                         solicitud.addDetalle(detallePaquete);
@@ -447,11 +462,31 @@ public class CitaController {
                 // No interrumpir el flujo si falla WhatsApp
             }
         } catch (IllegalArgumentException e) {
-            // Errores de validación (exámenes duplicados en paquete, inventario, etc.):
-            // volver al formulario de agregar para que el usuario corrija.
-            redirectAttrs.addFlashAttribute("mensaje", e.getMessage());
-            redirectAttrs.addFlashAttribute("clase", "danger");
-            return "redirect:/cita/agregar";
+            Cita cita = new Cita();
+            cita.setFechaCita(fechaCita);
+            cita.setNotas(notas);
+            model.addAttribute("cita", cita);
+            model.addAttribute("idPacienteSeleccionado", idPaciente);
+
+            // Dividir la fecha/hora enviada para repoblar los inputs del form
+            if (fechaCita != null) {
+                model.addAttribute("fechaSeleccionada", fechaCita.toLocalDate().toString()); // yyyy-MM-dd
+                model.addAttribute("horaSeleccionada",
+                        String.format("%02d:%02d", fechaCita.getHour(), fechaCita.getMinute()));
+            }
+
+            model.addAttribute("examenesSeleccionados",
+                    examenesSeleccionados != null ? examenesSeleccionados : new java.util.ArrayList<Long>());
+            model.addAttribute("paquetesSeleccionados",
+                    paquetesSeleccionados != null ? paquetesSeleccionados : new java.util.ArrayList<Long>());
+            model.addAttribute("pacientes", pacienteService.getAll());
+            model.addAttribute("examenesDisponibles", examenService.getAll());
+            model.addAttribute("paquetesDisponibles", paqueteService.getActivosConExamenes());
+            model.addAttribute("examenesPorPaquete", construirExamenesPorPaquete());
+            model.addAttribute("solicitudes", solicitudService.getAll());
+            model.addAttribute("mensaje", e.getMessage());
+            model.addAttribute("clase", "danger");
+            return "cita/agregar";
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -485,7 +520,8 @@ public class CitaController {
         model.addAttribute("examenesSeleccionados", examenesSeleccionados);
         model.addAttribute("paquetesSeleccionados", paquetesSeleccionados);
         model.addAttribute("examenesDisponibles", examenService.getAll());
-        model.addAttribute("paquetesDisponibles", paqueteService.getAll());
+        model.addAttribute("paquetesDisponibles", paqueteService.getActivosConExamenes());
+        model.addAttribute("examenesPorPaquete", construirExamenesPorPaquete());
 
         return "cita/modificar";
     }
@@ -501,7 +537,8 @@ public class CitaController {
             @RequestParam(required = false) Double pagoMonto,
             @RequestParam(required = false) String pagoTipo,
             @AuthenticationPrincipal UserDetails userDetails,
-            RedirectAttributes redirectAttrs) {
+            RedirectAttributes redirectAttrs,
+            Model model) {
         try {
             validarExamenesNoDuplicadosEnPaquetes(examenesSeleccionados, paquetesSeleccionados);
 
@@ -828,11 +865,18 @@ public class CitaController {
             redirectAttrs.addFlashAttribute("clase", "success");
 
         } catch (IllegalArgumentException e) {
-            // Errores de validación (exámenes duplicados en paquete, inventario, etc.):
-            // volver al formulario de edición para que el usuario corrija.
-            redirectAttrs.addFlashAttribute("mensaje", e.getMessage());
-            redirectAttrs.addFlashAttribute("clase", "danger");
-            return "redirect:/cita/modificar/" + idCita;
+            Cita cita = citaService.getById(idCita);
+            model.addAttribute("cita", cita);
+            model.addAttribute("examenesSeleccionados",
+                    examenesSeleccionados != null ? examenesSeleccionados : new java.util.ArrayList<Long>());
+            model.addAttribute("paquetesSeleccionados",
+                    paquetesSeleccionados != null ? paquetesSeleccionados : new java.util.ArrayList<Long>());
+            model.addAttribute("examenesDisponibles", examenService.getAll());
+            model.addAttribute("paquetesDisponibles", paqueteService.getActivosConExamenes());
+            model.addAttribute("examenesPorPaquete", construirExamenesPorPaquete());
+            model.addAttribute("mensaje", e.getMessage());
+            model.addAttribute("clase", "danger");
+            return "cita/modificar";
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -850,7 +894,6 @@ public class CitaController {
         if (query == null || query.trim().isEmpty()) {
             citas = citaService.getAll();
         } else {
-            // Puedes luego implementar un método personalizado en el servicio/repo
             citas = citaService.getAll().stream()
                     .filter(c -> c.getEstado() != null && c.getEstado().toLowerCase().contains(query.toLowerCase()))
                     .toList();

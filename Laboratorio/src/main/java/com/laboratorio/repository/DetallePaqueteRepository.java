@@ -27,4 +27,12 @@ public interface DetallePaqueteRepository extends JpaRepository<DetallePaquete, 
            WHERE dp.paquete.idPaquete IN :idsPaquete
            """)
     List<Object[]> findExamenesDePaquetes(@Param("idsPaquete") List<Long> idsPaquete);
+
+    @Query("""
+           SELECT dp.paquete.idPaquete, dp.examen.nombre
+           FROM DetallePaquete dp
+           WHERE dp.paquete.activo = true
+           ORDER BY dp.paquete.idPaquete, dp.examen.nombre
+           """)
+    List<Object[]> findNombresExamenesDePaquetes();
 }
