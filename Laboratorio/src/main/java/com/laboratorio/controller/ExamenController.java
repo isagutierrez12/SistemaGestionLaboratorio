@@ -8,6 +8,7 @@ import com.laboratorio.model.Examen;
 import com.laboratorio.model.ExamenInsumo;
 import com.laboratorio.model.ExamenInsumoForm;
 import com.laboratorio.model.Insumo;
+import com.laboratorio.repository.SolicitudDetalleRepository;
 import com.laboratorio.service.ExamenInsumoService;
 import com.laboratorio.service.ExamenService;
 import com.laboratorio.service.InsumoService;
@@ -37,14 +38,17 @@ public class ExamenController {
     private final ExamenService examenService;
     private final ExamenInsumoService examenInsumoService;
     private final InsumoService insumoService;
+    private final SolicitudDetalleRepository solicitudDetalleRepository;
 
     @Autowired
     public ExamenController(ExamenService examenService,
             ExamenInsumoService examenInsumoService,
-            InsumoService insumoService) {
+            InsumoService insumoService,
+            SolicitudDetalleRepository solicitudDetalleRepository) {
         this.examenService = examenService;
         this.examenInsumoService = examenInsumoService;
         this.insumoService = insumoService;
+        this.solicitudDetalleRepository = solicitudDetalleRepository;
     }
 
     @GetMapping("/examenes")
@@ -125,7 +129,6 @@ public class ExamenController {
         try {
             Examen existente = examenService.get(examen);
 
-            // Unicidad
             if (!examen.getNombre().equalsIgnoreCase(existente.getNombre())
                     && examenService.existsByNombre(examen.getNombre())) {
                 throw new IllegalArgumentException("El examen ya existe");
@@ -133,6 +136,17 @@ public class ExamenController {
 
             if (examen.getValorMinimo() > examen.getValorMaximo()) {
                 throw new IllegalArgumentException("El valor mínimo no puede ser mayor que el valor máximo");
+            }
+
+            boolean pasaAInactivo = Boolean.TRUE.equals(existente.getActivo())
+                    && Boolean.FALSE.equals(examen.getActivo());
+            if (pasaAInactivo) {
+                Long usos = solicitudDetalleRepository.contarCitasAgendadasConExamen(existente.getIdExamen());
+                if (usos != null && usos > 0) {
+                    throw new IllegalArgumentException(
+                            "No se puede desactivar el examen porque está incluido en citas agendadas. "
+                            + "Finalice o cancele esas citas antes de desactivarlo.");
+                }
             }
 
             existente.setNombre(examen.getNombre());

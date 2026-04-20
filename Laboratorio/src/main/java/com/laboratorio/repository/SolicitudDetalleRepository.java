@@ -73,8 +73,8 @@ public interface SolicitudDetalleRepository extends JpaRepository<SolicitudDetal
            GROUP BY e.nombre
            """)
     List<ExamenTop> topExamenesIndividuales(@Param("inicio") LocalDateTime inicio,
-                                            @Param("fin") LocalDateTime fin,
-                                            @Param("area") String area);
+            @Param("fin") LocalDateTime fin,
+            @Param("area") String area);
 
     @Query("""
            SELECT new com.laboratorio.model.ExamenTop(
@@ -92,9 +92,9 @@ public interface SolicitudDetalleRepository extends JpaRepository<SolicitudDetal
            GROUP BY dp.examen.nombre
            """)
     List<ExamenTop> topExamenesDesdePaquetes(@Param("inicio") LocalDateTime inicio,
-                                             @Param("fin") LocalDateTime fin,
-                                             @Param("area") String area);
-    
+            @Param("fin") LocalDateTime fin,
+            @Param("area") String area);
+
     @Query("""
            SELECT d
            FROM SolicitudDetalle d
@@ -103,5 +103,34 @@ public interface SolicitudDetalleRepository extends JpaRepository<SolicitudDetal
                JOIN FETCH d.examen e
            """)
     List<SolicitudDetalle> findAllConRelaciones();
+
+    @Query("""
+           SELECT COUNT(d)
+           FROM Cita c
+           JOIN c.solicitud s
+           JOIN s.detalles d
+           WHERE UPPER(COALESCE(c.estado, '')) IN ('AGENDADA', 'PENDIENTE')
+             AND (
+                   (d.examen IS NOT NULL AND d.examen.idExamen = :idExamen)
+                   OR
+                   (d.paquete IS NOT NULL AND EXISTS (
+                       SELECT dp FROM DetallePaquete dp
+                       WHERE dp.paquete.idPaquete = d.paquete.idPaquete
+                         AND dp.examen.idExamen = :idExamen
+                   ))
+             )
+           """)
+    Long contarCitasAgendadasConExamen(@Param("idExamen") Long idExamen);
+
+    @Query("""
+           SELECT COUNT(d)
+           FROM Cita c
+           JOIN c.solicitud s
+           JOIN s.detalles d
+           WHERE UPPER(COALESCE(c.estado, '')) IN ('AGENDADA', 'PENDIENTE')
+             AND d.paquete IS NOT NULL
+             AND d.paquete.idPaquete = :idPaquete
+           """)
+    Long contarCitasAgendadasConPaquete(@Param("idPaquete") Long idPaquete);
 
 }

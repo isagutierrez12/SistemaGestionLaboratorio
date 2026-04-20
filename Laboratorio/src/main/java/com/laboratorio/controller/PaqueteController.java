@@ -4,6 +4,7 @@ import com.laboratorio.model.DetallePaquete;
 import com.laboratorio.repository.DetallePaqueteRepository;
 import com.laboratorio.model.Examen;
 import com.laboratorio.model.Paquete;
+import com.laboratorio.repository.SolicitudDetalleRepository;
 import com.laboratorio.service.ExamenService;
 import com.laboratorio.service.PaqueteService;
 import java.util.List;
@@ -29,12 +30,16 @@ public class PaqueteController {
     private final ExamenService examenService;
     private final PaqueteService paqueteService;
     private final DetallePaqueteRepository detallePaqueteRepository;
+    private final SolicitudDetalleRepository solicitudDetalleRepository;
 
     @Autowired
-    public PaqueteController(PaqueteService paqueteService, ExamenService examenService, DetallePaqueteRepository detallePaqueteRepository) {
+    public PaqueteController(PaqueteService paqueteService, ExamenService examenService,
+            DetallePaqueteRepository detallePaqueteRepository,
+            SolicitudDetalleRepository solicitudDetalleRepository) {
         this.examenService = examenService;
         this.paqueteService = paqueteService;
         this.detallePaqueteRepository = detallePaqueteRepository;
+        this.solicitudDetalleRepository = solicitudDetalleRepository;
     }
 
     @GetMapping("/paquetes")
@@ -70,9 +75,20 @@ public class PaqueteController {
         }
 
         try {
+            if (!esNuevo && Boolean.FALSE.equals(paquete.getActivo())) {
+                Paquete existente = paqueteService.getById(paquete.getIdPaquete());
+                if (existente != null && Boolean.TRUE.equals(existente.getActivo())) {
+                    Long usos = solicitudDetalleRepository.contarCitasAgendadasConPaquete(paquete.getIdPaquete());
+                    if (usos != null && usos > 0) {
+                        throw new IllegalArgumentException(
+                                "No se puede desactivar el paquete porque está incluido en citas agendadas. "
+                                + "Finalice o cancele esas citas antes de desactivarlo.");
+                    }
+                }
+            }
+
             paqueteService.save(paquete);
 
-            // Solo actualizar detalles si realmente vino el hidden del frontend
             if (!esNuevo && examenesSeleccionados != null) {
                 paqueteService.actualizarExamenesDelPaquete(paquete.getIdPaquete(), examenesSeleccionados);
             }
