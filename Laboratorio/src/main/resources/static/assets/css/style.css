@@ -2328,3 +2328,21 @@ h6 {
         min-width: 560px;
     }
 }
+
+.btn-insumos {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    background-color: #1c94a4;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.btn-insumos:hover {
+    background-color: #157a87;
+    color: #fff;
+}
