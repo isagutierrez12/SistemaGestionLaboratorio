@@ -67,11 +67,22 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
        ORDER BY c.fechaCita DESC
        """)
     List<Cita> findHistorialPorPaciente(@Param("idPaciente") String idPaciente);
-    
+
     @Query("""
-       SELECT FUNCTION('to_char', c.fechaCita, 'HH24:MI')
-       FROM Cita c
-       WHERE DATE(c.fechaCita) = :fecha
+   SELECT FUNCTION('to_char', c.fechaCita, 'HH24:MI')
+   FROM Cita c
+   WHERE FUNCTION('DATE', c.fechaCita) = :fecha
+     AND (c.estado IS NULL OR UPPER(c.estado) <> 'CANCELADA')
     """)
     List<String> horasOcupadasPorFecha(@Param("fecha") LocalDate fecha);
+
+    @Query("""
+   SELECT FUNCTION('to_char', c.fechaCita, 'HH24:MI')
+   FROM Cita c
+   WHERE FUNCTION('DATE', c.fechaCita) = :fecha
+     AND (c.estado IS NULL OR UPPER(c.estado) <> 'CANCELADA')
+     AND c.idCita <> :idCita
+    """)
+    List<String> horasOcupadasPorFechaExcluyendoCita(@Param("fecha") LocalDate fecha,
+            @Param("idCita") Long idCita);
 }

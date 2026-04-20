@@ -49,8 +49,14 @@ public class CitaServiceImpl implements CitaService {
     public List<Cita> findHistorialPorPaciente(String idPaciente) {
         return citaRepository.findHistorialPorPaciente(idPaciente);
     }
+
     @Override
     public List<String> obtenerHorasOcupadas(LocalDate fecha) {
         return citaRepository.horasOcupadasPorFecha(fecha);
+    }
+
+    @Override
+    public List<String> obtenerHorasOcupadasExcluyendoCita(LocalDate fecha, Long idCita) {
+        return citaRepository.horasOcupadasPorFechaExcluyendoCita(fecha, idCita);
     }
 }

@@ -899,8 +899,16 @@ public class CitaController {
 
     @GetMapping("/horas-ocupadas")
     @ResponseBody
-    public List<String> horasOcupadas(@RequestParam String fecha) {
+    public List<String> horasOcupadas(
+            @RequestParam String fecha,
+            @RequestParam(required = false) Long idCita) {
+
         LocalDate fechaLocal = LocalDate.parse(fecha);
+
+        if (idCita != null) {
+            return citaService.obtenerHorasOcupadasExcluyendoCita(fechaLocal, idCita);
+        }
+
         return citaService.obtenerHorasOcupadas(fechaLocal);
     }
 

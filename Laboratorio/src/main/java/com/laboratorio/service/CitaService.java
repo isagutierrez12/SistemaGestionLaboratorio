@@ -13,10 +13,13 @@ import java.util.List;
  *
  * @author melanie
  */
-public interface CitaService  extends CrudService<Cita>{
+public interface CitaService extends CrudService<Cita> {
+
     Cita getById(Long idCita);
-    
+
     List<Cita> findHistorialPorPaciente(String idPaciente);
-    
+
     List<String> obtenerHorasOcupadas(LocalDate fecha);
+
+    List<String> obtenerHorasOcupadasExcluyendoCita(LocalDate fecha, Long idCita);
 }
