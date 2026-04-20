@@ -2304,7 +2304,23 @@ h6 {
    el scroll aparece cuando en pantallas chicas no hay espacio para las celdas. */
 #calendar {
     max-width: 100%;
+    width: 100%;
     overflow-x: auto;
+}
+
+.fc .fc-timegrid-slot {
+    height: 40px !important;
+}
+
+.fc .fc-timegrid-event {
+    min-height: 30px !important;
+    font-size: 12px;
+    padding: 2px 4px;
+}
+
+.fc .fc-timegrid-event .fc-event-time,
+.fc .fc-timegrid-event .fc-event-title {
+    white-space: normal !important;
 }
 
 @media (max-width: 575px) {

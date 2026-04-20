@@ -72,11 +72,11 @@
 
             <script th:if="${success}" th:inline="javascript">
                 Swal.fire({
-                title: 'Éxito',
-                        text: /*[[${success}]]*/,
-                        icon: 'success',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#1c94a4'
+                    title: 'Éxito',
+                    text: /*[[${success}]]*/,
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#1c94a4'
                 });
             </script>
 
@@ -87,13 +87,21 @@
 
                     switch (clase) {
                         case 'success':
-                            titulo = 'Éxito';       icono = 'success'; break;
+                            titulo = 'Éxito';
+                            icono = 'success';
+                            break;
                         case 'warning':
-                            titulo = 'Atención';    icono = 'warning'; break;
+                            titulo = 'Atención';
+                            icono = 'warning';
+                            break;
                         case 'info':
-                            titulo = 'Información'; icono = 'info';    break;
+                            titulo = 'Información';
+                            icono = 'info';
+                            break;
                         default:
-                            titulo = 'Error';       icono = 'error';   break;
+                            titulo = 'Error';
+                            icono = 'error';
+                            break;
                     }
 
                     Swal.fire({
@@ -175,78 +183,122 @@
             </div>
 
             <script th:inline="javascript">
-                document.addEventListener('DOMContentLoaded', function() {
-                var calendarEl = document.getElementById('calendar');
-                var citas = /*[[${citas}]]*/ [];
-                var eventos = citas.map(function(cita) {
-                return {
-                id: cita.idCita,
-                        title: cita.paciente,
-                        start: cita.fechaCita,
-                        extendedProps: {
-                        estado: cita.estado,
+                document.addEventListener('DOMContentLoaded', function () {
+                    const calendarEl = document.getElementById('calendar');
+                    const buscadorPaciente = document.getElementById("buscadorPaciente");
+                    const toggleBtn = document.querySelector('.toggle-sidebar-btn');
+                    const citas = /*[[${citas}]]*/ [];
+
+                    const eventos = citas.map(function (cita) {
+                        const inicio = new Date(cita.fechaCita);
+                        const fin = new Date(inicio.getTime() + 15 * 60000);
+
+                        return {
+                            id: cita.idCita,
+                            title: cita.paciente,
+                            start: inicio.toISOString(),
+                            end: fin.toISOString(),
+                            extendedProps: {
+                                estado: cita.estado,
                                 notas: cita.notas,
                                 examenes: cita.examenes,
                                 paquetes: cita.paquetes
-                        }
-                };
-                });
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
+                            }
+                        };
+                    });
+
+                    const calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth',
                         locale: 'es',
                         headerToolbar: {
-                        left: 'prev,next today',
-                                center: 'title',
-                                right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
                         },
                         buttonText: {
-                        today: 'Hoy',
-                                month: 'Mes',
-                                week: 'Semana',
-                                day: 'Día',
-                                list: 'Lista'
+                            today: 'Hoy',
+                            month: 'Mes',
+                            week: 'Semana',
+                            day: 'Día',
+                            list: 'Lista'
                         },
                         events: eventos,
-                        eventClick: function(info) {
-                        var cita = info.event;
-                        document.getElementById("detallePaciente").textContent = cita.title;
-                        document.getElementById("detalleFecha").textContent = new Date(cita.start).toLocaleString('es-CR');
-                        document.getElementById("detalleEstado").textContent = cita.extendedProps.estado || 'Agendada';
-                        document.getElementById("detalleNotas").textContent = cita.extendedProps.notas || 'Sin notas';
-                        // Llenar listas
-                        var listaExamenes = document.getElementById("detalleExamenes");
-                        listaExamenes.innerHTML = "";
-                        (cita.extendedProps.examenes || []).forEach(function(examen) {
-                        var li = document.createElement("li");
-                        li.textContent = examen;
-                        listaExamenes.appendChild(li);
-                        });
-                        var listaPaquetes = document.getElementById("detallePaquetes");
-                        listaPaquetes.innerHTML = "";
-                        (cita.extendedProps.paquetes || []).forEach(function(paquete) {
-                        var li = document.createElement("li");
-                        li.textContent = paquete;
-                        listaPaquetes.appendChild(li);
-                        });
-                        var modal = new bootstrap.Modal(document.getElementById('detalleCitaModal'));
-                        modal.show();
-                        document.getElementById("editarCitaBtn").href = "/cita/modificar/" + cita.id;
-                        info.jsEvent.preventDefault();
+                        slotDuration: '00:15:00',
+                        snapDuration: '00:15:00',
+                        slotLabelInterval: '00:15:00',
+                        slotLabelFormat: {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false
                         },
-                        dateClick: function(info) {
-                        window.location.href = '/cita/agregar?fecha=' + info.dateStr;
+                        defaultTimedEventDuration: '00:15:00',
+                        allDaySlot: false,
+                        slotMinTime: '05:00:00',
+                        slotMaxTime: '18:00:00',
+                        eventOverlap: false,
+                        expandRows: true,
+                        height: "auto",
+                        contentHeight: 900,
+                        eventMinHeight: 30,
+                        eventClick: function (info) {
+                            const cita = info.event;
+                            document.getElementById("detallePaciente").textContent = cita.title;
+                            document.getElementById("detalleFecha").textContent = new Date(cita.start).toLocaleString('es-CR');
+                            document.getElementById("detalleEstado").textContent = cita.extendedProps.estado || 'Agendada';
+                            document.getElementById("detalleNotas").textContent = cita.extendedProps.notas || 'Sin notas';
+
+                            const listaExamenes = document.getElementById("detalleExamenes");
+                            listaExamenes.innerHTML = "";
+                            (cita.extendedProps.examenes || []).forEach(function (examen) {
+                                const li = document.createElement("li");
+                                li.textContent = examen;
+                                listaExamenes.appendChild(li);
+                            });
+
+                            const listaPaquetes = document.getElementById("detallePaquetes");
+                            listaPaquetes.innerHTML = "";
+                            (cita.extendedProps.paquetes || []).forEach(function (paquete) {
+                                const li = document.createElement("li");
+                                li.textContent = paquete;
+                                listaPaquetes.appendChild(li);
+                            });
+
+                            const modal = new bootstrap.Modal(document.getElementById('detalleCitaModal'));
+                            modal.show();
+                            document.getElementById("editarCitaBtn").href = "/cita/modificar/" + cita.id;
+                            info.jsEvent.preventDefault();
+                        },
+                        dateClick: function (info) {
+                            window.location.href = '/cita/agregar?fecha=' + info.dateStr;
                         }
-                });
-                // FILTRO DE BÚSQUEDA POR NOMBRE
-                document.getElementById("buscadorPaciente").addEventListener("input", function () {
-                var texto = this.value.toLowerCase();
-                var eventosFiltrados = eventos.filter(function (ev) {
-                return ev.title.toLowerCase().includes(texto);
-                });
-                calendar.removeAllEvents();
-                calendar.addEventSource(eventosFiltrados);
-                });
-                calendar.render();
+                    });
+
+                    if (buscadorPaciente) {
+                        buscadorPaciente.addEventListener("input", function () {
+                            const texto = this.value.toLowerCase();
+                            const eventosFiltrados = eventos.filter(function (ev) {
+                                return ev.title.toLowerCase().includes(texto);
+                            });
+                            calendar.removeAllEvents();
+                            calendar.addEventSource(eventosFiltrados);
+                        });
+                    }
+
+                    calendar.render();
+
+                    function reajustarCalendario() {
+                        setTimeout(() => {
+                            calendar.updateSize();
+                        }, 320);
+                    }
+
+                    if (toggleBtn) {
+                        toggleBtn.addEventListener('click', reajustarCalendario);
+                    }
+
+                    window.addEventListener('resize', function () {
+                        calendar.updateSize();
+                    });
                 });
             </script>
 
@@ -368,113 +420,117 @@
             <script>
                 document.addEventListener("DOMContentLoaded", function () {
 
-                const contenedor = document.getElementById("contenedorHoras");
-                const inputFecha = document.getElementById("fecha");
-                const inputFinal = document.getElementById("fechaCita");
-                const btnGuardar = document.getElementById("btnGuardarCita");
-                function obtenerDiaSeguro(fecha) {
-                const [year, month, day] = fecha.split("-");
-                return new Date(year, month - 1, day).getDay();
-                }
+                    const contenedor = document.getElementById("contenedorHoras");
+                    const inputFecha = document.getElementById("fecha");
+                    const inputFinal = document.getElementById("fechaCita");
+                    const btnGuardar = document.getElementById("btnGuardarCita");
+                    function obtenerDiaSeguro(fecha) {
+                        const [year, month, day] = fecha.split("-");
+                        return new Date(year, month - 1, day).getDay();
+                    }
 
-                function esDomingo(fecha) {
-                return obtenerDiaSeguro(fecha) === 0;
-                }
+                    function esDomingo(fecha) {
+                        return obtenerDiaSeguro(fecha) === 0;
+                    }
 
-                function obtenerHorarioPorDia(fecha) {
-                const dia = obtenerDiaSeguro(fecha);
-                if (dia === 0) return null; // domingo
-                if (dia >= 1 && dia <= 4) return { inicio: 7, fin: 16 }; // Lun-Jue
-                if (dia === 5) return { inicio: 7, fin: 14 }; // Viernes
-                if (dia === 6) return { inicio: 7, fin: 12 }; // Sábado
-                }
+                    function obtenerHorarioPorDia(fecha) {
+                        const dia = obtenerDiaSeguro(fecha);
+                        if (dia === 0)
+                            return null; // domingo
+                        if (dia >= 1 && dia <= 4)
+                            return {inicio: 7, fin: 16}; // Lun-Jue
+                        if (dia === 5)
+                            return {inicio: 7, fin: 14}; // Viernes
+                        if (dia === 6)
+                            return {inicio: 7, fin: 12}; // Sábado
+                    }
 
-                function generarBloques(inicio, fin) {
-                let bloques = [];
-                for (let h = inicio; h < fin; h++) {
-                for (let m = 0; m < 60; m += 15) {
-                const hora = String(h).padStart(2, "0");
-                const min = String(m).padStart(2, "0");
-                bloques.push(`${hora}:${min}`);
-                }
-                }
-                return bloques;
-                }
+                    function generarBloques(inicio, fin) {
+                        let bloques = [];
+                        for (let h = inicio; h < fin; h++) {
+                            for (let m = 0; m < 60; m += 15) {
+                                const hora = String(h).padStart(2, "0");
+                                const min = String(m).padStart(2, "0");
+                                bloques.push(`${hora}:${min}`);
+                            }
+                        }
+                        return bloques;
+                    }
 
-                function cargarHorasOcupadas(fecha) {
-                const horario = obtenerHorarioPorDia(fecha);
-                contenedor.innerHTML = "";
-                inputFinal.value = "";
-                if (!horario) {
-                contenedor.innerHTML = "<p style='color:red;'>No hay atención este día</p>";
-                return;
-                }
-
-                fetch(`/cita/horas-ocupadas?fecha=${fecha}`)
-                        .then(res => res.json())
-                        .then(horasOcupadas => {
-                        const bloques = generarBloques(horario.inicio, horario.fin);
-                        bloques.forEach(hora => {
-
-                        const btn = document.createElement("button");
-                        btn.type = "button";
-                        btn.textContent = hora;
-                        btn.classList.add("hora-btn");
-                        if (horasOcupadas.includes(hora)) {
-                        btn.disabled = true;
-                        btn.style.backgroundColor = "#e0e0e0";
-                        btn.style.color = "#888";
-                        } else {
-                        btn.addEventListener("click", function () {
-
-                        document.querySelectorAll(".hora-btn")
-                                .forEach(b => b.classList.remove("selected"));
-                        btn.classList.add("selected");
-                        inputFinal.value = `${fecha}T${hora}`;
-                        });
+                    function cargarHorasOcupadas(fecha) {
+                        const horario = obtenerHorarioPorDia(fecha);
+                        contenedor.innerHTML = "";
+                        inputFinal.value = "";
+                        if (!horario) {
+                            contenedor.innerHTML = "<p style='color:red;'>No hay atención este día</p>";
+                            return;
                         }
 
-                        contenedor.appendChild(btn);
-                        });
-                        })
-                        .catch(err => console.error("Error cargando horas:", err));
-                }
+                        fetch(`/cita/horas-ocupadas?fecha=${fecha}`)
+                                .then(res => res.json())
+                                .then(horasOcupadas => {
+                                    const bloques = generarBloques(horario.inicio, horario.fin);
+                                    bloques.forEach(hora => {
 
-                function bloquearBoton() {
-                btnGuardar.disabled = true;
-                btnGuardar.style.opacity = "0.5";
-                btnGuardar.style.cursor = "not-allowed";
-                }
+                                        const btn = document.createElement("button");
+                                        btn.type = "button";
+                                        btn.textContent = hora;
+                                        btn.classList.add("hora-btn");
+                                        if (horasOcupadas.includes(hora)) {
+                                            btn.disabled = true;
+                                            btn.style.backgroundColor = "#e0e0e0";
+                                            btn.style.color = "#888";
+                                        } else {
+                                            btn.addEventListener("click", function () {
 
-                function habilitarBoton() {
-                btnGuardar.disabled = false;
-                btnGuardar.style.opacity = "1";
-                btnGuardar.style.cursor = "pointer";
-                }
+                                                document.querySelectorAll(".hora-btn")
+                                                        .forEach(b => b.classList.remove("selected"));
+                                                btn.classList.add("selected");
+                                                inputFinal.value = `${fecha}T${hora}`;
+                                            });
+                                        }
 
-                function validarFecha(fecha) {
-                contenedor.innerHTML = "";
-                inputFinal.value = "";
-                if (esDomingo(fecha)) {
-                bloquearBoton();
-                contenedor.innerHTML = "<p style='color:red;'>No hay atención los domingos</p>";
-                } else {
-                habilitarBoton();
-                cargarHorasOcupadas(fecha);
-                }
-                }
+                                        contenedor.appendChild(btn);
+                                    });
+                                })
+                                .catch(err => console.error("Error cargando horas:", err));
+                    }
 
-                // CARGA AUTOMÁTICA
-                if (inputFecha.value) {
-                validarFecha(inputFecha.value);
-                }
+                    function bloquearBoton() {
+                        btnGuardar.disabled = true;
+                        btnGuardar.style.opacity = "0.5";
+                        btnGuardar.style.cursor = "not-allowed";
+                    }
 
-                // Cambio manual
-                inputFecha.addEventListener("change", function () {
-                if (this.value) {
-                validarFecha(this.value);
-                }
-                });
+                    function habilitarBoton() {
+                        btnGuardar.disabled = false;
+                        btnGuardar.style.opacity = "1";
+                        btnGuardar.style.cursor = "pointer";
+                    }
+
+                    function validarFecha(fecha) {
+                        contenedor.innerHTML = "";
+                        inputFinal.value = "";
+                        if (esDomingo(fecha)) {
+                            bloquearBoton();
+                            contenedor.innerHTML = "<p style='color:red;'>No hay atención los domingos</p>";
+                        } else {
+                            habilitarBoton();
+                            cargarHorasOcupadas(fecha);
+                        }
+                    }
+
+                    // CARGA AUTOMÁTICA
+                    if (inputFecha.value) {
+                        validarFecha(inputFecha.value);
+                    }
+
+                    // Cambio manual
+                    inputFecha.addEventListener("change", function () {
+                        if (this.value) {
+                            validarFecha(this.value);
+                        }
+                    });
                 });
             </script>
 
@@ -482,29 +538,29 @@
         <script>
             document.addEventListener("DOMContentLoaded", function () {
 
-            // === Control de exámenes incluidos en paquetes ===
-            const paqueteCheckboxes = document.querySelectorAll('.paquete-checkbox');
-            const examenCheckboxes = document.querySelectorAll('.examen-checkbox');
-            paqueteCheckboxes.forEach(paquete => {
-            paquete.addEventListener('change', () => {
-            const examenesIncluidos = paquete.dataset.examenes ? paquete.dataset.examenes.split(',') : [];
-            examenesIncluidos.forEach(id => {
-            const examen = document.querySelector(`.examen-checkbox[value="${id.trim()}"]`);
-            if (examen) {
-            if (paquete.checked) {
-            examen.checked = false;
-            examen.disabled = true;
-            examen.parentElement.classList.add('text-muted');
-            examen.parentElement.title = "Incluido en el paquete seleccionado";
-            } else {
-            examen.disabled = false;
-            examen.parentElement.classList.remove('text-muted');
-            examen.parentElement.removeAttribute('title');
-            }
-            }
-            });
-            });
-            });
+                // === Control de exámenes incluidos en paquetes ===
+                const paqueteCheckboxes = document.querySelectorAll('.paquete-checkbox');
+                const examenCheckboxes = document.querySelectorAll('.examen-checkbox');
+                paqueteCheckboxes.forEach(paquete => {
+                    paquete.addEventListener('change', () => {
+                        const examenesIncluidos = paquete.dataset.examenes ? paquete.dataset.examenes.split(',') : [];
+                        examenesIncluidos.forEach(id => {
+                            const examen = document.querySelector(`.examen-checkbox[value="${id.trim()}"]`);
+                            if (examen) {
+                                if (paquete.checked) {
+                                    examen.checked = false;
+                                    examen.disabled = true;
+                                    examen.parentElement.classList.add('text-muted');
+                                    examen.parentElement.title = "Incluido en el paquete seleccionado";
+                                } else {
+                                    examen.disabled = false;
+                                    examen.parentElement.classList.remove('text-muted');
+                                    examen.parentElement.removeAttribute('title');
+                                }
+                            }
+                        });
+                    });
+                });
             });
         </script>
 
@@ -617,122 +673,127 @@
                 </div>
                 <script>
                     document.addEventListener("DOMContentLoaded", function () {
-                    const contenedor = document.getElementById("contenedorHoras");
-                    const inputFecha = document.getElementById("fecha");
-                    const inputFinal = document.getElementById("fechaCita");
-                    const idCita = document.getElementById("idCita").value;
-                    const btnActualizar = document.getElementById("btnActualizarCita");
-                    const fechaOriginal = document.getElementById("fechaOriginal").value;
-                    let horaSeleccionada = inputFinal.value.split("T")[1].substring(0, 5);
-                    //  Obtener día correctamente
-                    function obtenerDiaSeguro(fecha) {
-                    const [year, month, day] = fecha.split("-");
-                    return new Date(year, month - 1, day).getDay();
-                    }
+                        const contenedor = document.getElementById("contenedorHoras");
+                        const inputFecha = document.getElementById("fecha");
+                        const inputFinal = document.getElementById("fechaCita");
+                        const idCita = document.getElementById("idCita").value;
+                        const btnActualizar = document.getElementById("btnActualizarCita");
+                        const fechaOriginal = document.getElementById("fechaOriginal").value;
+                        let horaSeleccionada = inputFinal.value.split("T")[1].substring(0, 5);
+                        //  Obtener día correctamente
+                        function obtenerDiaSeguro(fecha) {
+                            const [year, month, day] = fecha.split("-");
+                            return new Date(year, month - 1, day).getDay();
+                        }
 
-                    //  Horarios por día
-                    function obtenerHorarioPorDia(fecha) {
-                    const dia = obtenerDiaSeguro(fecha);
-                    if (dia === 0) return null; // domingo
-                    if (dia >= 1 && dia <= 4) return { inicio: 7, fin: 16 }; // Lun-Jue
-                    if (dia === 5) return { inicio: 7, fin: 14 }; // Viernes
-                    if (dia === 6) return { inicio: 7, fin: 12 }; // Sábado
-                    }
+                        //  Horarios por día
+                        function obtenerHorarioPorDia(fecha) {
+                            const dia = obtenerDiaSeguro(fecha);
+                            if (dia === 0)
+                                return null; // domingo
+                            if (dia >= 1 && dia <= 4)
+                                return {inicio: 7, fin: 16}; // Lun-Jue
+                            if (dia === 5)
+                                return {inicio: 7, fin: 14}; // Viernes
+                            if (dia === 6)
+                                return {inicio: 7, fin: 12}; // Sábado
+                        }
 
-                    function bloquearBoton() {
-                    btnActualizar.disabled = true;
-                    btnActualizar.style.opacity = "0.5";
-                    btnActualizar.style.cursor = "not-allowed";
-                    }
+                        function bloquearBoton() {
+                            btnActualizar.disabled = true;
+                            btnActualizar.style.opacity = "0.5";
+                            btnActualizar.style.cursor = "not-allowed";
+                        }
 
-                    function habilitarBoton() {
-                    btnActualizar.disabled = false;
-                    btnActualizar.style.opacity = "1";
-                    btnActualizar.style.cursor = "pointer";
-                    }
+                        function habilitarBoton() {
+                            btnActualizar.disabled = false;
+                            btnActualizar.style.opacity = "1";
+                            btnActualizar.style.cursor = "pointer";
+                        }
 
-                    // Generar bloques de 15 min
-                    function generarBloques(inicio, fin) {
-                    let bloques = [];
-                    for (let h = inicio; h < fin; h++) {
-                    for (let m = 0; m < 60; m += 15) {
-                    const hora = String(h).padStart(2, "0");
-                    const min = String(m).padStart(2, "0");
-                    bloques.push(`${hora}:${min}`);
-                    }
-                    }
-                    return bloques;
-                    }
+                        // Generar bloques de 15 min
+                        function generarBloques(inicio, fin) {
+                            let bloques = [];
+                            for (let h = inicio; h < fin; h++) {
+                                for (let m = 0; m < 60; m += 15) {
+                                    const hora = String(h).padStart(2, "0");
+                                    const min = String(m).padStart(2, "0");
+                                    bloques.push(`${hora}:${min}`);
+                                }
+                            }
+                            return bloques;
+                        }
 
-                    function cargarHoras(fecha, esInicial = false) {
-                    if (!fecha) return;
-                    let horario = obtenerHorarioPorDia(fecha);
-                    contenedor.innerHTML = "";
-                    // Solo limpiar si es un cambio de fecha real, no en la carga inicial
-                    if (!esInicial) {
-                    horaSeleccionada = null;
-                    inputFinal.value = "";
-                    }
+                        function cargarHoras(fecha, esInicial = false) {
+                            if (!fecha)
+                                return;
+                            let horario = obtenerHorarioPorDia(fecha);
+                            contenedor.innerHTML = "";
+                            // Solo limpiar si es un cambio de fecha real, no en la carga inicial
+                            if (!esInicial) {
+                                horaSeleccionada = null;
+                                inputFinal.value = "";
+                            }
 
-                    if (!horario) {
-                    if (fecha !== fechaOriginal) {
-                    contenedor.innerHTML = "<p style='color:red;'>No hay atención los domingos</p>";
-                    bloquearBoton();
-                    return;
-                    } else {
-                    habilitarBoton();
-                    horario = { inicio: 7, fin: 17 };
-                    }
-                    } else {
-                    habilitarBoton();
-                    }
-
-                    fetch(`/cita/horas-ocupadas?fecha=${fecha}&idCita=${idCita}`)
-                            .then(res => res.json())
-                            .then(horasOcupadas => {
-                            const bloques = generarBloques(horario.inicio, horario.fin);
-                            bloques.forEach(hora => {
-                            const btn = document.createElement("button");
-                            btn.type = "button";
-                            btn.textContent = hora;
-                            btn.classList.add("hora-btn");
-                            if (horasOcupadas.includes(hora) && hora !== horaSeleccionada) {
-                            btn.disabled = true;
-                            btn.style.backgroundColor = "#e0e0e0";
-                            btn.style.color = "#888";
+                            if (!horario) {
+                                if (fecha !== fechaOriginal) {
+                                    contenedor.innerHTML = "<p style='color:red;'>No hay atención los domingos</p>";
+                                    bloquearBoton();
+                                    return;
+                                } else {
+                                    habilitarBoton();
+                                    horario = {inicio: 7, fin: 17};
+                                }
                             } else {
-                            btn.addEventListener("click", function () {
-                            document.querySelectorAll(".hora-btn")
-                                    .forEach(b => b.classList.remove("selected"));
-                            btn.classList.add("selected");
-                            horaSeleccionada = hora;
-                            inputFinal.value = `${fecha}T${hora}`;
-                            });
+                                habilitarBoton();
                             }
 
-                            //  El botón actual queda marcado Y se re-asigna el hidden input
-                            if (hora === horaSeleccionada) {
-                            btn.classList.add("selected");
-                            inputFinal.value = `${fecha}T${hora}`;
+                            fetch(`/cita/horas-ocupadas?fecha=${fecha}&idCita=${idCita}`)
+                                    .then(res => res.json())
+                                    .then(horasOcupadas => {
+                                        const bloques = generarBloques(horario.inicio, horario.fin);
+                                        bloques.forEach(hora => {
+                                            const btn = document.createElement("button");
+                                            btn.type = "button";
+                                            btn.textContent = hora;
+                                            btn.classList.add("hora-btn");
+                                            if (horasOcupadas.includes(hora) && hora !== horaSeleccionada) {
+                                                btn.disabled = true;
+                                                btn.style.backgroundColor = "#e0e0e0";
+                                                btn.style.color = "#888";
+                                            } else {
+                                                btn.addEventListener("click", function () {
+                                                    document.querySelectorAll(".hora-btn")
+                                                            .forEach(b => b.classList.remove("selected"));
+                                                    btn.classList.add("selected");
+                                                    horaSeleccionada = hora;
+                                                    inputFinal.value = `${fecha}T${hora}`;
+                                                });
+                                            }
+
+                                            //  El botón actual queda marcado Y se re-asigna el hidden input
+                                            if (hora === horaSeleccionada) {
+                                                btn.classList.add("selected");
+                                                inputFinal.value = `${fecha}T${hora}`;
+                                            }
+
+                                            contenedor.appendChild(btn);
+                                        });
+                                    })
+                                    .catch(err => console.error("Error cargando horas:", err));
+                        }
+
+                        // CARGA INICIAL: no limpiar
+                        if (inputFecha.value) {
+                            cargarHoras(inputFecha.value, true);
+                        }
+
+                        // CAMBIO DE FECHA: limpiar hora porque puede no existir en la nueva fecha
+                        inputFecha.addEventListener("change", function () {
+                            if (this.value) {
+                                cargarHoras(this.value, false);
                             }
-
-                            contenedor.appendChild(btn);
-                            });
-                            })
-                            .catch(err => console.error("Error cargando horas:", err));
-                    }
-
-                    // CARGA INICIAL: no limpiar
-                    if (inputFecha.value) {
-                    cargarHoras(inputFecha.value, true);
-                    }
-
-                    // CAMBIO DE FECHA: limpiar hora porque puede no existir en la nueva fecha
-                    inputFecha.addEventListener("change", function () {
-                    if (this.value) {
-                    cargarHoras(this.value, false);
-                    }
-                    });
+                        });
                     });
                 </script>
             </section>
