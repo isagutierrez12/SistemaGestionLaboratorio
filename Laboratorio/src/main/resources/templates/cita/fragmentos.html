@@ -300,6 +300,7 @@
                                             <select id="idPaciente" name="idPaciente" class="form-select" required="required">
                                                 <option value="">Seleccione...</option>
                                                 <option th:each="p : ${pacientes}" 
+                                                        th:if="${p.activo}"
                                                         th:value="${p.idPaciente}" 
                                                         th:text="${p.nombre} + ' ' + ${p.primerApellido} + ' ' + ${p.segundoApellido}"
                                                         th:selected="${idPacienteSeleccionado != null and idPacienteSeleccionado == p.idPaciente}">

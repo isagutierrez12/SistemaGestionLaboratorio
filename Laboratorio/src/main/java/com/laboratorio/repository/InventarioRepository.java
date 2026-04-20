@@ -82,7 +82,7 @@ public interface InventarioRepository extends JpaRepository<Inventario, Long> {
     WHERE i.id_insumo = :idInsumo
       AND i.activo = true
       AND (i.fecha_vencimiento IS NULL OR i.fecha_vencimiento >= :hoy)
-      AND (i.stock_actual - i.stock_bloqueado) > 0
+      AND i.stock_actual > 0
     ORDER BY i.fecha_apertura ASC NULLS LAST
     """, nativeQuery = true)
     List<Inventario> buscarLotesDisponiblesParaDescuento(@Param("idInsumo") Long idInsumo,

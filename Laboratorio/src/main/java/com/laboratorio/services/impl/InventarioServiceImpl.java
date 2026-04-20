@@ -271,7 +271,9 @@ public class InventarioServiceImpl implements InventarioService {
             }
 
             int aLiberar = Math.min(inv.getStockBloqueado(), restante);
+
             inv.setStockBloqueado(inv.getStockBloqueado() - aLiberar);
+            inv.setStockActual(inv.getStockActual() + aLiberar);
             inventarioRepository.save(inv);
 
             restante -= aLiberar;
@@ -305,8 +307,6 @@ public class InventarioServiceImpl implements InventarioService {
             int aConsumir = Math.min(inv.getStockBloqueado(), restante);
 
             inv.setStockBloqueado(inv.getStockBloqueado() - aConsumir);
-            inv.setStockActual(inv.getStockActual() - aConsumir);
-
             inventarioRepository.save(inv);
 
             restante -= aConsumir;
@@ -321,7 +321,7 @@ public class InventarioServiceImpl implements InventarioService {
         List<Inventario> inventarios = inventarioRepository.buscarLotesDisponiblesParaDescuento(idInsumo, hoy);
 
         int totalDisponible = inventarios.stream()
-                .mapToInt(inv -> inv.getStockActual() - inv.getStockBloqueado())
+                .mapToInt(Inventario::getStockActual)
                 .sum();
 
         if (totalDisponible < cantidadNecesaria) {
@@ -333,7 +333,7 @@ public class InventarioServiceImpl implements InventarioService {
         int restante = cantidadNecesaria;
 
         for (Inventario inv : inventarios) {
-            int disponible = inv.getStockActual() - inv.getStockBloqueado();
+            int disponible = inv.getStockActual();
 
             if (disponible <= 0) {
                 continue;
@@ -341,6 +341,7 @@ public class InventarioServiceImpl implements InventarioService {
 
             int aBloquear = Math.min(disponible, restante);
 
+            inv.setStockActual(inv.getStockActual() - aBloquear);
             inv.setStockBloqueado(inv.getStockBloqueado() + aBloquear);
             inventarioRepository.save(inv);
 
@@ -377,7 +378,7 @@ public class InventarioServiceImpl implements InventarioService {
             List<Inventario> lotes = inventarioRepository
                     .buscarLotesDisponiblesParaDescuento(idInsumo, hoy);
             int disponible = lotes.stream()
-                    .mapToInt(inv -> inv.getStockActual() - inv.getStockBloqueado())
+                    .mapToInt(Inventario::getStockActual)
                     .sum();
             if (disponible < necesaria) {
                 faltantes.add("insumo ID " + idInsumo
