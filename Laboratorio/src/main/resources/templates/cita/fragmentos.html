@@ -72,11 +72,11 @@
 
             <script th:if="${success}" th:inline="javascript">
                 Swal.fire({
-                title: 'Éxito',
-                        text: /*[[${success}]]*/,
-                        icon: 'success',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#1c94a4'
+                    title: 'Éxito',
+                    text: /*[[${success}]]*/,
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#1c94a4'
                 });
             </script>
 
@@ -87,13 +87,21 @@
 
                     switch (clase) {
                         case 'success':
-                            titulo = 'Éxito';       icono = 'success'; break;
+                            titulo = 'Éxito';
+                            icono = 'success';
+                            break;
                         case 'warning':
-                            titulo = 'Atención';    icono = 'warning'; break;
+                            titulo = 'Atención';
+                            icono = 'warning';
+                            break;
                         case 'info':
-                            titulo = 'Información'; icono = 'info';    break;
+                            titulo = 'Información';
+                            icono = 'info';
+                            break;
                         default:
-                            titulo = 'Error';       icono = 'error';   break;
+                            titulo = 'Error';
+                            icono = 'error';
+                            break;
                     }
 
                     Swal.fire({
@@ -342,6 +350,7 @@
                                             <select id="idPaciente" name="idPaciente" class="form-select" required="required">
                                                 <option value="">Seleccione...</option>
                                                 <option th:each="p : ${pacientes}" 
+                                                        th:if="${p.activo}" 
                                                         th:value="${p.idPaciente}" 
                                                         th:text="${p.nombre} + ' ' + ${p.primerApellido} + ' ' + ${p.segundoApellido}"
                                                         th:selected="${idPacienteSeleccionado != null and idPacienteSeleccionado == p.idPaciente}">
@@ -368,7 +377,7 @@
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Exámenes</label>
                                             <div id="listaExamenes" class="opciones-lista">
-                                                <div th:each="e : ${examenesDisponibles}" class="form-check">
+                                                <div th:each="e : ${examenesDisponibles}" th:if="${e.activo}" class="form-check">
                                                     <input class="form-check-input examen-checkbox" type="checkbox"
                                                            th:id="'examen_' + ${e.idExamen}"
                                                            name="examenesSeleccionados"
@@ -426,120 +435,124 @@
             <script>
                 document.addEventListener("DOMContentLoaded", function () {
 
-                const contenedor = document.getElementById("contenedorHoras");
-                const inputFecha = document.getElementById("fecha");
-                const inputFinal = document.getElementById("fechaCita");
-                const btnGuardar = document.getElementById("btnGuardarCita");
-                function obtenerDiaSeguro(fecha) {
-                const [year, month, day] = fecha.split("-");
-                return new Date(year, month - 1, day).getDay();
-                }
+                    const contenedor = document.getElementById("contenedorHoras");
+                    const inputFecha = document.getElementById("fecha");
+                    const inputFinal = document.getElementById("fechaCita");
+                    const btnGuardar = document.getElementById("btnGuardarCita");
+                    function obtenerDiaSeguro(fecha) {
+                        const [year, month, day] = fecha.split("-");
+                        return new Date(year, month - 1, day).getDay();
+                    }
 
-                function esDomingo(fecha) {
-                return obtenerDiaSeguro(fecha) === 0;
-                }
+                    function esDomingo(fecha) {
+                        return obtenerDiaSeguro(fecha) === 0;
+                    }
 
-                function obtenerHorarioPorDia(fecha) {
-                const dia = obtenerDiaSeguro(fecha);
-                if (dia === 0) return null; // domingo
-                if (dia >= 1 && dia <= 4) return { inicio: 7, fin: 16 };
-                if (dia === 5) return { inicio: 7, fin: 14 };
-                if (dia === 6) return { inicio: 7, fin: 12 };
-                }
+                    function obtenerHorarioPorDia(fecha) {
+                        const dia = obtenerDiaSeguro(fecha);
+                        if (dia === 0)
+                            return null; // domingo
+                        if (dia >= 1 && dia <= 4)
+                            return {inicio: 7, fin: 16};
+                        if (dia === 5)
+                            return {inicio: 7, fin: 14};
+                        if (dia === 6)
+                            return {inicio: 7, fin: 12};
+                    }
 
-                function generarBloques(inicio, fin) {
-                let bloques = [];
-                for (let h = inicio; h < fin; h++) {
-                for (let m = 0; m < 60; m += 15) {
-                const hora = String(h).padStart(2, "0");
-                const min = String(m).padStart(2, "0");
-                bloques.push(`${hora}:${min}`);
-                }
-                }
-                return bloques;
-                }
+                    function generarBloques(inicio, fin) {
+                        let bloques = [];
+                        for (let h = inicio; h < fin; h++) {
+                            for (let m = 0; m < 60; m += 15) {
+                                const hora = String(h).padStart(2, "0");
+                                const min = String(m).padStart(2, "0");
+                                bloques.push(`${hora}:${min}`);
+                            }
+                        }
+                        return bloques;
+                    }
 
-                function cargarHorasOcupadas(fecha) {
-                const horario = obtenerHorarioPorDia(fecha);
-                contenedor.innerHTML = "";
-                inputFinal.value = "";
-                if (!horario) {
-                contenedor.innerHTML = "<p style='color:red;'>No hay atención este día</p>";
-                return;
-                }
+                    function cargarHorasOcupadas(fecha) {
+                        const horario = obtenerHorarioPorDia(fecha);
+                        contenedor.innerHTML = "";
+                        inputFinal.value = "";
+                        if (!horario) {
+                            contenedor.innerHTML = "<p style='color:red;'>No hay atención este día</p>";
+                            return;
+                        }
 
-                fetch(`/cita/horas-ocupadas?fecha=${fecha}`)
-                        .then(res => res.json())
-                        .then(horasOcupadas => {
-                        const bloques = generarBloques(horario.inicio, horario.fin);
-                        const horaPre = contenedor.dataset.horaPreseleccionada;
-                        bloques.forEach(hora => {
+                        fetch(`/cita/horas-ocupadas?fecha=${fecha}`)
+                                .then(res => res.json())
+                                .then(horasOcupadas => {
+                                    const bloques = generarBloques(horario.inicio, horario.fin);
+                                    const horaPre = contenedor.dataset.horaPreseleccionada;
+                                    bloques.forEach(hora => {
 
-                        const btn = document.createElement("button");
-                        btn.type = "button";
-                        btn.textContent = hora;
-                        btn.classList.add("hora-btn");
-                        if (horasOcupadas.includes(hora)) {
-                        btn.disabled = true;
-                        btn.style.backgroundColor = "#e0e0e0";
-                        btn.style.color = "#888";
+                                        const btn = document.createElement("button");
+                                        btn.type = "button";
+                                        btn.textContent = hora;
+                                        btn.classList.add("hora-btn");
+                                        if (horasOcupadas.includes(hora)) {
+                                            btn.disabled = true;
+                                            btn.style.backgroundColor = "#e0e0e0";
+                                            btn.style.color = "#888";
+                                        } else {
+                                            btn.addEventListener("click", function () {
+
+                                                document.querySelectorAll(".hora-btn")
+                                                        .forEach(b => b.classList.remove("selected"));
+                                                btn.classList.add("selected");
+                                                inputFinal.value = `${fecha}T${hora}`;
+                                            });
+
+                                            if (horaPre && hora === horaPre) {
+                                                btn.classList.add("selected");
+                                                inputFinal.value = `${fecha}T${hora}`;
+                                            }
+                                        }
+
+                                        contenedor.appendChild(btn);
+                                    });
+                                    delete contenedor.dataset.horaPreseleccionada;
+                                })
+                                .catch(err => console.error("Error cargando horas:", err));
+                    }
+
+                    function bloquearBoton() {
+                        btnGuardar.disabled = true;
+                        btnGuardar.style.opacity = "0.5";
+                        btnGuardar.style.cursor = "not-allowed";
+                    }
+
+                    function habilitarBoton() {
+                        btnGuardar.disabled = false;
+                        btnGuardar.style.opacity = "1";
+                        btnGuardar.style.cursor = "pointer";
+                    }
+
+                    function validarFecha(fecha) {
+                        contenedor.innerHTML = "";
+                        inputFinal.value = "";
+                        if (esDomingo(fecha)) {
+                            bloquearBoton();
+                            contenedor.innerHTML = "<p style='color:red;'>No hay atención los domingos</p>";
                         } else {
-                        btn.addEventListener("click", function () {
-
-                        document.querySelectorAll(".hora-btn")
-                                .forEach(b => b.classList.remove("selected"));
-                        btn.classList.add("selected");
-                        inputFinal.value = `${fecha}T${hora}`;
-                        });
-
-                        if (horaPre && hora === horaPre) {
-                        btn.classList.add("selected");
-                        inputFinal.value = `${fecha}T${hora}`;
+                            habilitarBoton();
+                            cargarHorasOcupadas(fecha);
                         }
+                    }
+
+                    // CARGA AUTOMÁTICA
+                    if (inputFecha.value) {
+                        validarFecha(inputFecha.value);
+                    }
+
+                    // Cambio manual
+                    inputFecha.addEventListener("change", function () {
+                        if (this.value) {
+                            validarFecha(this.value);
                         }
-
-                        contenedor.appendChild(btn);
-                        });
-                        delete contenedor.dataset.horaPreseleccionada;
-                        })
-                        .catch(err => console.error("Error cargando horas:", err));
-                }
-
-                function bloquearBoton() {
-                btnGuardar.disabled = true;
-                btnGuardar.style.opacity = "0.5";
-                btnGuardar.style.cursor = "not-allowed";
-                }
-
-                function habilitarBoton() {
-                btnGuardar.disabled = false;
-                btnGuardar.style.opacity = "1";
-                btnGuardar.style.cursor = "pointer";
-                }
-
-                function validarFecha(fecha) {
-                contenedor.innerHTML = "";
-                inputFinal.value = "";
-                if (esDomingo(fecha)) {
-                bloquearBoton();
-                contenedor.innerHTML = "<p style='color:red;'>No hay atención los domingos</p>";
-                } else {
-                habilitarBoton();
-                cargarHorasOcupadas(fecha);
-                }
-                }
-
-                // CARGA AUTOMÁTICA
-                if (inputFecha.value) {
-                validarFecha(inputFecha.value);
-                }
-
-                // Cambio manual
-                inputFecha.addEventListener("change", function () {
-                if (this.value) {
-                validarFecha(this.value);
-                }
-                });
+                    });
                 });
             </script>
 
@@ -547,29 +560,29 @@
         <script>
             document.addEventListener("DOMContentLoaded", function () {
 
-            // === Control de exámenes incluidos en paquetes ===
-            const paqueteCheckboxes = document.querySelectorAll('.paquete-checkbox');
-            const examenCheckboxes = document.querySelectorAll('.examen-checkbox');
-            paqueteCheckboxes.forEach(paquete => {
-            paquete.addEventListener('change', () => {
-            const examenesIncluidos = paquete.dataset.examenes ? paquete.dataset.examenes.split(',') : [];
-            examenesIncluidos.forEach(id => {
-            const examen = document.querySelector(`.examen-checkbox[value="${id.trim()}"]`);
-            if (examen) {
-            if (paquete.checked) {
-            examen.checked = false;
-            examen.disabled = true;
-            examen.parentElement.classList.add('text-muted');
-            examen.parentElement.title = "Incluido en el paquete seleccionado";
-            } else {
-            examen.disabled = false;
-            examen.parentElement.classList.remove('text-muted');
-            examen.parentElement.removeAttribute('title');
-            }
-            }
-            });
-            });
-            });
+                // === Control de exámenes incluidos en paquetes ===
+                const paqueteCheckboxes = document.querySelectorAll('.paquete-checkbox');
+                const examenCheckboxes = document.querySelectorAll('.examen-checkbox');
+                paqueteCheckboxes.forEach(paquete => {
+                    paquete.addEventListener('change', () => {
+                        const examenesIncluidos = paquete.dataset.examenes ? paquete.dataset.examenes.split(',') : [];
+                        examenesIncluidos.forEach(id => {
+                            const examen = document.querySelector(`.examen-checkbox[value="${id.trim()}"]`);
+                            if (examen) {
+                                if (paquete.checked) {
+                                    examen.checked = false;
+                                    examen.disabled = true;
+                                    examen.parentElement.classList.add('text-muted');
+                                    examen.parentElement.title = "Incluido en el paquete seleccionado";
+                                } else {
+                                    examen.disabled = false;
+                                    examen.parentElement.classList.remove('text-muted');
+                                    examen.parentElement.removeAttribute('title');
+                                }
+                            }
+                        });
+                    });
+                });
             });
         </script>
 
@@ -645,14 +658,14 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Exámenes</label>
-                                    <div class="form-check" th:each="examen : ${examenesDisponibles}">
+                                    <div class="form-check" th:each="examen : ${examenesDisponibles}" th:if="${examen.activo}">
                                         <input class="form-check-input" type="checkbox" 
                                                name="examenesSeleccionados" 
                                                th:value="${examen.idExamen}"
                                                th:data-precio="${examen.precio}"
                                                th:checked="${examenesSeleccionados != null
-                                                   ? examenesSeleccionados.contains(examen.idExamen)
-                                                   : cita.solicitud.detalles.?[examen != null].![examen.idExamen].contains(examen.idExamen)}"></input>
+                                               ? examenesSeleccionados.contains(examen.idExamen)
+                                               : cita.solicitud.detalles.?[examen != null].![examen.idExamen].contains(examen.idExamen)}"></input>
                                         <label class="form-check-label" th:text="${examen.nombre}">Examen</label>
                                     </div>
                                 </div>
@@ -666,8 +679,8 @@
                                                th:value="${paquete.idPaquete}"
                                                th:data-precio="${paquete.precio}"
                                                th:checked="${paquetesSeleccionados != null
-                                                   ? paquetesSeleccionados.contains(paquete.idPaquete)
-                                                   : cita.solicitud.detalles.?[paquete != null].![paquete.idPaquete].contains(paquete.idPaquete)}"></input>
+                                               ? paquetesSeleccionados.contains(paquete.idPaquete)
+                                               : cita.solicitud.detalles.?[paquete != null].![paquete.idPaquete].contains(paquete.idPaquete)}"></input>
                                         <label class="form-check-label" th:text="${paquete.nombre}">Paquete</label>
                                         <div class="text-muted small"
                                              style="margin-left: 25px; font-size: 0.78rem; line-height: 1.1;"
@@ -690,118 +703,123 @@
                 </div>
                 <script>
                     document.addEventListener("DOMContentLoaded", function () {
-                    const contenedor = document.getElementById("contenedorHoras");
-                    const inputFecha = document.getElementById("fecha");
-                    const inputFinal = document.getElementById("fechaCita");
-                    const idCita = document.getElementById("idCita").value;
-                    const btnActualizar = document.getElementById("btnActualizarCita");
-                    const fechaOriginal = document.getElementById("fechaOriginal").value;
-                    let horaSeleccionada = inputFinal.value.split("T")[1].substring(0, 5);
-                    //  Obtener día correctamente
-                    function obtenerDiaSeguro(fecha) {
-                    const [year, month, day] = fecha.split("-");
-                    return new Date(year, month - 1, day).getDay();
-                    }
+                        const contenedor = document.getElementById("contenedorHoras");
+                        const inputFecha = document.getElementById("fecha");
+                        const inputFinal = document.getElementById("fechaCita");
+                        const idCita = document.getElementById("idCita").value;
+                        const btnActualizar = document.getElementById("btnActualizarCita");
+                        const fechaOriginal = document.getElementById("fechaOriginal").value;
+                        let horaSeleccionada = inputFinal.value.split("T")[1].substring(0, 5);
+                        //  Obtener día correctamente
+                        function obtenerDiaSeguro(fecha) {
+                            const [year, month, day] = fecha.split("-");
+                            return new Date(year, month - 1, day).getDay();
+                        }
 
-                    //  Horarios por día
-                    function obtenerHorarioPorDia(fecha) {
-                    const dia = obtenerDiaSeguro(fecha);
-                    if (dia === 0) return null; // domingo
-                    if (dia >= 1 && dia <= 4) return { inicio: 7, fin: 16 };
-                    if (dia === 5) return { inicio: 7, fin: 14 };
-                    if (dia === 6) return { inicio: 7, fin: 12 };
-                    }
+                        //  Horarios por día
+                        function obtenerHorarioPorDia(fecha) {
+                            const dia = obtenerDiaSeguro(fecha);
+                            if (dia === 0)
+                                return null; // domingo
+                            if (dia >= 1 && dia <= 4)
+                                return {inicio: 7, fin: 16};
+                            if (dia === 5)
+                                return {inicio: 7, fin: 14};
+                            if (dia === 6)
+                                return {inicio: 7, fin: 12};
+                        }
 
-                    function bloquearBoton() {
-                    btnActualizar.disabled = true;
-                    btnActualizar.style.opacity = "0.5";
-                    btnActualizar.style.cursor = "not-allowed";
-                    }
+                        function bloquearBoton() {
+                            btnActualizar.disabled = true;
+                            btnActualizar.style.opacity = "0.5";
+                            btnActualizar.style.cursor = "not-allowed";
+                        }
 
-                    function habilitarBoton() {
-                    btnActualizar.disabled = false;
-                    btnActualizar.style.opacity = "1";
-                    btnActualizar.style.cursor = "pointer";
-                    }
+                        function habilitarBoton() {
+                            btnActualizar.disabled = false;
+                            btnActualizar.style.opacity = "1";
+                            btnActualizar.style.cursor = "pointer";
+                        }
 
-                    // Generar bloques de 15 min
-                    function generarBloques(inicio, fin) {
-                    let bloques = [];
-                    for (let h = inicio; h < fin; h++) {
-                    for (let m = 0; m < 60; m += 15) {
-                    const hora = String(h).padStart(2, "0");
-                    const min = String(m).padStart(2, "0");
-                    bloques.push(`${hora}:${min}`);
-                    }
-                    }
-                    return bloques;
-                    }
+                        // Generar bloques de 15 min
+                        function generarBloques(inicio, fin) {
+                            let bloques = [];
+                            for (let h = inicio; h < fin; h++) {
+                                for (let m = 0; m < 60; m += 15) {
+                                    const hora = String(h).padStart(2, "0");
+                                    const min = String(m).padStart(2, "0");
+                                    bloques.push(`${hora}:${min}`);
+                                }
+                            }
+                            return bloques;
+                        }
 
-                    function cargarHoras(fecha, esInicial = false) {
-                    if (!fecha) return;
-                    let horario = obtenerHorarioPorDia(fecha);
-                    contenedor.innerHTML = "";
-                    if (!esInicial) {
-                    horaSeleccionada = null;
-                    inputFinal.value = "";
-                    }
+                        function cargarHoras(fecha, esInicial = false) {
+                            if (!fecha)
+                                return;
+                            let horario = obtenerHorarioPorDia(fecha);
+                            contenedor.innerHTML = "";
+                            if (!esInicial) {
+                                horaSeleccionada = null;
+                                inputFinal.value = "";
+                            }
 
-                    if (!horario) {
-                    if (fecha !== fechaOriginal) {
-                    contenedor.innerHTML = "<p style='color:red;'>No hay atención los domingos</p>";
-                    bloquearBoton();
-                    return;
-                    } else {
-                    habilitarBoton();
-                    horario = { inicio: 7, fin: 17 };
-                    }
-                    } else {
-                    habilitarBoton();
-                    }
-
-                    fetch(`/cita/horas-ocupadas?fecha=${fecha}&idCita=${idCita}`)
-                            .then(res => res.json())
-                            .then(horasOcupadas => {
-                            const bloques = generarBloques(horario.inicio, horario.fin);
-                            bloques.forEach(hora => {
-                            const btn = document.createElement("button");
-                            btn.type = "button";
-                            btn.textContent = hora;
-                            btn.classList.add("hora-btn");
-                            if (horasOcupadas.includes(hora) && hora !== horaSeleccionada) {
-                            btn.disabled = true;
-                            btn.style.backgroundColor = "#e0e0e0";
-                            btn.style.color = "#888";
+                            if (!horario) {
+                                if (fecha !== fechaOriginal) {
+                                    contenedor.innerHTML = "<p style='color:red;'>No hay atención los domingos</p>";
+                                    bloquearBoton();
+                                    return;
+                                } else {
+                                    habilitarBoton();
+                                    horario = {inicio: 7, fin: 17};
+                                }
                             } else {
-                            btn.addEventListener("click", function () {
-                            document.querySelectorAll(".hora-btn")
-                                    .forEach(b => b.classList.remove("selected"));
-                            btn.classList.add("selected");
-                            horaSeleccionada = hora;
-                            inputFinal.value = `${fecha}T${hora}`;
-                            });
+                                habilitarBoton();
                             }
 
-                            if (hora === horaSeleccionada) {
-                            btn.classList.add("selected");
-                            inputFinal.value = `${fecha}T${hora}`;
+                            fetch(`/cita/horas-ocupadas?fecha=${fecha}&idCita=${idCita}`)
+                                    .then(res => res.json())
+                                    .then(horasOcupadas => {
+                                        const bloques = generarBloques(horario.inicio, horario.fin);
+                                        bloques.forEach(hora => {
+                                            const btn = document.createElement("button");
+                                            btn.type = "button";
+                                            btn.textContent = hora;
+                                            btn.classList.add("hora-btn");
+                                            if (horasOcupadas.includes(hora) && hora !== horaSeleccionada) {
+                                                btn.disabled = true;
+                                                btn.style.backgroundColor = "#e0e0e0";
+                                                btn.style.color = "#888";
+                                            } else {
+                                                btn.addEventListener("click", function () {
+                                                    document.querySelectorAll(".hora-btn")
+                                                            .forEach(b => b.classList.remove("selected"));
+                                                    btn.classList.add("selected");
+                                                    horaSeleccionada = hora;
+                                                    inputFinal.value = `${fecha}T${hora}`;
+                                                });
+                                            }
+
+                                            if (hora === horaSeleccionada) {
+                                                btn.classList.add("selected");
+                                                inputFinal.value = `${fecha}T${hora}`;
+                                            }
+
+                                            contenedor.appendChild(btn);
+                                        });
+                                    })
+                                    .catch(err => console.error("Error cargando horas:", err));
+                        }
+
+                        if (inputFecha.value) {
+                            cargarHoras(inputFecha.value, true);
+                        }
+
+                        inputFecha.addEventListener("change", function () {
+                            if (this.value) {
+                                cargarHoras(this.value, false);
                             }
-
-                            contenedor.appendChild(btn);
-                            });
-                            })
-                            .catch(err => console.error("Error cargando horas:", err));
-                    }
-
-                    if (inputFecha.value) {
-                    cargarHoras(inputFecha.value, true);
-                    }
-
-                    inputFecha.addEventListener("change", function () {
-                    if (this.value) {
-                    cargarHoras(this.value, false);
-                    }
-                    });
+                        });
                     });
                 </script>
             </section>
