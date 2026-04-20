@@ -33,7 +33,7 @@ public class UsuarioController {
 
     @GetMapping("/usuarios")
     public String listadoUsuarios(Model model) {
-        var lista = usuarioService.getUsuarios();
+        var lista = usuarioService.getUsuariosActivos();
         model.addAttribute("usuarios", lista);
         return "usuario/usuarios";
     }

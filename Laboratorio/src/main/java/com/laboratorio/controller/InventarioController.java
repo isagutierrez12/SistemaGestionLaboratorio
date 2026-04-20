@@ -6,6 +6,7 @@ import com.laboratorio.service.InsumoService;
 import com.laboratorio.service.InventarioService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -82,7 +83,13 @@ public class InventarioController {
                 model.addAttribute("error", "El código de barras ya está en uso");
                 return "inventario/modificar";
             }
+          
         }
+          if (inventario.getFechaVencimiento().isBefore(LocalDate.now())) {
+                model.addAttribute("error", "La Fecha de Vencimiento no puede estar vencida.");
+                model.addAttribute("insumos", insumoService.getActive());
+                return "inventario/modificar";
+            }
         try {
             if (!esNuevo) {
                 Inventario original = inventarioService.get(new Inventario() {
@@ -117,7 +124,8 @@ public class InventarioController {
             model.addAttribute("insumos", insumoService.getActive());
             model.addAttribute("inventario", inventario);
 
-            return esNuevo ? "inventario/agregar" : "inventario/modificar";
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/inventario/inventarios";
         }
     }
 
