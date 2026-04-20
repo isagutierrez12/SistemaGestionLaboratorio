@@ -10,5 +10,6 @@ public interface ExamenService extends CrudService<Examen> {
     public List<Examen> findById(List<Long> ids);
 
     public boolean existsByNombre(String nombre);
+    List<Examen> getActivos();
 
 }

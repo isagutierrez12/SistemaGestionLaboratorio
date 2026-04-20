@@ -39,18 +39,23 @@ public class ExamenServiceImpl implements ExamenService {
     public void delete(Examen examen) {
         examenRepository.delete(examen);
     }
-    
+
     @Override
     public List<Examen> buscarExamenes(String query) {
         return examenRepository.buscarPorQuery(query);
     }
-    
-    public List<Examen> findById(List<Long> ids){
+
+    public List<Examen> findById(List<Long> ids) {
         return examenRepository.findAllById(ids);
     }
-    
+
     public boolean existsByNombre(String nombre) {
-    return examenRepository.existsByNombreIgnoreCase(nombre);
-}
+        return examenRepository.existsByNombreIgnoreCase(nombre);
+    }
+
+    @Override
+    public List<Examen> getActivos() {
+        return examenRepository.findByActivoTrue();
+    }
 
 }

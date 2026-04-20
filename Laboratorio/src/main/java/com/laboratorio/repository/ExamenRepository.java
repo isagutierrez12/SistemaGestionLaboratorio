@@ -20,5 +20,6 @@ public interface ExamenRepository extends JpaRepository<Examen, Long> {
 
     @Query("SELECT DISTINCT LOWER(e.area) FROM Examen e WHERE e.area IS NOT NULL AND e.area <> ''")
     List<String> obtenerAreasUnicas();
+    List<Examen> findByActivoTrue();
 
 }

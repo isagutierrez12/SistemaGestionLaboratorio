@@ -181,7 +181,7 @@ public class ExamenController {
 
     @GetMapping("/proforma")
     public String listadoProforma(Model model) {
-        model.addAttribute("examenes", examenService.getAll());
+        model.addAttribute("examenes", examenService.getActivos());
         return "examen/proforma";
     }
 

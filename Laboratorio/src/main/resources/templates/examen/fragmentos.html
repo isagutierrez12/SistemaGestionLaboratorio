@@ -391,6 +391,13 @@
                                 </div>
 
                                 <form th:action="@{/examen/mostrar}" method="post" id="formExamenes">
+                                    <div class="d-flex mb-3">
+                                        <input type="text"
+                                               id="busquedaProforma"
+                                               class="form-control me-2"
+                                               placeholder="Buscar por nombre, área, unidad o condición" />
+                                    </div>
+
                                     <table class="table datatable align-middle ">
                                         <thead>
                                             <tr>
@@ -401,7 +408,6 @@
                                                 <th>Unidad</th>
                                                 <th>Rango</th>
                                                 <th>Condiciones</th>
-                                                <th>Estado</th>
                                             </tr>
                                         </thead>
                                         <style>
@@ -410,10 +416,8 @@
                                             }
                                         </style>
 
-                                        <tbody>
-                                            <tr th:each="e : ${examenes}"
-                                                th:classappend="${e.activo} ? '' : 'fila-inactiva'">
-
+                                        <tbody id="tbodyProforma">
+                                            <tr th:each="e : ${examenes}" th:if="${e.activo}">
                                                 <td>
                                                     <input type="checkbox" name="seleccionados"
                                                            th:value="${e.idExamen}" class="exam-check"
@@ -437,10 +441,6 @@
                                                 <td>[[${e.unidad}]]</td>
                                                 <td>[[${e.valorMinimo}]] - [[${e.valorMaximo}]]</td>
                                                 <td style="text-align: left;">[[${e.condiciones}]]</td>
-
-                                                <td>
-                                                    <span th:text="${e.activo} ? 'Activo' : 'Inactivo'"></span>
-                                                </td>
                                             </tr>
                                         </tbody>
 
@@ -452,18 +452,6 @@
                     </div>
                 </div>
             </section>
-              <script>
-                document.getElementById("btnContinuar").addEventListener("click", function(e) {
-
-                    const seleccionados = document.querySelectorAll(".exam-check:checked").length;
-
-                    if (seleccionados === 0) {
-                        e.preventDefault();
-                        alert("Debe seleccionar al menos un examen");
-                    }
-
-                });
-            </script>
         </section>
 
         <section th:fragment="vista-proforma" class="section">
