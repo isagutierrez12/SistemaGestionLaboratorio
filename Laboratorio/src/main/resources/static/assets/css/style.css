@@ -868,12 +868,6 @@ h6 {
     background-color: #fff;
 }
 
-@media (max-width: 1199px) {
-    .sidebar {
-        left: -300px;
-    }
-}
-
 .sidebar::-webkit-scrollbar {
     width: 5px;
     height: 8px;
@@ -884,30 +878,19 @@ h6 {
     background-color: #aab7cf;
 }
 
-@media (min-width: 1200px) {
 
-    #main,
-    #footer {
-        margin-left: 300px;
-    }
+#main,
+#footer {
+    margin-left: 300px;
 }
 
-@media (max-width: 1199px) {
-    .toggle-sidebar .sidebar {
-        left: 0;
-    }
+.toggle-sidebar .sidebar {
+    left: -300px;
 }
 
-@media (min-width: 1200px) {
-
-    .toggle-sidebar #main,
-    .toggle-sidebar #footer {
-        margin-left: 0;
-    }
-
-    .toggle-sidebar .sidebar {
-        left: -300px;
-    }
+.toggle-sidebar #main,
+.toggle-sidebar #footer {
+    margin-left: 0;
 }
 
 .sidebar-nav {
@@ -2288,4 +2271,44 @@ h6 {
 #tablaPagos tbody tr:hover{
     background-color: rgba(4, 187, 196, 0.18);
     transition: background-color 0.2s ease-in-out;
+}
+
+
+/* #main no debe desbordar; permitir que su contenido maneje overflow internamente. */
+#main {
+    overflow-x: hidden;
+    min-width: 0;
+}
+
+/* Las cards y card-body respetan el ancho disponible sin imponer su ancho natural. */
+#main .card,
+#main .card-body {
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Card-body maneja scroll horizontal cuando su contenido (tabla ancha, etc.) no entra.
+   El scroll aparece DENTRO de la card, no en el documento. */
+#main .card-body {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Si ya usan .table-responsive de Bootstrap, que siga funcionando como siempre. */
+#main .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Calendario FullCalendar: contenedor limita al ancho del padre;
+   el scroll aparece cuando en pantallas chicas no hay espacio para las celdas. */
+#calendar {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+@media (max-width: 575px) {
+    #calendar .fc-view-harness {
+        min-width: 560px;
+    }
 }

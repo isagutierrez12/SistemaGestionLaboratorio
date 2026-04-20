@@ -29,7 +29,10 @@ public class ExamenServiceImpl implements ExamenService {
 
     @Override
     public void save(Examen examen) {
-       examenRepository.save(examen);
+        if (examen.getIdExamen() == null && (examen.getCodigo() == null || examen.getCodigo().isBlank())) {
+            examen.setCodigo("EX" + System.currentTimeMillis());
+        }
+        examenRepository.save(examen);
     }
 
     @Override

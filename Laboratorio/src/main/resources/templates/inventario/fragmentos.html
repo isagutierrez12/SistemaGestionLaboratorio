@@ -56,7 +56,7 @@
                                         <button class="btn btn-export-excel" onclick="exportarExcelInventario()">Exportar Excel</button>
                                     </div>
                                 </div>
-                                
+
                                 <div th:replace="~{inventario/fragmentos :: busquedaInventario}"></div>
 
                                 <table id="tablaInventario" class="table ">
@@ -303,16 +303,18 @@
 
                                     <div class="col-md-6">
                                         <label class="form-label">Fecha de Vencimiento</label>
-                                        <input type="date" class="form-control"
-                                               th:field="*{fechaVencimiento}"
-                                               th:value="*{fechaVencimiento != null} ? ${#dates.format(fechaVencimiento, 'yyyy-MM-dd')} : ''">
+                                        <input type="date"
+                                               class="form-control"
+                                               name="fechaVencimiento"
+                                               th:value="${inventario.fechaVencimiento != null ? #temporals.format(inventario.fechaVencimiento, 'yyyy-MM-dd') : ''}">
                                     </div>
 
                                     <div class="col-md-6">
                                         <label class="form-label">Fecha de Apertura</label>
-                                        <input type="date" class="form-control"
-                                               th:field="*{fechaApertura}"
-                                               th:value="*{fechaApertura != null} ? ${#dates.format(fechaApertura, 'yyyy-MM-dd')} : ''">
+                                        <input type="date"
+                                               class="form-control"
+                                               name="fechaApertura"
+                                               th:value="${inventario.fechaApertura != null ? #temporals.format(inventario.fechaApertura, 'yyyy-MM-dd') : ''}">
                                     </div>
 
 

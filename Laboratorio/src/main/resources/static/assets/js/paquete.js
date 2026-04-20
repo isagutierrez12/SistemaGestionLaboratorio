@@ -2,6 +2,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const input = document.getElementById("busquedaInput");
     const tableBody = document.querySelector("table.datatable tbody");
 
+    // Paginador: solo si existe la tabla de listado de paquetes en esta vista
+    const paginator = tableBody
+            ? setupTablePaginator({ tbody: tableBody, pageSize: 25 })
+            : null;
+
     if (input && tableBody) {
         input.addEventListener("input", function () {
             const query = input.value.trim();
@@ -27,6 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 <td colspan="6" class="text-center text-muted">No se encontraron paquetes</td>
                             </tr>
                         `;
+                            if (paginator) paginator.refresh();
                             return;
                         }
 
@@ -48,6 +54,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         `;
                             tableBody.appendChild(tr);
                         });
+
+                        if (paginator) paginator.refresh();
                     })
                     .catch((error) => {
                         console.error("Error en búsqueda dinámica:", error);
@@ -56,6 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             <td colspan="6" class="text-center text-danger">Error al cargar resultados</td>
                         </tr>
                     `;
+                        if (paginator) paginator.refresh();
                     });
         });
     }

@@ -280,27 +280,34 @@
 
   /**
    * Initiate Datatables
+   *
+   * DESACTIVADO: estas tablas ya tienen paginación/búsqueda custom propias
+   * en los archivos de cada vista (insumos.js, examen.js, etc.). Activar
+   * simpleDatatables genera duplicación visual (doble barra de búsqueda,
+   * doble paginación, celdas compactadas). Si alguna vez querés activar
+   * simpleDatatables para una tabla específica, agregale otra clase distinta
+   * (ej. "datatable-auto") y selectalo con esa clase en lugar de ".datatable".
    */
-  const datatables = select('.datatable', true)
-  datatables.forEach(datatable => {
-    new simpleDatatables.DataTable(datatable, {
-      perPageSelect: [5, 10, 15, ["All", -1]],
-      columns: [{
-          select: 2,
-          sortSequence: ["desc", "asc"]
-        },
-        {
-          select: 3,
-          sortSequence: ["desc"]
-        },
-        {
-          select: 4,
-          cellClass: "green",
-          headerClass: "red"
-        }
-      ]
-    });
-  })
+  // const datatables = select('.datatable', true)
+  // datatables.forEach(datatable => {
+  //   new simpleDatatables.DataTable(datatable, {
+  //     perPageSelect: [5, 10, 15, ["All", -1]],
+  //     columns: [{
+  //         select: 2,
+  //         sortSequence: ["desc", "asc"]
+  //       },
+  //       {
+  //         select: 3,
+  //         sortSequence: ["desc"]
+  //       },
+  //       {
+  //         select: 4,
+  //         cellClass: "green",
+  //         headerClass: "red"
+  //       }
+  //     ]
+  //   });
+  // })
 
   /**
    * Autoresize echart charts
@@ -318,4 +325,3 @@
   
  
 })();
-

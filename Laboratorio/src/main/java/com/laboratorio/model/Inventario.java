@@ -15,6 +15,7 @@ import java.util.Date;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Data
@@ -43,8 +44,12 @@ public class Inventario implements Serializable {
     @Min(value = 0, message = "Stock Mínimo no puede ser negativo.")
     private int stockMinimo;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaVencimiento;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaApertura;
+    ;
     private Boolean activo;
 
 }

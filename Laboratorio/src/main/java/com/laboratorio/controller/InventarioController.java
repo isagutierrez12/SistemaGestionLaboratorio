@@ -75,12 +75,12 @@ public class InventarioController {
 
             if (esNuevo) {
                 model.addAttribute("error", "No se pueden agregar códigos de barras duplicados");
-                return "/inventario/agregar";
+                return "inventario/agregar";
             }
 
             if (!existente.getIdInventario().equals(inventario.getIdInventario())) {
                 model.addAttribute("error", "El código de barras ya está en uso");
-                return "/inventario/modificar";
+                return "inventario/modificar";
             }
         }
         try {
@@ -117,7 +117,7 @@ public class InventarioController {
             model.addAttribute("insumos", insumoService.getActive());
             model.addAttribute("inventario", inventario);
 
-            return esNuevo ? "/inventario/agregar" : "/inventario/modificar";
+            return esNuevo ? "inventario/agregar" : "inventario/modificar";
         }
     }
 

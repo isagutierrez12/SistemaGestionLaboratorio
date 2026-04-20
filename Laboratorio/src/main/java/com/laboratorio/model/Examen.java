@@ -32,7 +32,7 @@ public class Examen {
     @Column(name = "id_examen", nullable = false, updatable = false)
     private Long idExamen;
 
-    @Column(name = "codigo", nullable = false, updatable = false, insertable = false)
+    @Column(name = "codigo", nullable = false, updatable = false)
     private String codigo;
 
     @NotBlank(message = "El nombre es obligatorio")

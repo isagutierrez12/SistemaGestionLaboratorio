@@ -190,6 +190,25 @@ public class PacienteController {
                 throw new IllegalArgumentException("El correo ya está registrado");
             }
 
+            // Bloquear desactivación si el paciente tiene citas agendadas (pendientes de atender)
+            boolean pasaAInactivo = Boolean.TRUE.equals(existente.getActivo())
+                    && Boolean.FALSE.equals(paciente.getActivo());
+            if (pasaAInactivo) {
+                List<Cita> citasPaciente = citaService.findHistorialPorPaciente(paciente.getIdPaciente());
+                if (citasPaciente != null) {
+                    boolean tieneCitasAgendadas = citasPaciente.stream()
+                            .anyMatch(c -> {
+                                String e = (c.getEstado() == null) ? "" : c.getEstado().trim().toUpperCase();
+                                return e.equals("AGENDADA") || e.equals("PENDIENTE");
+                            });
+                    if (tieneCitasAgendadas) {
+                        throw new IllegalArgumentException(
+                                "No se puede desactivar el paciente porque tiene citas agendadas. "
+                                + "Cancele o finalice las citas pendientes antes de desactivarlo.");
+                    }
+                }
+            }
+
             existente.setNombre(paciente.getNombre());
             existente.setPrimerApellido(paciente.getPrimerApellido());
             existente.setSegundoApellido(paciente.getSegundoApellido());
