@@ -109,15 +109,16 @@ public class CitaController {
                 .map(c -> {
                     var solicitud = c.getSolicitud();
 
-                    // Extraer nombres de exámenes y paquetes
                     List<String> examenes = solicitud.getDetalles().stream()
-                            .filter(d -> d.getExamen() != null)
+                            .filter(d -> d.getExamen() != null && d.getPaquete() == null)
                             .map(d -> d.getExamen().getNombre())
+                            .distinct()
                             .toList();
 
                     List<String> paquetes = solicitud.getDetalles().stream()
-                            .filter(d -> d.getPaquete() != null)
+                            .filter(d -> d.getPaquete() != null && d.getExamen() == null)
                             .map(d -> d.getPaquete().getNombre())
+                            .distinct()
                             .toList();
 
                     return new CitaCalendarioDTO(
@@ -179,19 +180,16 @@ public class CitaController {
         try {
             validarExamenesNoDuplicadosEnPaquetes(examenesSeleccionados, paquetesSeleccionados);
 
-            // Armar lista completa de exámenes (individuales + los que vienen en paquetes)
             List<Long> todosLosExamenes = new ArrayList<>();
             if (examenesSeleccionados != null) {
                 todosLosExamenes.addAll(examenesSeleccionados);
             }
             if (paquetesSeleccionados != null) {
                 for (Long idPaq : paquetesSeleccionados) {
-                    Paquete p = paqueteService.getByIdConDetalles(idPaq);
-                    if (p != null && p.getDetalles() != null) {
-                        for (DetallePaquete dp : p.getDetalles()) {
-                            if (dp.getExamen() != null) {
-                                todosLosExamenes.add(dp.getExamen().getIdExamen());
-                            }
+                    List<DetallePaquete> detallesPaq = detallePaqueteRepository.findByPaqueteIdPaquete(idPaq);
+                    for (DetallePaquete dp : detallesPaq) {
+                        if (dp.getExamen() != null) {
+                            todosLosExamenes.add(dp.getExamen().getIdExamen());
                         }
                     }
                 }
@@ -231,15 +229,19 @@ public class CitaController {
 
                         // ---------- GUARDAR EL PAQUETE COMO DETALLE -----------
                         SolicitudDetalle detallePaquete = new SolicitudDetalle();
-                        detallePaquete.setPaquete(paquete);
+                        detallePaquete.setPaquete(paquete);  // ← AQUÍ SÍ EXISTE "paquete"
                         detallePaquete.setExamen(null);
 
                         solicitud.addDetalle(detallePaquete);
                         // SUMAR PRECIO DEL PAQUETE
                         precioTotal += paquete.getPrecio().doubleValue();
                         //---------- GUARDAR LOS EXÁMENES QUE INCLUYE EL PAQUETE -----------
-                        for (DetallePaquete dp : paquete.getDetalles()) {
+                        List<DetallePaquete> detallesDelPaquete = detallePaqueteRepository.findByPaqueteIdPaquete(idPaquete);
+                        for (DetallePaquete dp : detallesDelPaquete) {
                             Examen examenPaquete = dp.getExamen();
+                            if (examenPaquete == null) {
+                                continue;
+                            }
 
                             SolicitudDetalle detalleExamen = new SolicitudDetalle();
                             detalleExamen.setExamen(examenPaquete);
@@ -468,9 +470,8 @@ public class CitaController {
             model.addAttribute("cita", cita);
             model.addAttribute("idPacienteSeleccionado", idPaciente);
 
-            // Dividir la fecha/hora enviada para repoblar los inputs del form
             if (fechaCita != null) {
-                model.addAttribute("fechaSeleccionada", fechaCita.toLocalDate().toString()); // yyyy-MM-dd
+                model.addAttribute("fechaSeleccionada", fechaCita.toLocalDate().toString());
                 model.addAttribute("horaSeleccionada",
                         String.format("%02d:%02d", fechaCita.getHour(), fechaCita.getMinute()));
             }
@@ -505,15 +506,16 @@ public class CitaController {
             return "redirect:/cita/citas";
         }
 
-        // Obtener los IDs de exámenes y paquetes ya seleccionados
         List<Long> examenesSeleccionados = cita.getSolicitud().getDetalles().stream()
-                .filter(d -> d.getExamen() != null)
+                .filter(d -> d.getExamen() != null && d.getPaquete() == null)
                 .map(d -> d.getExamen().getIdExamen())
+                .distinct()
                 .toList();
 
         List<Long> paquetesSeleccionados = cita.getSolicitud().getDetalles().stream()
-                .filter(d -> d.getPaquete() != null)
+                .filter(d -> d.getPaquete() != null && d.getExamen() == null)
                 .map(d -> d.getPaquete().getIdPaquete())
+                .distinct()
                 .toList();
 
         model.addAttribute("cita", cita);
@@ -542,19 +544,16 @@ public class CitaController {
         try {
             validarExamenesNoDuplicadosEnPaquetes(examenesSeleccionados, paquetesSeleccionados);
 
-            // Armar lista completa de exámenes (individuales + los que vienen en paquetes)
             List<Long> todosLosExamenes = new ArrayList<>();
             if (examenesSeleccionados != null) {
                 todosLosExamenes.addAll(examenesSeleccionados);
             }
             if (paquetesSeleccionados != null) {
                 for (Long idPaq : paquetesSeleccionados) {
-                    Paquete p = paqueteService.getByIdConDetalles(idPaq);
-                    if (p != null && p.getDetalles() != null) {
-                        for (DetallePaquete dp : p.getDetalles()) {
-                            if (dp.getExamen() != null) {
-                                todosLosExamenes.add(dp.getExamen().getIdExamen());
-                            }
+                    List<DetallePaquete> detallesPaq = detallePaqueteRepository.findByPaqueteIdPaquete(idPaq);
+                    for (DetallePaquete dp : detallesPaq) {
+                        if (dp.getExamen() != null) {
+                            todosLosExamenes.add(dp.getExamen().getIdExamen());
                         }
                     }
                 }
@@ -613,7 +612,8 @@ public class CitaController {
                         precioTotal += paquete.getPrecio().doubleValue();
 
                         // 5.3 Guardar los exámenes del paquete como detalles (para reporte/lista)
-                        for (DetallePaquete dp : paquete.getDetalles()) {
+                        List<DetallePaquete> detallesDelPaquete = detallePaqueteRepository.findByPaqueteIdPaquete(idPaquete);
+                        for (DetallePaquete dp : detallesDelPaquete) {
                             Examen examenPaquete = dp.getExamen();
                             if (examenPaquete == null) {
                                 continue;
@@ -921,11 +921,9 @@ public class CitaController {
             List<DetalleCitaResponse.Item> examenes = new ArrayList<>();
             List<DetalleCitaResponse.Item> paquetes = new ArrayList<>();
 
-            Set<Long> paquetesAgregados = new HashSet<>();
-
             for (SolicitudDetalle d : solicitud.getDetalles()) {
 
-                if (d.getExamen() != null) {
+                if (d.getExamen() != null && d.getPaquete() == null) {
                     Examen ex = d.getExamen();
                     examenes.add(new DetalleCitaResponse.Item(
                             ex.getCodigo(),
@@ -934,7 +932,7 @@ public class CitaController {
                     ));
                 }
 
-                if (d.getPaquete() != null && paquetesAgregados.add(d.getPaquete().getIdPaquete())) {
+                if (d.getPaquete() != null && d.getExamen() == null) {
                     Paquete paq = d.getPaquete();
                     paquetes.add(new DetalleCitaResponse.Item(
                             paq.getCodigo(),

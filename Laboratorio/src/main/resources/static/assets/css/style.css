@@ -2274,34 +2274,27 @@ h6 {
 }
 
 
-/* #main no debe desbordar; permitir que su contenido maneje overflow internamente. */
 #main {
     overflow-x: hidden;
     min-width: 0;
 }
 
-/* Las cards y card-body respetan el ancho disponible sin imponer su ancho natural. */
 #main .card,
 #main .card-body {
     min-width: 0;
     max-width: 100%;
 }
 
-/* Card-body maneja scroll horizontal cuando su contenido (tabla ancha, etc.) no entra.
-   El scroll aparece DENTRO de la card, no en el documento. */
 #main .card-body {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
 
-/* Si ya usan .table-responsive de Bootstrap, que siga funcionando como siempre. */
 #main .table-responsive {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
 
-/* Calendario FullCalendar: contenedor limita al ancho del padre;
-   el scroll aparece cuando en pantallas chicas no hay espacio para las celdas. */
 #calendar {
     max-width: 100%;
     width: 100%;

@@ -11,8 +11,10 @@ import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -162,46 +164,45 @@ public class InventarioServiceImpl implements InventarioService {
         String anterior = normalizarEstado(estadoAnterior);
         String nuevo = normalizarEstado(estadoNuevo);
 
-        boolean mismosExamenes = (examenesAnteriores == null && examenesNuevos == null)
-                || (examenesAnteriores != null && examenesAnteriores.equals(examenesNuevos));
+        Set<Long> prevSet = (examenesAnteriores == null) ? java.util.Collections.emptySet() : new HashSet<>(examenesAnteriores);
+        Set<Long> newSet = (examenesNuevos == null) ? java.util.Collections.emptySet() : new HashSet<>(examenesNuevos);
+        boolean mismosExamenes = prevSet.equals(newSet);
 
         if (anterior.equals(nuevo) && mismosExamenes) {
             return;
         }
 
-        boolean eraBloqueante = anterior.equals("AGENDADA");
-        boolean esBloqueante = nuevo.equals("AGENDADA");
 
-        if (mismosExamenes) {
-            if (eraBloqueante && nuevo.equals("TERMINADA")) {
+        if (mismosExamenes && examenesNuevos != null && !examenesNuevos.isEmpty()) {
+            if (anterior.equals("AGENDADA") && nuevo.equals("TERMINADA")) {
                 ajustarInventarioPorExamenes(examenesNuevos, "TERMINADA");
                 return;
             }
-            if (eraBloqueante && nuevo.equals("CANCELADA")) {
+            if (anterior.equals("AGENDADA") && nuevo.equals("CANCELADA")) {
                 ajustarInventarioPorExamenes(examenesNuevos, "CANCELADA");
                 return;
             }
-            if (anterior.equals("CANCELADA") && esBloqueante) {
-                ajustarInventarioPorExamenes(examenesNuevos, nuevo);
+            if (anterior.equals("CANCELADA") && nuevo.equals("AGENDADA")) {
+                ajustarInventarioPorExamenes(examenesNuevos, "AGENDADA");
+                return;
+            }
+
+            if (anterior.equals("TERMINADA")) {
                 return;
             }
         }
 
-        if (eraBloqueante && examenesAnteriores != null && !examenesAnteriores.isEmpty()) {
-            ajustarInventarioPorExamenes(examenesAnteriores, "CANCELADA");
+        if (anterior.equals("AGENDADA") && !prevSet.isEmpty()) {
+            ajustarInventarioPorExamenes(new ArrayList<>(prevSet), "CANCELADA");
         }
 
-        switch (nuevo) {
-            case "AGENDADA":
-            case "CANCELADA":
-                ajustarInventarioPorExamenes(examenesNuevos, nuevo);
-                break;
-            case "TERMINADA":
-                ajustarInventarioPorExamenes(examenesNuevos, "AGENDADA");
-                ajustarInventarioPorExamenes(examenesNuevos, "TERMINADA");
-                break;
-            default:
-                break;
+        if (!newSet.isEmpty()) {
+            if (nuevo.equals("AGENDADA")) {
+                ajustarInventarioPorExamenes(new ArrayList<>(newSet), "AGENDADA");
+            } else if (nuevo.equals("TERMINADA")) {
+                ajustarInventarioPorExamenes(new ArrayList<>(newSet), "AGENDADA");
+                ajustarInventarioPorExamenes(new ArrayList<>(newSet), "TERMINADA");
+            }
         }
     }
 
