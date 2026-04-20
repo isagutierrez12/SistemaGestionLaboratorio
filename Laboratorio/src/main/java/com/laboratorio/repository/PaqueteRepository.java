@@ -37,4 +37,13 @@ public interface PaqueteRepository extends JpaRepository<Paquete, Long> {
        ORDER BY p.nombre ASC
        """)
     List<Paquete> findActivosConExamenes();
+
+    @Query("""
+       SELECT DISTINCT p
+       FROM Paquete p
+       LEFT JOIN FETCH p.detalles d
+       LEFT JOIN FETCH d.examen e
+       WHERE p.idPaquete = :id
+       """)
+    java.util.Optional<Paquete> findByIdConDetalles(@org.springframework.data.repository.query.Param("id") Long id);
 }

@@ -110,6 +110,12 @@ public class PaqueteServiceImpl implements PaqueteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Paquete getByIdConDetalles(Long id) {
+        return paqueteRepository.findByIdConDetalles(id).orElse(null);
+    }
+
+    @Override
     public boolean existsByNombre(String nombre) {
         return paqueteRepository.existsByNombre(nombre);
     }

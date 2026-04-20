@@ -71,6 +71,7 @@ public class CitaController {
     private final InventarioService inventarioService;
     private WhatsAppServiceImpl whatsAppServiceImpl;
     private final PagoService pagoService;
+    private final com.laboratorio.repository.DetallePaqueteRepository detallePaqueteRepository;
 
     @Autowired
     public CitaController(
@@ -83,7 +84,8 @@ public class CitaController {
             EmailServiceImpl emailServiceImpl,
             InventarioService inventarioService,
             WhatsAppServiceImpl whatsAppServiceImpl,
-            PagoService pagoService
+            PagoService pagoService,
+            com.laboratorio.repository.DetallePaqueteRepository detallePaqueteRepository
     ) {
         this.citaService = citaService;
         this.solicitudService = solicitudService;
@@ -95,6 +97,7 @@ public class CitaController {
         this.inventarioService = inventarioService;
         this.whatsAppServiceImpl = whatsAppServiceImpl;
         this.pagoService = pagoService;
+        this.detallePaqueteRepository = detallePaqueteRepository;
     }
 
     // Listado de citas
@@ -166,7 +169,7 @@ public class CitaController {
             }
             if (paquetesSeleccionados != null) {
                 for (Long idPaq : paquetesSeleccionados) {
-                    Paquete p = paqueteService.getById(idPaq);
+                    Paquete p = paqueteService.getByIdConDetalles(idPaq);
                     if (p != null && p.getDetalles() != null) {
                         for (DetallePaquete dp : p.getDetalles()) {
                             if (dp.getExamen() != null) {
@@ -207,7 +210,7 @@ public class CitaController {
 
                 for (Long idPaquete : paquetesSeleccionados) {
 
-                    Paquete paquete = paqueteService.getById(idPaquete);
+                    Paquete paquete = paqueteService.getByIdConDetalles(idPaquete);
 
                     if (paquete != null) {
 
@@ -443,6 +446,13 @@ public class CitaController {
                 e.printStackTrace();
                 // No interrumpir el flujo si falla WhatsApp
             }
+        } catch (IllegalArgumentException e) {
+            // Errores de validación (exámenes duplicados en paquete, inventario, etc.):
+            // volver al formulario de agregar para que el usuario corrija.
+            redirectAttrs.addFlashAttribute("mensaje", e.getMessage());
+            redirectAttrs.addFlashAttribute("clase", "danger");
+            return "redirect:/cita/agregar";
+
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttrs.addFlashAttribute("mensaje", "Error al registrar la cita: " + e.getMessage());
@@ -502,7 +512,7 @@ public class CitaController {
             }
             if (paquetesSeleccionados != null) {
                 for (Long idPaq : paquetesSeleccionados) {
-                    Paquete p = paqueteService.getById(idPaq);
+                    Paquete p = paqueteService.getByIdConDetalles(idPaq);
                     if (p != null && p.getDetalles() != null) {
                         for (DetallePaquete dp : p.getDetalles()) {
                             if (dp.getExamen() != null) {
@@ -553,7 +563,7 @@ public class CitaController {
             // 5. Agregar paquetes seleccionados
             if (paquetesSeleccionados != null && !paquetesSeleccionados.isEmpty()) {
                 for (Long idPaquete : paquetesSeleccionados) {
-                    Paquete paquete = paqueteService.getById(idPaquete);
+                    Paquete paquete = paqueteService.getByIdConDetalles(idPaquete);
                     if (paquete != null) {
 
                         // 5.1 Guardar el paquete como detalle (igual que en guardarCita)
@@ -817,6 +827,13 @@ public class CitaController {
             redirectAttrs.addFlashAttribute("mensaje", "Cita actualizada correctamente.");
             redirectAttrs.addFlashAttribute("clase", "success");
 
+        } catch (IllegalArgumentException e) {
+            // Errores de validación (exámenes duplicados en paquete, inventario, etc.):
+            // volver al formulario de edición para que el usuario corrija.
+            redirectAttrs.addFlashAttribute("mensaje", e.getMessage());
+            redirectAttrs.addFlashAttribute("clase", "danger");
+            return "redirect:/cita/modificar/" + idCita;
+
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttrs.addFlashAttribute("mensaje", "Error al actualizar la cita: " + e.getMessage());
@@ -899,16 +916,8 @@ public class CitaController {
 
     @GetMapping("/horas-ocupadas")
     @ResponseBody
-    public List<String> horasOcupadas(
-            @RequestParam String fecha,
-            @RequestParam(required = false) Long idCita) {
-
+    public List<String> horasOcupadas(@RequestParam String fecha) {
         LocalDate fechaLocal = LocalDate.parse(fecha);
-
-        if (idCita != null) {
-            return citaService.obtenerHorasOcupadasExcluyendoCita(fechaLocal, idCita);
-        }
-
         return citaService.obtenerHorasOcupadas(fechaLocal);
     }
 
@@ -927,21 +936,14 @@ public class CitaController {
             return;
         }
 
+        List<Object[]> tuplas = detallePaqueteRepository.findExamenesDePaquetes(paquetesSeleccionados);
+
         // Mapa: idExamen → nombre del primer paquete donde aparece
         Map<Long, String> paqueteDeExamen = new HashMap<>();
-        for (Long idPaquete : paquetesSeleccionados) {
-            Paquete paquete = paqueteService.getById(idPaquete);
-            if (paquete == null || paquete.getDetalles() == null) {
-                continue;
-            }
-            for (DetallePaquete dp : paquete.getDetalles()) {
-                if (dp.getExamen() != null) {
-                    paqueteDeExamen.putIfAbsent(
-                            dp.getExamen().getIdExamen(),
-                            paquete.getNombre()
-                    );
-                }
-            }
+        for (Object[] fila : tuplas) {
+            Long idExamen = ((Number) fila[1]).longValue();
+            String nombrePaquete = (String) fila[2];
+            paqueteDeExamen.putIfAbsent(idExamen, nombrePaquete);
         }
 
         List<Long> idsConflictivos = examenesSeleccionados.stream()
